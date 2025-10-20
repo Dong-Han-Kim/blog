@@ -15,7 +15,6 @@ const eslintConfig = [
     rules: {
       'no-unused-vars': 'warn',
       'no-console': 'off',
-
       'react/react-in-jsx-scope': 'off',
     },
   },
