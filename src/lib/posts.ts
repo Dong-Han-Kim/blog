@@ -16,11 +16,19 @@ export function getAllPosts() {
       const filePath = path.join(categoryDir, file);
       const fileContents = fs.readFileSync(filePath, 'utf-8');
       const { data } = matter(fileContents);
+      const { title, date, tags, description, draft, keywords, thumbnail } =
+        data;
 
       return {
         category,
         slug: file.replace(/\.md$/, ''),
-        ...data,
+        title,
+        date,
+        tags,
+        description,
+        draft,
+        keywords,
+        thumbnail,
       };
     });
   });

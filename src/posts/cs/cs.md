@@ -5,12 +5,12 @@ date: '2025-10-01'
 category: 'CS'
 tags: ['React', 'Hooks', 'useEffect', 'useState']
 description: 'React Hooks의 개념과 실전 활용법을 정리했습니다.'
+thumbnail: '/images/react-hooks-thumbnail.png'
 
 # 💬 옵션 필드
 draft: false # true면 아직 공개 안 함
-readingTime: 5 # 분 단위 (자동 계산 가능)
 
-# 📚 SEO용 (선택)
+# 📚 SEO용
 keywords: ['React', 'Frontend', 'Hooks', 'useEffect']
 ---
 
