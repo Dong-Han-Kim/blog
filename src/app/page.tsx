@@ -15,26 +15,25 @@ export default function Home() {
   });
 
   return (
-    <>
-      <div className="w-full bg-amber-300">
-        <h1 className="text-5xl mb-10">ALL</h1>
-        <div>
-          {sortedPosts.map((post) => {
-            if (post.draft) return null;
-            return (
-              <Card
-                key={post.slug}
-                slug={post.slug}
-                category={post.category}
-                title={post.title}
-                description={post.description}
-                date={post.date}
-                thumbnail={post.thumbnail}
-              />
-            );
-          })}
-        </div>
+    <div className="w-full px-10 md:px-20 lg:px-50">
+      <h1 className="text-5xl mb-10">ALL</h1>
+      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+        {sortedPosts.map((post) => {
+          if (post.draft) return null;
+          return (
+            <Card
+              key={post.slug}
+              slug={post.slug}
+              category={post.category}
+              title={post.title}
+              description={post.description}
+              date={post.date}
+              thumbnail={post.thumbnail}
+              keywords={post.keywords}
+            />
+          );
+        })}
       </div>
-    </>
+    </div>
   );
 }

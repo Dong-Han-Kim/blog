@@ -17,6 +17,7 @@ export interface PostCard {
   description: string;
   date: string;
   thumbnail: string;
+  keywords: string[];
 }
 
 export interface DefaultImage {

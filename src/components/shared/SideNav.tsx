@@ -1,18 +1,43 @@
+import Image from 'next/image';
+import Link from 'next/link';
+
 function SideNav() {
   return (
-    <aside className="flex flex-col items-start">
-      <h3 className="font-bold text-5xl mb-30">Blog.</h3>
+    <aside className="hidden xl:flex flex-col items-start min-w-80">
+      <h3 className="mb-15 rounded-sm overflow-hidden">
+        <Link href="/">
+          <Image src="/blog-logo.png" alt="Blog Logo" width={80} height={80} />
+        </Link>
+      </h3>
       <nav className="border-y-1 border-gray-400 border-solid py-15 w-full">
         <ul className="text-sm flex flex-col gap-5 items-start">
-          <li>All</li>
-          <li>HTML</li>
-          <li>CSS</li>
-          <li>JavaScript</li>
-          <li>TypeScript</li>
-          <li>React.js</li>
-          <li>Next.js</li>
-          <li>상태관리</li>
-          <li>Projects</li>
+          <li className="hover:line-through transition-all duration-500 ease-in-out">
+            <Link href="/">All</Link>
+          </li>
+          <li className="hover:line-through transition-all duration-500 ease-in-out">
+            <Link href="/blog/html">HTML</Link>
+          </li>
+          <li className="hover:line-through transition-all duration-500 ease-in-out">
+            <Link href="/blog/css">CSS</Link>
+          </li>
+          <li className="hover:line-through transition-all duration-500 ease-in-out">
+            <Link href="/blog/javascript">JavaScript</Link>
+          </li>
+          <li className="hover:line-through transition-all duration-500 ease-in-out">
+            <Link href="/blog/typescript">TypeScript</Link>
+          </li>
+          <li className="hover:line-through transition-all duration-500 ease-in-out">
+            <Link href="/blog/react">React.js</Link>
+          </li>
+          <li className="hover:line-through transition-all duration-500 ease-in-out">
+            <Link href="/blog/nextjs">Next.js</Link>
+          </li>
+          <li className="hover:line-through transition-all duration-500 ease-in-out">
+            <Link href="/blog/state-management">상태관리</Link>
+          </li>
+          <li className="hover:line-through transition-all duration-500 ease-in-out">
+            <Link href="/blog/projects">Projects</Link>
+          </li>
         </ul>
       </nav>
     </aside>
