@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import ThemeButton from './ThemeButton';
 
 function SideNav() {
   return (
@@ -9,7 +10,7 @@ function SideNav() {
           <Image src="/blog-logo.png" alt="Blog Logo" width={80} height={80} />
         </Link>
       </h3>
-      <nav className="border-y-1 border-gray-400 border-solid py-15 w-full">
+      <nav className="border-y-1 border-gray-400 border-solid py-15 w-full mb-15">
         <ul className="text-sm flex flex-col gap-5 items-start">
           <li className="hover:line-through transition-all duration-500 ease-in-out">
             <Link href="/">All</Link>
@@ -40,6 +41,7 @@ function SideNav() {
           </li>
         </ul>
       </nav>
+      <ThemeButton />
     </aside>
   );
 }

@@ -4,6 +4,12 @@
   --spacing: 0.0625rem;
 }
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+html.dark {
+  color: #ffffff;
+}
+
 body {
   font-family: Pretendard;
 }
