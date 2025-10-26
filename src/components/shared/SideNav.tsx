@@ -4,10 +4,15 @@ import ThemeButton from './ThemeButton';
 
 function SideNav() {
   return (
-    <aside className="hidden xl:flex flex-col items-start min-w-80">
+    <aside className="hidden xl:flex flex-col items-start min-w-90">
       <h3 className="mb-15 rounded-sm overflow-hidden">
         <Link href="/">
-          <Image src="/blog-logo.png" alt="Blog Logo" width={80} height={80} />
+          <Image
+            src="/blog-logo-black.png"
+            alt="Blog Logo"
+            width={90}
+            height={90}
+          />
         </Link>
       </h3>
       <nav className="border-y-1 border-gray-400 border-solid py-15 w-full mb-15">
