@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <body>
-        <ThemeProvider>
+        <ThemeProvider attribute="class" defaultTheme="system">
           <header>
             <Nav />
           </header>
