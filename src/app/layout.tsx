@@ -30,7 +30,7 @@ export default function RootLayout({
           <header>
             <Nav />
           </header>
-          <main className="flex max-w-7xl mx-auto w-full gap-20 my-55">
+          <main className="flex max-w-7xl mx-auto w-full gap-20 my-25">
             <SideNav />
             {children}
           </main>
