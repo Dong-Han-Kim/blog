@@ -1,28 +1,31 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
-import ThemeButton from './ThemeButton';
+import { Default_Nav_items } from '@/constants/menu';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
-import { Default_Nav_items } from '@/constants/menu';
+import Link from 'next/link';
+import Image from 'next/image';
 
-function SideNav() {
+interface SideMenuProps {
+  isOpen: boolean;
+  onClick: () => void;
+}
+
+function SideMenu({ isOpen, onClick }: SideMenuProps) {
   const pathname = usePathname();
+
+  const navWrapperClass = clsx(
+    'w-250 h-screen bg-white dark:bg-stone-950 absolute right-0 transition-all duration-500 ease-out',
+    `${isOpen ? 'translate-x-0' : 'translate-x-full'}`,
+  );
+
   return (
-    <aside className="hidden xl:flex flex-col items-start min-w-90">
-      <h3 className="mb-15 rounded-sm overflow-hidden">
-        <Link href="/">
-          <Image
-            src="/blog-logo-black.png"
-            alt="Blog Logo"
-            width={90}
-            height={90}
-          />
-        </Link>
-      </h3>
-      <nav className="border-y-1 border-gray-400 border-solid py-15 w-full mb-15">
-        <ul className="text-sm flex flex-col gap-5 items-start">
+    <section className={navWrapperClass}>
+      <button onClick={onClick}>
+        <Image src="/icons/x.svg" alt="메뉴 닫기" width={30} height={30} />
+      </button>
+      <nav className="py-15 w-full mb-15">
+        <ul className="text-sm flex flex-col gap-15 items-center">
           {Default_Nav_items.map(
             ({
               name,
@@ -49,9 +52,8 @@ function SideNav() {
           )}
         </ul>
       </nav>
-      <ThemeButton />
-    </aside>
+    </section>
   );
 }
 
-export default SideNav;
+export default SideMenu;
