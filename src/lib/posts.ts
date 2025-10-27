@@ -3,6 +3,7 @@ import matter from 'gray-matter';
 import path from 'path';
 import { remark } from 'remark';
 import html from 'remark-html';
+import { PostMeta } from '../types/common';
 
 const postsDirectory = path.join(process.cwd(), '/src/posts');
 
@@ -35,7 +36,7 @@ export function getAllPosts() {
   return allPosts;
 }
 
-export function getPostsByCategory(category: string) {
+export function getPostsByCategory(category: string): PostMeta[] | null {
   const categoryDir = path.join(postsDirectory, category);
   if (!fs.existsSync(categoryDir)) {
     return null;
@@ -46,11 +47,18 @@ export function getPostsByCategory(category: string) {
     const filePath = path.join(categoryDir, file);
     const fileContents = fs.readFileSync(filePath, 'utf-8');
     const { data } = matter(fileContents);
+    const { title, date, tags, description, draft, keywords, thumbnail } = data;
 
     return {
       category,
       slug: file.replace(/\.md$/, ''),
-      ...data,
+      title,
+      date,
+      tags,
+      description,
+      draft,
+      keywords,
+      thumbnail,
     };
   });
 }
