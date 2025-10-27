@@ -2,6 +2,12 @@
 
 @theme inline {
   --spacing: 0.0625rem;
+
+  --color-bg-light: #ffffff;
+  --color-text-light: #000000;
+
+  --color-bg-dark: #0f172a; /* slate-900 정도 */
+  --color-text-dark: #f8fafc; /* slate-50 정도 */
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -12,4 +18,10 @@ html.dark {
 
 body {
   font-family: Pretendard;
+
+  @apply bg-[var(--color-bg-light)] text-[var(--color-text-light)] transition-colors duration-300;
+}
+
+.dark body {
+  @apply bg-[var(--color-bg-dark)] text-[var(--color-text-dark)];
 }

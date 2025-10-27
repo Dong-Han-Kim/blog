@@ -17,16 +17,25 @@ function ThemeButton() {
     setIsMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (theme === 'dark') setChecked(true);
+  }, [theme]);
+
   if (!isMounted) return null;
   return (
     <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label="테마 변경 버튼"
       className="w-60 h-30 rounded-full relative bg-sky-300 dark:bg-gray-700"
       onClick={() => {
-        setTheme(theme === 'dark' ? 'light' : 'dark');
-        setChecked(!checked);
+        const nextChecked = !checked;
+        setChecked(nextChecked);
+        setTheme(nextChecked ? 'dark' : 'light');
       }}
     >
-      <span className={switchClass}>{theme === 'dark' ? '☀️' : '🌙'}</span>
+      <span className={switchClass}>{checked ? '🌙' : '☀️'}</span>
     </button>
   );
 }
