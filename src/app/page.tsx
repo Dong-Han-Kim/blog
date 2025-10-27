@@ -5,7 +5,6 @@ import Card from '@/components/shared/Card';
 
 export default function Home() {
   const allPosts: PostMeta[] = getAllPosts();
-  console.log(allPosts);
 
   const sortedPosts = allPosts.sort((a, b) => {
     if (!a.date || !b.date) return 0;
