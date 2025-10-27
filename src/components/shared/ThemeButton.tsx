@@ -24,6 +24,10 @@ function ThemeButton() {
   if (!isMounted) return null;
   return (
     <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label="테마 변경 버튼"
       className="w-60 h-30 rounded-full relative bg-sky-300 dark:bg-gray-700"
       onClick={() => {
         const nextChecked = !checked;
