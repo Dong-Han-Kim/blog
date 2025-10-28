@@ -4,11 +4,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import ThemeButton from './ThemeButton';
 import { usePathname } from 'next/navigation';
-import clsx from 'clsx';
 import { Default_Nav_items } from '@/constants/menu';
+import { cn } from '@/lib/cn';
 
 function SideNav() {
   const pathname = usePathname();
+
+  function isActive(pathname: string, path: string) {
+    if (path === '/') return pathname === '/';
+    return pathname === path || pathname.startsWith(`${path}/`);
+  }
   return (
     <aside className="hidden xl:flex flex-col items-start min-w-90">
       <h3 className="mb-15 rounded-sm overflow-hidden">
@@ -33,14 +38,12 @@ function SideNav() {
               path: string;
               state: boolean;
             }) => {
+              const active = isActive(pathname, path);
               if (!state) return null;
               return (
                 <li
                   key={name}
-                  className={clsx(
-                    `hover:line-through`,
-                    `${pathname === path && 'line-through'}`,
-                  )}
+                  className={cn(`hover:line-through`, active && 'line-through')}
                 >
                   <Link href={path}>{name}</Link>
                 </li>

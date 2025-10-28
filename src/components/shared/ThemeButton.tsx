@@ -1,6 +1,6 @@
 'use client';
 
-import clsx from 'clsx';
+import { cn } from '@/lib/cn';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
@@ -9,7 +9,7 @@ function ThemeButton() {
   const [isMounted, setIsMounted] = useState(false);
   const [checked, setChecked] = useState(false);
 
-  const switchClass = clsx(
+  const switchClass = cn(
     `flex items-center justify-center align-center rounded-full w-30 h-30 absolute top-0 left-0 transition-transform duration-300 ease-in-out bg-sky-400 dark:bg-sky-700 ${checked ? 'translate-x-30' : 'translate-x-0'}`,
   );
 
