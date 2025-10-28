@@ -2,22 +2,27 @@
 
 import { Default_Nav_items } from '@/constants/menu';
 import { usePathname } from 'next/navigation';
-import clsx from 'clsx';
 import Link from 'next/link';
 import Image from 'next/image';
+import { cn } from '@/lib/cn';
 
-interface SideMenuProps {
+interface MobileMenuProps {
   isOpen: boolean;
   onClick: () => void;
 }
 
-function SideMenu({ isOpen, onClick }: SideMenuProps) {
+function MobileMenu({ isOpen, onClick }: MobileMenuProps) {
   const pathname = usePathname();
 
-  const navWrapperClass = clsx(
+  const navWrapperClass = cn(
     'w-250 h-screen bg-white dark:bg-stone-950 absolute right-0 transition-all duration-500 ease-out',
     `${isOpen ? 'translate-x-0' : 'translate-x-full'}`,
   );
+
+  function isActive(pathname: string, path: string) {
+    if (path === '/') return pathname === '/';
+    return pathname === path || pathname.startsWith(`${path}/`);
+  }
 
   return (
     <section className={navWrapperClass}>
@@ -36,16 +41,19 @@ function SideMenu({ isOpen, onClick }: SideMenuProps) {
               path: string;
               state: boolean;
             }) => {
+              const active = isActive(pathname, path);
               if (!state) return null;
               return (
-                <li
-                  key={name}
-                  className={clsx(
-                    `hover:line-through`,
-                    `${pathname === path && 'line-through'}`,
-                  )}
-                >
-                  <Link href={path}>{name}</Link>
+                <li key={name}>
+                  <Link
+                    href={path}
+                    className={cn(
+                      `hover:line-through`,
+                      active && 'line-through',
+                    )}
+                  >
+                    {name}
+                  </Link>
                 </li>
               );
             },
@@ -56,4 +64,4 @@ function SideMenu({ isOpen, onClick }: SideMenuProps) {
   );
 }
 
-export default SideMenu;
+export default MobileMenu;
