@@ -21,8 +21,6 @@ function Card({
     ? category
     : 'etc';
 
-  console.log(category);
-
   const handleImageError = (error: React.SyntheticEvent<HTMLImageElement>) => {
     if (!error) return;
     setIsError(true);

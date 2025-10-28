@@ -10,7 +10,6 @@ interface PostPageParams {
 
 async function PostPage({ params }: PostPageParams) {
   const { category, slug } = await params;
-  console.log(category);
 
   const post = await getPostById(category, slug);
 
