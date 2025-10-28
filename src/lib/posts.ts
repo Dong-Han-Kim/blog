@@ -2,7 +2,10 @@ import fs from 'fs';
 import matter from 'gray-matter';
 import path from 'path';
 import { remark } from 'remark';
-import html from 'remark-html';
+import remarkRehype from 'remark-rehype';
+import rehypeSanitize from 'rehype-sanitize';
+import rehypeStringify from 'rehype-stringify';
+import rehypePrismPlus from 'rehype-prism-plus';
 import { PostMeta } from '../types/common';
 
 const postsDirectory = path.join(process.cwd(), '/src/posts');
@@ -70,13 +73,29 @@ export async function getPostById(category: string, slug: string) {
   }
   const fileContents = fs.readFileSync(filePath, 'utf-8');
   const { data, content } = matter(fileContents);
+  const { title, date, tags, description, draft, keywords, thumbnail } = data;
 
-  const processed = await remark().use(html).process(content);
+  const processed = await remark()
+    .use(remarkRehype) // Markdown → HTML AST
+    .use(rehypeSanitize) // XSS 방지
+    .use(rehypePrismPlus, {
+      ignoreMissing: true,
+      showLineNumbers: true,
+      defaultLanguage: 'text',
+    })
+    .use(rehypeStringify, { allowDangerousHtml: true })
+    .process(content);
   const contentHtml = processed.toString();
   return {
     category,
     slug,
     content: contentHtml,
-    ...data,
+    title,
+    date,
+    tags,
+    description,
+    draft,
+    keywords,
+    thumbnail,
   };
 }

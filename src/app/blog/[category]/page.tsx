@@ -6,8 +6,8 @@ interface CategoryPageProps {
   params: { category: string };
 }
 
-function CategoryPage({ params }: CategoryPageProps) {
-  const { category } = params;
+async function CategoryPage({ params }: CategoryPageProps) {
+  const { category } = await params;
   const posts: PostMeta[] | null = getPostsByCategory(category);
 
   const sortedPosts =
