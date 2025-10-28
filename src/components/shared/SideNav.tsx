@@ -1,0 +1,60 @@
+'use client';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import ThemeButton from './ThemeButton';
+import { usePathname } from 'next/navigation';
+import { Default_Nav_items } from '@/constants/menu';
+import { cn } from '@/lib/cn';
+
+function SideNav() {
+  const pathname = usePathname();
+
+  function isActive(pathname: string, path: string) {
+    if (path === '/') return pathname === '/';
+    return pathname === path || pathname.startsWith(`${path}/`);
+  }
+  return (
+    <aside className="hidden xl:flex flex-col items-start min-w-90">
+      <h3 className="mb-15 rounded-sm overflow-hidden">
+        <Link href="/">
+          <Image
+            src="/blog-logo-black.png"
+            alt="Blog Logo"
+            width={90}
+            height={90}
+          />
+        </Link>
+      </h3>
+      <nav className="border-y-1 border-gray-400 border-solid py-15 w-full mb-15">
+        <ul className="text-sm flex flex-col gap-5 items-start">
+          {Default_Nav_items.map(
+            ({
+              name,
+              path,
+              state,
+            }: {
+              name: string;
+              path: string;
+              state: boolean;
+            }) => {
+              const active = isActive(pathname, path);
+              if (!state) return null;
+              return (
+                <li
+                  key={name}
+                  className={cn(`hover:line-through`, active && 'line-through')}
+                >
+                  <Link href={path}>{name}</Link>
+                </li>
+              );
+            },
+          )}
+        </ul>
+      </nav>
+      <ThemeButton />
+    </aside>
+  );
+}
+
+export default SideNav;

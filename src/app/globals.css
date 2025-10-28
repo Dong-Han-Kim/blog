@@ -1,0 +1,75 @@
+@import 'tailwindcss';
+
+@plugin "@tailwindcss/typography";
+
+@theme inline {
+  --spacing: 0.0625rem;
+
+  --color-bg-light: #ffffff;
+  --color-text-light: #000000;
+
+  --color-bg-dark: #0f172a; /* slate-900 정도 */
+  --color-text-dark: #f8fafc; /* slate-50 정도 */
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+html.dark {
+  color: #ffffff;
+}
+
+body {
+  font-family: Pretendard;
+  overflow-x: hidden;
+
+  @apply bg-[var(--color-bg-light)] text-[var(--color-text-light)] transition-colors duration-300;
+}
+
+.dark body {
+  @apply bg-[var(--color-bg-dark)] text-[var(--color-text-dark)];
+}
+
+/* global.css - 기존 line-numbers 관련 CSS 전부 삭제하고 이것만 사용 */
+
+pre {
+  position: relative;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  background: #1e293b;
+  counter-reset: line;
+}
+
+pre code {
+  display: block;
+}
+
+/* line-number 클래스가 있는 span에 번호 추가 */
+span.line-number {
+  counter-increment: line;
+  display: block;
+  position: relative;
+  padding-left: 3.5rem;
+}
+
+span.line-number::before {
+  content: counter(line);
+  position: absolute;
+  left: 0;
+  width: 2.5rem;
+  text-align: right;
+  color: #64748b;
+  user-select: none;
+  padding-right: 1rem;
+  border-right: 1px solid #334155;
+}
+
+/* 다크모드 */
+.dark pre {
+  background: #0f172a;
+}
+
+.dark span.line-number::before {
+  color: #475569;
+  border-right-color: #1e293b;
+}
