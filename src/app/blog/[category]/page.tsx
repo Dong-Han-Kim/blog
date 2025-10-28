@@ -1,6 +1,8 @@
 import Card from '@/components/shared/Card';
+import { Default_Nav_items } from '@/constants/menu';
 import { getPostsByCategory } from '@/lib/posts';
 import { PostMeta } from '@/types/common';
+import { notFound } from 'next/navigation';
 
 interface CategoryPageProps {
   params: { category: string };
@@ -8,6 +10,14 @@ interface CategoryPageProps {
 
 async function CategoryPage({ params }: CategoryPageProps) {
   const { category } = await params;
+  const isValidCategory = Default_Nav_items.some(
+    (item) => item.path === `/blog/${category}`,
+  );
+
+  if (!isValidCategory) {
+    notFound();
+  }
+
   const posts: PostMeta[] | null = getPostsByCategory(category);
 
   const sortedPosts =
