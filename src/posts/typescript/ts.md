@@ -14,8 +14,6 @@ draft: false # true면 아직 공개 안 함
 keywords: ['React', 'Frontend', 'Hooks', 'useEffect']
 ---
 
-# React Hooks 완벽 가이드
-
 React 16.8부터 도입된 **Hooks**는 함수형 컴포넌트에서도 상태 관리와 라이프사이클 제어를 가능하게 합니다.
 
 ---

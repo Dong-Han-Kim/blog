@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { cn } from '@/lib/cn';
 import { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -9,7 +9,7 @@ interface MobileNavPortalProps {
 }
 
 function MobileNavPortal({ children, isOpen, onClose }: MobileNavPortalProps) {
-  const portalClass = clsx(
+  const portalClass = cn(
     'w-full h-screen absolute top-0 left-0 z-98 transition-all duration-900 ease-in-out',
     `${isOpen ? 'bg-black/30 opacity-100' : 'bg-black/0 opacity-0 pointer-events-none'}`,
   );
