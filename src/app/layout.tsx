@@ -4,6 +4,7 @@ import Nav from '@/components/shared/Nav';
 import SideNav from '../components/shared/SideNav';
 import type { Viewport } from 'next';
 import { ThemeProvider } from 'next-themes';
+import 'prism-themes/themes/prism-material-dark.css';
 
 export const metadata: Metadata = {
   title: 'blog',

@@ -5,7 +5,7 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import ThemeButton from './ThemeButton';
 import MobileNavPortal from './MobileNavPortal';
-import SideMenu from './SideMenu';
+import MobileMenu from './MobileMenu';
 import MenuToggleBtn from './MenuToggleBtn';
 import Link from 'next/link';
 
@@ -54,7 +54,7 @@ function MobileNavContent() {
       </div>
 
       <MobileNavPortal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <SideMenu isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
+        <MobileMenu isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
       </MobileNavPortal>
     </>
   );
