@@ -1,4 +1,5 @@
 import { getPostById } from '@/lib/posts';
+import { notFound } from 'next/navigation';
 
 interface PostPageParams {
   params: {
@@ -14,18 +15,9 @@ async function PostPage({ params }: PostPageParams) {
   const post = await getPostById(category, slug);
 
   if (!post) {
-    return <h1>포스트가 없습니다.</h1>;
+    return notFound();
   }
-  const {
-    title,
-    date,
-    tags,
-    description,
-    draft,
-    keywords,
-    thumbnail,
-    content,
-  } = post;
+  const { title, date, tags, content } = post;
 
   return (
     <article className="w-full relative">

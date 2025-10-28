@@ -1,18 +1,10 @@
 'use client';
 
+import { DEFAULT_THUMBNAIL } from '@/constants/thumbnail';
 import { PostCard } from '@/types/common';
 import Image from 'next/image';
 import Link from 'next/link';
-import { DefaultImage } from '@/types/common';
 import { useState } from 'react';
-
-const DEFAULT_THUMBNAIL: DefaultImage = {
-  html: '/thumbnail/html.jpg',
-  css: '/thumbnail/CSS.jpg',
-  js: '/thumbnail/javaScript.jpg',
-  react: '/thumbnail/react.jpg',
-  etc: '/thumbnail/etc.jpg',
-};
 
 function Card({
   slug,
@@ -28,6 +20,8 @@ function Card({
   const thumbnailUrl = Object.keys(DEFAULT_THUMBNAIL).includes(category)
     ? category
     : 'etc';
+
+  console.log(category);
 
   const handleImageError = (error: React.SyntheticEvent<HTMLImageElement>) => {
     if (!error) return;
