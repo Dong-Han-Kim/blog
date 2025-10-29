@@ -5,7 +5,7 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
 function ThemeButton() {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
   const [checked, setChecked] = useState(false);
 
@@ -18,8 +18,12 @@ function ThemeButton() {
   }, []);
 
   useEffect(() => {
-    if (theme === 'dark') setChecked(true);
-  }, [theme]);
+    if (resolvedTheme === 'dark') {
+      setChecked(true);
+    } else {
+      setChecked(false);
+    }
+  }, [resolvedTheme]);
 
   if (!isMounted) return null;
   return (
