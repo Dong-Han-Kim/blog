@@ -1,6 +1,6 @@
 'use client';
 
-import { DEFAULT_THUMBNAIL } from '@/constants/thumbnail';
+import { CATEGORY_CONTENT } from '@/constants/category-content';
 import { PostCard } from '@/types/common';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -17,7 +17,7 @@ function Card({
 }: PostCard) {
   const [isError, setIsError] = useState(false);
 
-  const thumbnailUrl = Object.keys(DEFAULT_THUMBNAIL).includes(category)
+  const thumbnailUrl = Object.keys(CATEGORY_CONTENT).includes(category)
     ? category
     : 'etc';
 
@@ -36,7 +36,7 @@ function Card({
           <Image
             src={
               !thumbnail || isError
-                ? DEFAULT_THUMBNAIL[thumbnailUrl]
+                ? CATEGORY_CONTENT[thumbnailUrl].thumbnail
                 : thumbnail
             }
             fill
