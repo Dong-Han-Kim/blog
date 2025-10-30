@@ -1,4 +1,5 @@
 import Card from '@/components/shared/Card';
+import { CATEGORY_CONTENT } from '@/constants/category-content';
 import { Default_Nav_items } from '@/constants/menu';
 import { getPostsByCategory } from '@/lib/posts';
 import { PostMeta } from '@/types/common';
@@ -31,7 +32,7 @@ async function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <div className="w-full px-10 md:px-20 lg:px-50">
-      <h1 className="text-5xl mb-10">{category}</h1>
+      <h1 className="text-5xl mb-10">{CATEGORY_CONTENT[category].name}</h1>
       <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
         {!sortedPosts ? (
           <div className="w-full h-screen col-start-1 col-end-4 flex items-start justify-center mt-55">
