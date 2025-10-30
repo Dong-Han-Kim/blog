@@ -20,6 +20,9 @@ export interface PostCard {
   keywords: string[];
 }
 
-export interface DefaultImage {
-  [key: string]: string;
+export interface CategoryContent {
+  [key: string]: {
+    name: string;
+    thumbnail: string;
+  };
 }
