@@ -9,6 +9,9 @@ import 'prism-themes/themes/prism-material-dark.css';
 export const metadata: Metadata = {
   title: 'blog',
   description: 'This is my blog',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export const viewport: Viewport = {

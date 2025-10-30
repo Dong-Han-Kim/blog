@@ -43,7 +43,11 @@ function SideNav() {
               return (
                 <li
                   key={name}
-                  className={cn(`hover:line-through`, active && 'line-through')}
+                  className={cn(
+                    `hover:line-through decoration-7 decoration-yellow-300/30`,
+                    active &&
+                      'line-through decoration-7 decoration-yellow-300/30',
+                  )}
                 >
                   <Link href={path}>{name}</Link>
                 </li>
