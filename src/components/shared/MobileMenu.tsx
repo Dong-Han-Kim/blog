@@ -48,8 +48,9 @@ function MobileMenu({ isOpen, onClick }: MobileMenuProps) {
                   <Link
                     href={path}
                     className={cn(
-                      `hover:line-through`,
-                      active && 'line-through',
+                      `hover:line-through decoration-7 decoration-yellow-300/30`,
+                      active &&
+                        'line-through decoration-7 decoration-yellow-300/30',
                     )}
                   >
                     {name}
