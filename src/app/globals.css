@@ -14,6 +14,10 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+html {
+  scrollbar-gutter: stable;
+}
+
 html.dark {
   color: #ffffff;
 }
@@ -72,4 +76,9 @@ span.line-number::before {
 .dark span.line-number::before {
   color: #475569;
   border-right-color: #1e293b;
+}
+
+.mobile-nav::-webkit-scrollbar {
+  position: relative;
+  z-index: 9999;
 }
