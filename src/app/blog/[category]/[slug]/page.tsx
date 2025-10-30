@@ -19,7 +19,7 @@ async function PostPage({ params }: PostPageParams) {
   const { title, date, tags, content } = post;
 
   return (
-    <article className="w-full relative">
+    <article className="w-full relative px-50">
       <div className="text-center flex flex-col items-center mb-20">
         <h3 className="text-4xl font-extrabold">{title}</h3>
         <ul className="flex items-center text-xs text-gray-400 gap-5 my-8">
