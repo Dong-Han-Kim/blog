@@ -9,7 +9,7 @@ interface MobileNavContentProps {
 }
 
 function MenuToggleBtn({ onClick }: MobileNavContentProps) {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ function MenuToggleBtn({ onClick }: MobileNavContentProps) {
   if (!isMounted) return null;
   return (
     <button type="button" onClick={onClick}>
-      {theme === 'dark' ? (
+      {resolvedTheme === 'dark' ? (
         <Image src={'/menu-white.svg'} alt="Menu" width={30} height={30} />
       ) : (
         <Image src={'/menu.svg'} alt="Menu" width={30} height={30} />
