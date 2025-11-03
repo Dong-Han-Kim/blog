@@ -10,9 +10,10 @@ import MenuToggleBtn from './MenuToggleBtn';
 import Link from 'next/link';
 
 function MobileNavContent() {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [showPortal, setShowPortal] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -20,9 +21,12 @@ function MobileNavContent() {
 
   useEffect(() => {
     if (isOpen) {
+      setShowPortal(true);
       document.body.classList.add('overflow-hidden');
     } else {
       document.body.classList.remove('overflow-hidden');
+      const timeout = setTimeout(() => setShowPortal(false), 500);
+      return () => clearTimeout(timeout);
     }
   }, [isOpen]);
 
@@ -31,7 +35,7 @@ function MobileNavContent() {
     <>
       <h3>
         <Link href="/">
-          {theme === 'dark' ? (
+          {resolvedTheme === 'dark' ? (
             <Image
               src="/blog-text-white.png"
               alt="Blog Logo"
@@ -52,10 +56,11 @@ function MobileNavContent() {
         <ThemeButton />
         <MenuToggleBtn onClick={() => setIsOpen(!isOpen)} />
       </div>
-
-      <MobileNavPortal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <MobileMenu isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
-      </MobileNavPortal>
+      {showPortal && (
+        <MobileNavPortal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+          <MobileMenu isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
+        </MobileNavPortal>
+      )}
     </>
   );
 }
