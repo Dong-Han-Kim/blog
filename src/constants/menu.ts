@@ -7,5 +7,5 @@ export const Default_Nav_items = [
   { name: 'React.js', path: '/blog/reactjs', state: true },
   { name: 'Next.js', path: '/blog/nextjs', state: true },
   { name: '상태관리', path: '/blog/state-management', state: false },
-  { name: 'Projects', path: '/blog/projects', state: false },
+  { name: 'Projects', path: '/blog/projects', state: true },
 ];
