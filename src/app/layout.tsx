@@ -5,9 +5,17 @@ import SideNav from '../components/shared/SideNav';
 import type { Viewport } from 'next';
 import { ThemeProvider } from 'next-themes';
 import 'prism-themes/themes/prism-material-dark.css';
+import localFont from 'next/font/local';
+
+const pretendard = localFont({
+  src: '../../public/fonts/PretendardVariable.woff2',
+  display: 'swap',
+  variable: '--font-pretendard',
+  weight: '100 900',
+});
 
 export const metadata: Metadata = {
-  title: 'blog',
+  title: 'blog92',
   description: 'This is my blog',
   icons: {
     icon: '/favicon.ico',
@@ -29,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <body>
+      <body className={pretendard.className}>
         <ThemeProvider attribute="class" defaultTheme="system">
           <header>
             <Nav />

@@ -16,6 +16,11 @@
 
 html {
   scrollbar-gutter: stable;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
+    'Pretendard Variable', Pretendard, Roboto, 'Noto Sans KR', 'Segoe UI',
+    'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    sans-serif;
 }
 
 html.dark {
@@ -23,7 +28,7 @@ html.dark {
 }
 
 body {
-  font-family: Pretendard;
+  /* font-family: Pretendard; */
   overflow-x: hidden;
 
   @apply bg-[var(--color-bg-light)] text-[var(--color-text-light)] transition-colors duration-300;
