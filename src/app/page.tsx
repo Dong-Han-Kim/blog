@@ -15,7 +15,6 @@ export default function Home() {
 
   return (
     <div className="w-full px-10 md:px-20 lg:px-50">
-      <h1 className="text-5xl mb-10">ALL</h1>
       <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
         {sortedPosts.map((post) => {
           if (post.draft) return null;

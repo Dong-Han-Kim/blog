@@ -15,7 +15,7 @@ function SideNav() {
     return pathname === path || pathname.startsWith(`${path}/`);
   }
   return (
-    <aside className="hidden xl:flex flex-col items-start min-w-90">
+    <header className="flex flex-col items-center min-w-90 py-15">
       <h3 className="mb-15 rounded-sm overflow-hidden">
         <Link href="/">
           <Image
@@ -26,8 +26,8 @@ function SideNav() {
           />
         </Link>
       </h3>
-      <nav className="border-y-1 border-gray-400 border-solid py-15 w-full mb-15">
-        <ul className="text-sm flex flex-col gap-5 items-start">
+      <nav className="flex justify-center items-center border-y-1 border-gray-400 border-solid py-15 w-full mb-15 mx-auto max-w-7xl">
+        <ul className="text-sm flex gap-7 items-center">
           {Default_Nav_items.map(
             ({
               name,
@@ -56,8 +56,8 @@ function SideNav() {
           )}
         </ul>
       </nav>
-      <ThemeButton />
-    </aside>
+      {/* <ThemeButton /> */}
+    </header>
   );
 }
 
