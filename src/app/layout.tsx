@@ -41,9 +41,9 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system">
           <header>
             <Nav />
+            <SideNav />
           </header>
           <main className="flex max-w-7xl mx-auto w-full gap-20 my-25">
-            <SideNav />
             {children}
           </main>
         </ThemeProvider>
