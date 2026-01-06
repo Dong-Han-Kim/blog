@@ -4,7 +4,7 @@ import { Default_Nav_items } from '@/constants/menu';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { cn } from '@/lib/cn';
+import { cn } from '@/lib/utils/cn';
 
 interface MobileMenuProps {
   isOpen: boolean;
