@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/cn';
+import { cn } from '@/lib/utils/cn';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
