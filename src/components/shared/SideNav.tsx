@@ -5,7 +5,7 @@ import Link from 'next/link';
 import ThemeButton from './ThemeButton';
 import { usePathname } from 'next/navigation';
 import { Default_Nav_items } from '@/constants/menu';
-import { cn } from '@/lib/cn';
+import { cn } from '@/lib/utils/cn';
 
 function SideNav() {
   const pathname = usePathname();

@@ -1,4 +1,4 @@
-import { cn } from '@/lib/cn';
+import { cn } from '@/lib/utils/cn';
 import { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
