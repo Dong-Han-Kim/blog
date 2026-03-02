@@ -1,4 +1,4 @@
-import { getAllPosts } from '@/lib/posts';
+import { getAllPosts } from '@/lib/mdx';
 import { PostMeta } from '../types/common';
 
 import Card from '@/components/shared/Card';
@@ -26,7 +26,6 @@ export default function Home() {
               title={post.title}
               description={post.description}
               date={post.date}
-              thumbnail={post.thumbnail}
               keywords={post.keywords}
             />
           );

@@ -4,7 +4,7 @@ import { CATEGORY_CONTENT } from '@/constants/category-content';
 import { PostCard } from '@/types/common';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+
 
 function Card({
   slug,
@@ -12,19 +12,11 @@ function Card({
   title,
   description,
   date,
-  thumbnail,
   keywords,
 }: PostCard) {
-  const [isError, setIsError] = useState(false);
-
   const thumbnailUrl = Object.keys(CATEGORY_CONTENT).includes(category)
     ? category
     : 'etc';
-
-  const handleImageError = (error: React.SyntheticEvent<HTMLImageElement>) => {
-    if (!error) return;
-    setIsError(true);
-  };
 
   return (
     <article
@@ -34,14 +26,9 @@ function Card({
       <Link href={`/blog/${category}/${slug}`}>
         <div className="relative w-full h-180 mb-8">
           <Image
-            src={
-              !thumbnail || isError
-                ? CATEGORY_CONTENT[thumbnailUrl].thumbnail
-                : thumbnail
-            }
+            src={CATEGORY_CONTENT[thumbnailUrl].thumbnail}
             fill
             alt="thumbnail"
-            onError={handleImageError}
           />
         </div>
         <div className="px-12 flex flex-col mb-8">
