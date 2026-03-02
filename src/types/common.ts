@@ -3,20 +3,18 @@ export interface PostMeta {
   date: string;
   category: string;
   tags: string[];
-  description: string;
+  description: string | null;
   slug: string;
   draft: boolean;
   keywords: string[];
-  thumbnail: string;
 }
 
 export interface PostCard {
   slug: string;
   category: string;
   title: string;
-  description: string;
+  description: string | null;
   date: string;
-  thumbnail: string;
   keywords: string[];
 }
 
