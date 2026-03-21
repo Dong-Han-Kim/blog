@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1763902981175,
-      "tag": "0000_bent_talos",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1767709143375,
-      "tag": "0001_aromatic_mulholland_black",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1767709401663,
-      "tag": "0002_brief_nicolaos",
+      "when": 1774082324542,
+      "tag": "0000_tidy_mindworm",
       "breakpoints": true
     }
   ]

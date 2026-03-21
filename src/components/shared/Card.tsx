@@ -23,7 +23,7 @@ function Card({
       key={slug}
       className="w-full h-full border border-gray-300 rounded-lg hover:-translate-y-5 transition-transform duration-300 ease-in-out overflow-hidden"
     >
-      <Link href={`/blog/${category}/${slug}`}>
+      <Link href={`/posts/${slug}`}>
         <div className="relative w-full h-180 mb-8">
           <Image
             src={CATEGORY_CONTENT[thumbnailUrl].thumbnail}

@@ -1,29 +1,31 @@
 import { notFound } from 'next/navigation';
-import { getPostsByCategory, getAllPosts } from '@/lib/mdx';
+import { getAllPosts, getPostsByTag } from '@/lib/mdx';
 import Card from '@/components/shared/Card';
 import type { Metadata } from 'next';
 
 interface PageProps {
-  params: Promise<{ category: string }>;
+  params: Promise<{ tag: string }>;
 }
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
-  const categories = [...new Set(posts.map((p) => p.category))];
-  return categories.map((category) => ({ category }));
+  const tags = [...new Set(posts.flatMap((p) => p.tags))];
+  return tags.map((tag) => ({ tag }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { category } = await params;
+  const { tag } = await params;
+  const decoded = decodeURIComponent(tag);
   return {
-    title: `${category} 카테고리`,
-    description: `${category} 관련 글 모음`,
+    title: `#${decoded} 태그`,
+    description: `${decoded} 태그가 포함된 글 모음`,
   };
 }
 
-export default async function CategoryPage({ params }: PageProps) {
-  const { category } = await params;
-  const posts = getPostsByCategory(category);
+export default async function TagPage({ params }: PageProps) {
+  const { tag } = await params;
+  const decoded = decodeURIComponent(tag);
+  const posts = getPostsByTag(decoded);
 
   if (!posts || posts.length === 0) notFound();
 
@@ -33,7 +35,7 @@ export default async function CategoryPage({ params }: PageProps) {
 
   return (
     <div className="w-full px-10 md:px-20 lg:px-50">
-      <h1 className="text-3xl font-bold mb-20">{category}</h1>
+      <h1 className="text-3xl font-bold mb-20">#{decoded}</h1>
       <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
         {sortedPosts.map((post) => (
           <Card
