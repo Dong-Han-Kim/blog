@@ -67,6 +67,7 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
           <Label htmlFor="authorName">닉네임</Label>
           <Input
             id="authorName"
+            className="h-12"
             placeholder="닉네임을 입력하세요"
             {...register('authorName')}
           />
@@ -79,6 +80,7 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
           <Input
             id="password"
             type="password"
+            className="h-12"
             placeholder="수정/삭제 시 필요해요"
             {...register('password')}
           />
@@ -92,8 +94,9 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
         <Label htmlFor="content">댓글</Label>
         <Textarea
           id="content"
+          className="min-h-32"
           placeholder="댓글을 남겨주세요"
-          rows={4}
+          rows={5}
           {...register('content')}
         />
         {errors.content && (
