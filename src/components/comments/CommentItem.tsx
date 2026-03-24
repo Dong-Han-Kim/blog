@@ -93,59 +93,66 @@ export function CommentItem({
 
   return (
     <div style={{ marginLeft: `${indentPx}px` }}>
-      <div className="py-16 border-b border-gray-100 dark:border-gray-800">
-        <div className="flex items-center gap-8 mb-8">
-          <span className="font-medium text-sm">{comment.authorName}</span>
+      <div className="py-20 border-b border-gray-100 dark:border-gray-800">
+        <div className="flex items-center gap-8 mb-10">
+          <span className="font-semibold text-sm">{comment.authorName}</span>
           <span className="text-xs text-gray-400">{formattedDate}</span>
-          {isUpdated && <span className="text-xs text-gray-400">(수정됨)</span>}
+          {isUpdated && (
+            <span className="text-xs text-gray-400 italic">(수정됨)</span>
+          )}
         </div>
 
         {isEditing ? (
-          <form onSubmit={handleSubmit(handleEditSubmit)} className="space-y-8">
-            <Textarea {...register('content')} rows={3} />
+          <form onSubmit={handleSubmit(handleEditSubmit)} className="space-y-12">
+            <Textarea className="min-h-24" {...register('content')} rows={3} />
             {errors.content && (
               <p className="text-sm text-red-500">{errors.content.message}</p>
             )}
-            <div className="flex gap-8">
-              <Button type="submit" size="sm" disabled={isSubmittingEdit}>
+            <div className="flex gap-10">
+              <Button type="submit" size="default" disabled={isSubmittingEdit}>
                 {isSubmittingEdit ? '수정 중...' : '수정 완료'}
               </Button>
-              <Button type="button" size="sm" variant="ghost" onClick={handleCancelEdit}>
+              <Button type="button" size="default" variant="ghost" onClick={handleCancelEdit}>
                 취소
               </Button>
             </div>
           </form>
         ) : (
-          <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+          <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
             {comment.content}
           </p>
         )}
 
         {!isEditing && (
-          <div className="flex gap-8 mt-8">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs text-gray-400 h-auto p-0"
+          <div className="flex gap-12 mt-12">
+            <button
+              type="button"
+              className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors py-4 px-2"
               onClick={() => setShowReplyForm(!showReplyForm)}
             >
               답글
-            </Button>
+            </button>
             <EditCommentDialog commentId={comment.id} onVerified={handleEditVerified}>
-              <Button variant="ghost" size="sm" className="text-xs text-gray-400 h-auto p-0">
+              <button
+                type="button"
+                className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors py-4 px-2"
+              >
                 수정
-              </Button>
+              </button>
             </EditCommentDialog>
             <DeleteCommentDialog commentId={comment.id}>
-              <Button variant="ghost" size="sm" className="text-xs text-gray-400 h-auto p-0">
+              <button
+                type="button"
+                className="text-xs text-gray-400 hover:text-red-500 transition-colors py-4 px-2"
+              >
                 삭제
-              </Button>
+              </button>
             </DeleteCommentDialog>
           </div>
         )}
 
         {showReplyForm && (
-          <div className="mt-12">
+          <div className="mt-16 pl-16 border-l-2 border-gray-200 dark:border-gray-700">
             <CommentForm
               postSlug={postSlug}
               parentId={comment.id}

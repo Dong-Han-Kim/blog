@@ -22,9 +22,11 @@ export function CommentList({
 }: CommentListProps) {
   if (comments.length === 0) {
     return (
-      <p className="text-center text-gray-400 py-32">
-        아직 댓글이 없어요. 첫 번째 댓글을 남겨주세요!
-      </p>
+      <div className="text-center py-40">
+        <p className="text-gray-400 text-sm">
+          아직 댓글이 없어요. 첫 번째 댓글을 남겨주세요!
+        </p>
+      </div>
     );
   }
 

@@ -52,24 +52,25 @@ export function EditCommentDialog({ commentId, onVerified, children }: EditComme
           <DialogTitle>댓글 수정</DialogTitle>
           <DialogDescription>댓글 작성 시 입력한 비밀번호를 입력해주세요.</DialogDescription>
         </DialogHeader>
-        <div className="space-y-16">
-          <div>
+        <div className="space-y-20">
+          <div className="space-y-6">
             <Label htmlFor="edit-password">비밀번호</Label>
             <Input
               id="edit-password"
               type="password"
+              className="h-12"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
               placeholder="비밀번호를 입력하세요"
             />
-            {error && <p className="text-sm text-red-500 mt-4">{error}</p>}
+            {error && <p className="text-sm text-red-500 mt-6">{error}</p>}
           </div>
-          <div className="flex justify-end gap-8">
-            <Button variant="ghost" onClick={() => setOpen(false)}>
+          <div className="flex justify-end gap-10">
+            <Button variant="ghost" size="lg" onClick={() => setOpen(false)}>
               취소
             </Button>
-            <Button onClick={handleVerify} disabled={isLoading || password.length < 4}>
+            <Button size="lg" onClick={handleVerify} disabled={isLoading || password.length < 4}>
               {isLoading ? '확인 중...' : '확인'}
             </Button>
           </div>
