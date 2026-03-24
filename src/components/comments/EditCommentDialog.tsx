@@ -1,0 +1,80 @@
+'use client';
+
+import { useState } from 'react';
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { verifyCommentPassword } from '@/actions/comment';
+
+interface EditCommentDialogProps {
+  commentId: string;
+  onVerified: (password: string) => void;
+  children: React.ReactNode;
+}
+
+export function EditCommentDialog({ commentId, onVerified, children }: EditCommentDialogProps) {
+  const [open, setOpen] = useState(false);
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleVerify = async () => {
+    setError('');
+    setIsLoading(true);
+
+    const result = await verifyCommentPassword({ commentId, password });
+
+    if (result.success) {
+      setOpen(false);
+      onVerified(password);
+      setPassword('');
+    } else {
+      setError(result.error ?? '일시적인 오류가 발생했어요.');
+    }
+
+    setIsLoading(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>댓글 수정</DialogTitle>
+          <DialogDescription>댓글 작성 시 입력한 비밀번호를 입력해주세요.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-16">
+          <div>
+            <Label htmlFor="edit-password">비밀번호</Label>
+            <Input
+              id="edit-password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
+              placeholder="비밀번호를 입력하세요"
+            />
+            {error && <p className="text-sm text-red-500 mt-4">{error}</p>}
+          </div>
+          <div className="flex justify-end gap-8">
+            <Button variant="ghost" onClick={() => setOpen(false)}>
+              취소
+            </Button>
+            <Button onClick={handleVerify} disabled={isLoading || password.length < 4}>
+              {isLoading ? '확인 중...' : '확인'}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
