@@ -63,10 +63,11 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
       </div>
 
       <div className="flex gap-12">
-        <div className="flex-1">
+        <div className="flex-1 space-y-6">
           <Label htmlFor="authorName">닉네임</Label>
           <Input
             id="authorName"
+            className="h-12"
             placeholder="닉네임을 입력하세요"
             {...register('authorName')}
           />
@@ -74,11 +75,12 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
             <p className="text-sm text-red-500 mt-4">{errors.authorName.message}</p>
           )}
         </div>
-        <div className="flex-1">
+        <div className="flex-1 space-y-6">
           <Label htmlFor="password">비밀번호</Label>
           <Input
             id="password"
             type="password"
+            className="h-12"
             placeholder="수정/삭제 시 필요해요"
             {...register('password')}
           />
@@ -88,12 +90,13 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
         </div>
       </div>
 
-      <div>
+      <div className="space-y-6">
         <Label htmlFor="content">댓글</Label>
         <Textarea
           id="content"
+          className="min-h-32"
           placeholder="댓글을 남겨주세요"
-          rows={4}
+          rows={5}
           {...register('content')}
         />
         {errors.content && (
@@ -101,13 +104,13 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
         )}
       </div>
 
-      <div className="flex justify-end gap-8">
+      <div className="flex justify-end gap-10">
         {onCancel && (
-          <Button type="button" variant="ghost" onClick={onCancel}>
+          <Button type="button" variant="ghost" size="lg" onClick={onCancel}>
             취소
           </Button>
         )}
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" size="lg" disabled={isSubmitting}>
           {isSubmitting ? '작성 중...' : parentId ? '답글 작성' : '댓글 작성'}
         </Button>
       </div>

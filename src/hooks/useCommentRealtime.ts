@@ -21,6 +21,7 @@ export function useCommentRealtime({
   onReconnect,
 }: UseCommentRealtimeOptions) {
   const channelRef = useRef<RealtimeChannel | null>(null);
+  const isConnectedRef = useRef(false);
 
   useEffect(() => {
     const channel = supabase
@@ -72,9 +73,10 @@ export function useCommentRealtime({
           );
         }
         if (status === 'SUBSCRIBED') {
-          if (channelRef.current) {
+          if (isConnectedRef.current) {
             onReconnect();
           }
+          isConnectedRef.current = true;
         }
       });
 
@@ -83,6 +85,7 @@ export function useCommentRealtime({
     return () => {
       supabase.removeChannel(channel);
       channelRef.current = null;
+      isConnectedRef.current = false;
     };
   }, [postSlug]); // eslint-disable-line react-hooks/exhaustive-deps
 }

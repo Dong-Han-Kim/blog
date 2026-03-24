@@ -69,7 +69,7 @@ export function CommentSection({ postSlug, initialComments }: CommentSectionProp
 
       <CommentForm postSlug={postSlug} />
 
-      <div className="mt-24">
+      <div className="mt-32">
         <CommentList
           comments={commentTree}
           postSlug={postSlug}
