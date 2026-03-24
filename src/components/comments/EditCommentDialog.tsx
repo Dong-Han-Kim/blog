@@ -58,7 +58,7 @@ export function EditCommentDialog({ commentId, onVerified, children }: EditComme
             <Input
               id="edit-password"
               type="password"
-              className="h-12"
+              className="h-44"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
@@ -67,10 +67,10 @@ export function EditCommentDialog({ commentId, onVerified, children }: EditComme
             {error && <p className="text-sm text-red-500 mt-6">{error}</p>}
           </div>
           <div className="flex justify-end gap-10">
-            <Button variant="ghost" size="lg" onClick={() => setOpen(false)}>
+            <Button variant="ghost" className="h-44 px-20" onClick={() => setOpen(false)}>
               취소
             </Button>
-            <Button size="lg" onClick={handleVerify} disabled={isLoading || password.length < 4}>
+            <Button className="h-44 px-24" onClick={handleVerify} disabled={isLoading || password.length < 4}>
               {isLoading ? '확인 중...' : '확인'}
             </Button>
           </div>

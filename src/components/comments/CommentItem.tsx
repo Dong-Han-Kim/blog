@@ -104,15 +104,15 @@ export function CommentItem({
 
         {isEditing ? (
           <form onSubmit={handleSubmit(handleEditSubmit)} className="space-y-12">
-            <Textarea className="min-h-24" {...register('content')} rows={3} />
+            <Textarea className="min-h-120" {...register('content')} rows={3} />
             {errors.content && (
               <p className="text-sm text-red-500">{errors.content.message}</p>
             )}
             <div className="flex gap-10">
-              <Button type="submit" size="default" disabled={isSubmittingEdit}>
+              <Button type="submit" className="h-40 px-20" disabled={isSubmittingEdit}>
                 {isSubmittingEdit ? '수정 중...' : '수정 완료'}
               </Button>
-              <Button type="button" size="default" variant="ghost" onClick={handleCancelEdit}>
+              <Button type="button" className="h-40 px-20" variant="ghost" onClick={handleCancelEdit}>
                 취소
               </Button>
             </div>
