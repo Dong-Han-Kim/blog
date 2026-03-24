@@ -8,6 +8,7 @@
 
 - **쓰기 경로**: React Hook Form → Server Action → Zod 검증 → 스팸 체크 → bcrypt 해싱 → Drizzle ORM → PostgreSQL
 - **읽기 경로**: 초기 SSR(서버 컴포넌트에서 Drizzle 조회) + Supabase Realtime WebSocket 구독
+- **수정 경로**: 수정 버튼 → 비밀번호 검증 → 인라인 수정 폼 활성화 → Server Action → Drizzle UPDATE
 - **삭제 경로**: Dialog 비밀번호 입력 → Server Action → bcrypt.compare → Drizzle DELETE (CASCADE)
 
 ```
@@ -21,6 +22,14 @@
     │                                │  └─ Drizzle INSERT ─────→│
     │                                │                          │
     │  ←── Supabase Realtime ────────│←── pg_notify ────────────│
+    │                                │                          │
+    │  ── 댓글 수정 (password) ─────→│                          │
+    │                                │  Server Action           │
+    │                                │  ├─ bcrypt.compare()     │
+    │                                │  ├─ Zod 검증 + 스팸 체크 │
+    │                                │  └─ Drizzle UPDATE ─────→│
+    │                                │                          │
+    │  ←── Realtime (UPDATE) ────────│←── pg_notify ────────────│
     │                                │                          │
     │  ── 댓글 삭제 (password) ─────→│                          │
     │                                │  Server Action           │
@@ -51,6 +60,7 @@ PostPage (Server Component)
             └─ CommentItem (재귀)
                  ├─ 닉네임, 내용, 작성일
                  ├─ 답글 버튼 → CommentForm (inline, parent_id 전달)
+                 ├─ 수정 버튼 → EditCommentDialog (비밀번호 검증) → 인라인 수정 폼
                  ├─ 삭제 버튼 → DeleteCommentDialog
                  └─ children: CommentItem[] (재귀 렌더링)
 ```
@@ -62,9 +72,10 @@ PostPage (Server Component)
 | `CommentSection` | Client | 초기 데이터 수신(props), Realtime 구독 관리, 댓글 상태 보유 |
 | `CommentForm` | Client | 폼 입력/검증(React Hook Form + Zod), Server Action 호출, 허니팟 필드 |
 | `CommentList` | Client | flat 배열 → 트리 변환, 재귀 렌더링 |
-| `CommentItem` | Client | 단일 댓글 표시, 답글/삭제 UI 토글 |
+| `CommentItem` | Client | 단일 댓글 표시, 답글/수정/삭제 UI 토글 |
+| `EditCommentDialog` | Client | shadcn Dialog, 비밀번호 검증 → 인라인 수정 폼 활성화 |
 | `DeleteCommentDialog` | Client | shadcn Dialog, 비밀번호 입력 → Server Action 호출 |
-| `actions/comment.ts` | Server | `createComment`, `deleteComment` Server Actions |
+| `actions/comment.ts` | Server | `createComment`, `updateComment`, `deleteComment` Server Actions |
 
 ### SOLID 원칙 적용
 
@@ -88,10 +99,11 @@ PostPage (Server Component)
 
 ## 4. Supabase Realtime 구독
 
-**커스텀 훅**: `useCommentRealtime(postSlug, onInsert, onDelete)`
+**커스텀 훅**: `useCommentRealtime(postSlug, onInsert, onUpdate, onDelete)`
 
 - `post_slug` 필터로 해당 포스트 댓글만 구독
 - `INSERT` 이벤트: 새 댓글을 상태에 추가 → 트리 재빌드
+- `UPDATE` 이벤트: 해당 댓글의 content를 갱신
 - `DELETE` 이벤트: 해당 댓글 + 자식들을 상태에서 제거
 - 연결 끊김 시 자동 재연결 (Supabase 내장) → 재연결 시 전체 목록 재조회로 동기화
 
@@ -131,6 +143,7 @@ PostPage (Server Component)
 | 스팸 감지 (허니팟) | 성공한 척 응답 | (봇 대상이므로 메시지 없음) |
 | Rate Limit 초과 | toast 알림 | `"잠시 후에 다시 시도해주세요 (N초 후 작성 가능)"` |
 | 금지어 감지 | 인라인 에러 | `"부적절한 표현이 포함되어 있어요. 내용을 수정해주세요"` |
+| 수정 비밀번호 불일치 | Dialog 내 에러 | `"비밀번호가 일치하지 않아요. 다시 확인해주세요"` |
 | 삭제 비밀번호 불일치 | Dialog 내 에러 | `"비밀번호가 일치하지 않아요. 다시 확인해주세요"` |
 | Realtime 연결 끊김 | 자동 재연결 | (Supabase 내장, 사용자 인지 불필요) |
 | Server Action 실패 | toast 에러 | `"일시적인 오류가 발생했어요. 잠시 후 다시 시도해주세요"` |
@@ -142,13 +155,14 @@ PostPage (Server Component)
 ```
 src/
 ├── actions/
-│   └── comment.ts                # createComment, deleteComment Server Actions
+│   └── comment.ts                # createComment, updateComment, deleteComment Server Actions
 ├── components/
 │   └── comments/
 │       ├── CommentSection.tsx     # Realtime 구독 + 상태 관리
 │       ├── CommentForm.tsx        # 작성 폼 (React Hook Form)
 │       ├── CommentList.tsx        # flat → tree 변환 + 재귀 렌더링
 │       ├── CommentItem.tsx        # 개별 댓글 UI
+│       ├── EditCommentDialog.tsx  # 수정 비밀번호 검증 모달
 │       └── DeleteCommentDialog.tsx # 삭제 비밀번호 모달
 ├── hooks/
 │   └── useCommentRealtime.ts     # Supabase Realtime 구독 커스텀 훅
@@ -167,6 +181,7 @@ src/
 
 - `src/app/posts/[slug]/page.tsx` — `CommentSection` 추가, 초기 댓글 데이터 Drizzle 조회
 - `src/lib/db/schema.ts` — 기존 `parentId: uuid('parent_id')` 컬럼에 `.references(() => comments.id, { onDelete: 'cascade' })` 외래키 제약 조건 추가
+- `src/lib/validations/comment.ts` — `updateCommentSchema` 추가 (commentId + password + content)
 
 ### 추가 패키지
 
@@ -187,11 +202,19 @@ npx shadcn@latest add sonner
 
 ## 8. DB 스키마 변경
 
-현재 `src/lib/db/schema.ts`의 `comments` 테이블은 `parentId` 컬럼이 있지만 외래키 참조가 없음. self-reference 추가:
+현재 `src/lib/db/schema.ts`의 `comments` 테이블 변경 사항:
 
+1. `parentId`에 self-reference 외래키 추가:
 ```typescript
 parentId: uuid('parent_id').references(() => comments.id, { onDelete: 'cascade' }),
 ```
+
+2. 수정 기능을 위한 `updatedAt` 컬럼 추가:
+```typescript
+updatedAt: timestamp('updated_at', { withTimezone: true }),
+```
+- 최초 작성 시 `null`, 수정 시 현재 시각으로 갱신
+- UI에서 `(수정됨)` 표시 여부 판단에 사용
 
 Supabase 대시보드에서 Realtime 활성화 필요:
 - Database → Replication → `comments` 테이블 활성화
