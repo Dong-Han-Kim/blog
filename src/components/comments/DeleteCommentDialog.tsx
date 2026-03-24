@@ -60,7 +60,7 @@ export function DeleteCommentDialog({ commentId, children }: DeleteCommentDialog
             <Input
               id="delete-password"
               type="password"
-              className="h-12"
+              className="h-44"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleDelete()}
@@ -69,12 +69,12 @@ export function DeleteCommentDialog({ commentId, children }: DeleteCommentDialog
             {error && <p className="text-sm text-red-500 mt-6">{error}</p>}
           </div>
           <div className="flex justify-end gap-10">
-            <Button variant="ghost" size="lg" onClick={() => setOpen(false)}>
+            <Button variant="ghost" className="h-44 px-20" onClick={() => setOpen(false)}>
               취소
             </Button>
             <Button
               variant="destructive"
-              size="lg"
+              className="h-44 px-24"
               onClick={handleDelete}
               disabled={isLoading || password.length < 4}
             >

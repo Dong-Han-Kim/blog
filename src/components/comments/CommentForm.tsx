@@ -67,7 +67,7 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
           <Label htmlFor="authorName">닉네임</Label>
           <Input
             id="authorName"
-            className="h-12"
+            className="h-44"
             placeholder="닉네임을 입력하세요"
             {...register('authorName')}
           />
@@ -80,7 +80,7 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
           <Input
             id="password"
             type="password"
-            className="h-12"
+            className="h-44"
             placeholder="수정/삭제 시 필요해요"
             {...register('password')}
           />
@@ -94,7 +94,7 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
         <Label htmlFor="content">댓글</Label>
         <Textarea
           id="content"
-          className="min-h-32"
+          className="min-h-160"
           placeholder="댓글을 남겨주세요"
           rows={5}
           {...register('content')}
@@ -106,11 +106,11 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
 
       <div className="flex justify-end gap-10">
         {onCancel && (
-          <Button type="button" variant="ghost" size="lg" onClick={onCancel}>
+          <Button type="button" variant="ghost" className="h-44 px-20" onClick={onCancel}>
             취소
           </Button>
         )}
-        <Button type="submit" size="lg" disabled={isSubmitting}>
+        <Button type="submit" className="h-44 px-24" disabled={isSubmitting}>
           {isSubmitting ? '작성 중...' : parentId ? '답글 작성' : '댓글 작성'}
         </Button>
       </div>
