@@ -54,25 +54,27 @@ export function DeleteCommentDialog({ commentId, children }: DeleteCommentDialog
             삭제하면 되돌릴 수 없어요. 댓글 작성 시 입력한 비밀번호를 입력해주세요.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-16">
-          <div>
+        <div className="space-y-20">
+          <div className="space-y-6">
             <Label htmlFor="delete-password">비밀번호</Label>
             <Input
               id="delete-password"
               type="password"
+              className="h-12"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleDelete()}
               placeholder="비밀번호를 입력하세요"
             />
-            {error && <p className="text-sm text-red-500 mt-4">{error}</p>}
+            {error && <p className="text-sm text-red-500 mt-6">{error}</p>}
           </div>
-          <div className="flex justify-end gap-8">
-            <Button variant="ghost" onClick={() => setOpen(false)}>
+          <div className="flex justify-end gap-10">
+            <Button variant="ghost" size="lg" onClick={() => setOpen(false)}>
               취소
             </Button>
             <Button
               variant="destructive"
+              size="lg"
               onClick={handleDelete}
               disabled={isLoading || password.length < 4}
             >
