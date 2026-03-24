@@ -10,6 +10,7 @@ export const comments = pgTable(
     content: text('content').notNull(),
     parentId: uuid('parent_id'),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }),
   },
   (table) => [
     index('idx_comments_post_slug').on(table.postSlug),
