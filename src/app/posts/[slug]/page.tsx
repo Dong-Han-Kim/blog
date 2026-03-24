@@ -80,26 +80,31 @@ export default async function PostPage({ params }: PageProps) {
 
   const { prev, next } = getAdjacentPosts(slug);
 
-  const rawComments = await db
-    .select({
-      id: comments.id,
-      postSlug: comments.postSlug,
-      authorName: comments.authorName,
-      content: comments.content,
-      parentId: comments.parentId,
-      createdAt: comments.createdAt,
-      updatedAt: comments.updatedAt,
-    })
-    .from(comments)
-    .where(eq(comments.postSlug, slug))
-    .orderBy(asc(comments.createdAt));
+  let initialComments: Comment[] = [];
+  try {
+    const rawComments = await db
+      .select({
+        id: comments.id,
+        postSlug: comments.postSlug,
+        authorName: comments.authorName,
+        content: comments.content,
+        parentId: comments.parentId,
+        createdAt: comments.createdAt,
+        updatedAt: comments.updatedAt,
+      })
+      .from(comments)
+      .where(eq(comments.postSlug, slug))
+      .orderBy(asc(comments.createdAt));
 
-  const initialComments: Comment[] = rawComments.map((c) => ({
-    ...c,
-    parentId: c.parentId ?? null,
-    createdAt: c.createdAt.toISOString(),
-    updatedAt: c.updatedAt?.toISOString() ?? null,
-  }));
+    initialComments = rawComments.map((c) => ({
+      ...c,
+      parentId: c.parentId ?? null,
+      createdAt: c.createdAt.toISOString(),
+      updatedAt: c.updatedAt?.toISOString() ?? null,
+    }));
+  } catch (error) {
+    console.error('댓글 조회 실패:', error);
+  }
 
   return (
     <div className="w-full px-10 md:px-20 lg:px-50">
