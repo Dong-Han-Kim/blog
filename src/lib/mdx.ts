@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { postFrontmatterSchema } from './validations/posts';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { ZodError } from 'zod';
 import { PostMeta } from '@/types/common';
 
@@ -43,7 +43,7 @@ export function getAllPosts(): PostMeta[] {
       'code' in error &&
       error.code === 'ENOENT'
     ) {
-      redirect('/not-found');
+      notFound();
     } else {
       console.error(`Error reading posts: ${error}`);
       redirect('/');
@@ -72,7 +72,7 @@ export function getPostBySlug(slug: string) {
       };
     }
 
-    redirect('/not-found');
+    notFound();
   } catch (error: unknown) {
     if (error instanceof ZodError) {
       console.error(`Error reading post ${slug}: ${error.message}`);
@@ -82,7 +82,7 @@ export function getPostBySlug(slug: string) {
       'code' in error &&
       error.code === 'ENOENT'
     ) {
-      redirect('/not-found');
+      notFound();
     } else {
       console.error(`Error reading post ${slug}: ${error}`);
       redirect('/');
@@ -119,7 +119,7 @@ export function getPostsByCategory(category: string): PostMeta[] {
       'code' in error &&
       error.code === 'ENOENT'
     ) {
-      redirect('/not-found');
+      notFound();
     } else {
       console.error(`Error reading category ${category}: ${error}`);
       redirect('/');
