@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/lib/utils/cn';
+import { usePostCategory } from '@/hooks/usePostCategory';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ interface MobileMenuProps {
 
 function MobileMenu({ isOpen, onClick }: MobileMenuProps) {
   const pathname = usePathname();
+  const postCategory = usePostCategory();
 
   const navWrapperClass = cn(
     'w-250 h-screen bg-white dark:bg-stone-950 absolute right-0 transition-all duration-500 ease-out',
@@ -20,7 +22,8 @@ function MobileMenu({ isOpen, onClick }: MobileMenuProps) {
   );
 
   function isActive(pathname: string, path: string) {
-    if (path === '/') return pathname === '/';
+    if (path === '/') return pathname === '/' && !postCategory;
+    if (postCategory && path === `/categories/${postCategory}`) return true;
     return pathname === path || pathname.startsWith(`${path}/`);
   }
 
