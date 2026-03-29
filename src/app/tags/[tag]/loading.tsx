@@ -12,6 +12,7 @@ export default function TagLoading() {
           >
             <div className="px-12 pt-16 pb-8">
               <Skeleton className="h-12 w-50 mb-8" />
+
               <Skeleton className="h-24 w-3/4 mb-8" />
               <Skeleton className="h-16 w-full mb-20" />
             </div>
