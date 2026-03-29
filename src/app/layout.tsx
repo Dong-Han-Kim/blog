@@ -21,6 +21,11 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.ico',
   },
+  alternates: {
+    types: {
+      'application/rss+xml': '/feed.xml',
+    },
+  },
 };
 
 export const viewport: Viewport = {
