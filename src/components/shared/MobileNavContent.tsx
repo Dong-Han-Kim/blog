@@ -8,6 +8,7 @@ import MobileNavPortal from './MobileNavPortal';
 import MobileMenu from './MobileMenu';
 import MenuToggleBtn from './MenuToggleBtn';
 import Link from 'next/link';
+import { SearchTrigger } from '@/components/search/SearchTrigger';
 
 function MobileNavContent() {
   const { resolvedTheme } = useTheme();
@@ -53,6 +54,7 @@ function MobileNavContent() {
         </Link>
       </h3>
       <div className="flex items-center gap-15">
+        <SearchTrigger />
         <ThemeButton />
         <MenuToggleBtn onClick={() => setIsOpen(!isOpen)} />
       </div>
