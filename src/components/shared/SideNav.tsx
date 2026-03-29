@@ -7,12 +7,15 @@ import { usePathname } from 'next/navigation';
 import { Default_Nav_items } from '@/constants/menu';
 import { cn } from '@/lib/utils/cn';
 import { SearchTrigger } from '@/components/search/SearchTrigger';
+import { usePostCategory } from '@/hooks/usePostCategory';
 
 function SideNav() {
   const pathname = usePathname();
+  const postCategory = usePostCategory();
 
   function isActive(pathname: string, path: string) {
-    if (path === '/') return pathname === '/';
+    if (path === '/') return pathname === '/' && !postCategory;
+    if (postCategory && path === `/categories/${postCategory}`) return true;
     return pathname === path || pathname.startsWith(`${path}/`);
   }
   return (
