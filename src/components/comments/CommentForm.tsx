@@ -102,6 +102,7 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
           placeholder="댓글을 남겨주세요"
           minRows={3}
           maxRows={10}
+
           {...register('content')}
         />
         {errors.content && (
