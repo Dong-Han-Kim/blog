@@ -43,7 +43,8 @@ export function SearchCommand() {
     if (open && posts.length === 0) {
       fetch('/search-index.json')
         .then((res) => res.json())
-        .then(setPosts);
+        .then(setPosts)
+        .catch(() => {});
     }
   }, [open, posts.length]);
 
@@ -77,7 +78,10 @@ export function SearchCommand() {
   );
 
   return (
-    <CommandDialog open={open} onOpenChange={setOpen}>
+    <CommandDialog open={open} onOpenChange={(isOpen) => {
+      setOpen(isOpen);
+      if (!isOpen) setQuery('');
+    }} shouldFilter={false}>
       <CommandInput
         placeholder="글 검색..."
         value={query}
