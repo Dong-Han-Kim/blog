@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils/cn';
 import { SearchTrigger } from '@/components/search/SearchTrigger';
 import { usePostCategory } from '@/hooks/usePostCategory';
 
+
 function SideNav() {
   const pathname = usePathname();
   const postCategory = usePostCategory();
