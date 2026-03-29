@@ -7,6 +7,7 @@ import { ThemeProvider } from 'next-themes';
 import 'prism-themes/themes/prism-material-dark.css';
 import localFont from 'next/font/local';
 import { Toaster } from '@/components/ui/sonner';
+import { SearchCommand } from '@/components/search/SearchCommand';
 
 const pretendard = localFont({
   src: '../../public/fonts/PretendardVariable.woff2',
@@ -20,6 +21,11 @@ export const metadata: Metadata = {
   description: 'This is my blog',
   icons: {
     icon: '/favicon.ico',
+  },
+  alternates: {
+    types: {
+      'application/rss+xml': '/feed.xml',
+    },
   },
 };
 
@@ -47,6 +53,7 @@ export default function RootLayout({
           <main className="flex max-w-7xl mx-auto w-full gap-20 my-25">
             {children}
           </main>
+          <SearchCommand />
           <Toaster position="bottom-right" />
         </ThemeProvider>
       </body>

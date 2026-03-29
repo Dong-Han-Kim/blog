@@ -6,6 +6,7 @@ import ThemeButton from './ThemeButton';
 import { usePathname } from 'next/navigation';
 import { Default_Nav_items } from '@/constants/menu';
 import { cn } from '@/lib/utils/cn';
+import { SearchTrigger } from '@/components/search/SearchTrigger';
 
 function SideNav() {
   const pathname = usePathname();
@@ -56,6 +57,7 @@ function SideNav() {
           )}
         </ul>
       </nav>
+      <SearchTrigger />
       {/* <ThemeButton /> */}
     </header>
   );
