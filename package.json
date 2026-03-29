@@ -40,6 +40,7 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-hook-form": "^7.71.2",
+    "react-textarea-autosize": "^8.5.9",
     "rehype-pretty-code": "^0.14.1",
     "rehype-prism-plus": "^2.0.1",
     "rehype-sanitize": "^6.0.0",
