@@ -1,11 +1,9 @@
 export const Default_Nav_items = [
   { name: 'ALL', path: '/', state: true },
-  { name: 'HTML', path: '/categories/html', state: true },
-  { name: 'CSS', path: '/categories/css', state: true },
-  { name: 'JavaScript', path: '/categories/javascript', state: true },
-  { name: 'TypeScript', path: '/categories/typescript', state: true },
-  { name: 'React.js', path: '/categories/reactjs', state: true },
-  { name: 'Next.js', path: '/categories/nextjs', state: true },
-  { name: '상태관리', path: '/categories/state-management', state: false },
+  { name: 'Frontend', path: '/categories/frontend', state: true },
+  { name: 'Backend', path: '/categories/backend', state: true },
+  { name: 'DevOps', path: '/categories/devops', state: true },
+  { name: 'Database', path: '/categories/database', state: true },
   { name: 'Projects', path: '/categories/projects', state: true },
+  { name: 'TIL', path: '/categories/til', state: true },
 ];

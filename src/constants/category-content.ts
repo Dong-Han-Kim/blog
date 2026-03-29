@@ -1,36 +1,22 @@
 import { CategoryContent } from '../types/common';
 
 export const CATEGORY_CONTENT: CategoryContent = {
-  html: {
-    name: 'HTML',
-    thumbnail: '/thumbnail/html.jpg',
+  frontend: {
+    name: 'Frontend',
   },
-  css: {
-    name: 'CSS',
-    thumbnail: '/thumbnail/css.jpg',
+  backend: {
+    name: 'Backend',
   },
-  javascript: {
-    name: 'JavaScript',
-    thumbnail: '/thumbnail/javaScript.jpg',
+  devops: {
+    name: 'DevOps',
   },
-  reactjs: {
-    name: 'React.js',
-    thumbnail: '/thumbnail/react.jpg',
-  },
-  nextjs: {
-    name: 'Next.js',
-    thumbnail: '/thumbnail/etc.jpg',
-  },
-  typescript: {
-    name: 'TypeScript',
-    thumbnail: '/thumbnail/etc.jpg',
+  database: {
+    name: 'Database',
   },
   projects: {
-    name: 'Project',
-    thumbnail: '/thumbnail/etc.jpg',
+    name: 'Projects',
   },
-  etc: {
-    name: 'Etc',
-    thumbnail: '/thumbnail/etc.jpg',
+  til: {
+    name: 'TIL',
   },
 };

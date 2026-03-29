@@ -1,7 +1,7 @@
 ---
 title: '댓글 시스템 테스트 페이지'
 date: '2026-03-24'
-category: 'NextJs'
+category: 'frontend'
 tags: ['Next.js', 'Supabase', 'Realtime']
 description: '댓글 작성, 수정, 삭제, 대댓글 기능을 테스트하기 위한 페이지입니다.'
 draft: false

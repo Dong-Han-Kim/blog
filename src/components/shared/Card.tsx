@@ -1,10 +1,8 @@
 'use client';
 
-import { CATEGORY_CONTENT } from '@/constants/category-content';
 import { PostCard } from '@/types/common';
 import Image from 'next/image';
 import Link from 'next/link';
-
 
 function Card({
   slug,
@@ -14,24 +12,14 @@ function Card({
   date,
   keywords,
 }: PostCard) {
-  const thumbnailUrl = Object.keys(CATEGORY_CONTENT).includes(category)
-    ? category
-    : 'etc';
-
   return (
     <article
       key={slug}
       className="w-full h-full border border-gray-300 rounded-lg hover:-translate-y-5 transition-transform duration-300 ease-in-out overflow-hidden"
     >
       <Link href={`/posts/${slug}`}>
-        <div className="relative w-full h-180 mb-8">
-          <Image
-            src={CATEGORY_CONTENT[thumbnailUrl].thumbnail}
-            fill
-            alt="thumbnail"
-          />
-        </div>
-        <div className="px-12 flex flex-col mb-8">
+        <div className="px-12 pt-16 flex flex-col mb-8">
+          <span className="text-xs text-gray-400 mb-8">{category}</span>
           <h3 className="text-2xl font-extrabold mb-8 text-nowrap text-ellipsis overflow-hidden">
             {title}
           </h3>

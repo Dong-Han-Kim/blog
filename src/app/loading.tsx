@@ -9,8 +9,8 @@ export default function HomeLoading() {
             key={i}
             className="w-full border border-gray-300 rounded-lg overflow-hidden"
           >
-            <Skeleton className="w-full h-180" />
-            <div className="px-12 py-8">
+            <div className="px-12 pt-16 pb-8">
+              <Skeleton className="h-12 w-50 mb-8" />
               <Skeleton className="h-24 w-3/4 mb-8" />
               <Skeleton className="h-16 w-full mb-20" />
               <div className="flex justify-end gap-5">
