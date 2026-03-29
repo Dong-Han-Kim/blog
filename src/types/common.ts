@@ -21,6 +21,5 @@ export interface PostCard {
 export interface CategoryContent {
   [key: string]: {
     name: string;
-    thumbnail: string;
   };
 }

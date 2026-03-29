@@ -1,8 +1,8 @@
 ---
 # 📌 기본 메타데이터
-title: 'React Hooks 완벽 가이드6'
-date: '2025-10-06'
-category: 'ReactJs'
+title: 'React Hooks 완벽 가이드4'
+date: '2025-10-04'
+category: 'frontend'
 tags: ['React', 'Hooks', 'useEffect', 'useState']
 description: 'React Hooks의 개념과 실전 활용법을 정리했습니다.'
 thumbnail: '/images/react-hooks-thumbnail.png'
