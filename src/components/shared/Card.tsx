@@ -1,7 +1,4 @@
-'use client';
-
 import { PostCard } from '@/types/common';
-import Image from 'next/image';
 import Link from 'next/link';
 
 function Card({
@@ -13,38 +10,29 @@ function Card({
   keywords,
 }: PostCard) {
   return (
-    <article
-      key={slug}
-      className="w-full h-full border border-gray-300 rounded-lg hover:-translate-y-5 transition-transform duration-300 ease-in-out overflow-hidden"
-    >
-      <Link href={`/posts/${slug}`}>
-        <div className="px-12 pt-16 flex flex-col mb-8">
-          <span className="text-xs text-gray-400 mb-8">{category}</span>
-          <h3 className="text-2xl font-extrabold mb-8 text-nowrap text-ellipsis overflow-hidden">
-            {title}
-          </h3>
-          <p className="mb-20 text-nowrap text-ellipsis overflow-hidden">
+    <article key={slug}>
+      <Link
+        href={`/posts/${slug}`}
+        className="block border-l-2 border-gray-900 dark:border-gray-200 pl-16 py-12 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors"
+      >
+        <span className="text-xs uppercase tracking-[2px] text-muted-foreground">
+          {category}
+        </span>
+        <h3 className="text-lg font-semibold mt-4 mb-4 line-clamp-1">
+          {title}
+        </h3>
+        {description && (
+          <p className="text-sm text-muted-foreground line-clamp-1 mb-12">
             {description}
           </p>
-          <ul className="flex gap-5 text-xs justify-end">
-            {keywords.map((keyword, i) => {
-              return (
-                <li
-                  key={keyword + i}
-                  className="text-gray-400"
-                >{`#${keyword}`}</li>
-              );
-            })}
-          </ul>
-        </div>
-        <div className="text-gray-400 text-sm mb-8 flex items-center gap-2 border-t border-t-gray-300 pt-12 px-12">
-          <Image
-            src={'/icons/calendar-gray.svg'}
-            width={18}
-            height={18}
-            alt="date calender"
-          />
-          {date}
+        )}
+        <div className="flex items-center justify-between">
+          <time className="text-xs text-muted-foreground">{date}</time>
+          <div className="flex gap-8 text-xs text-muted-foreground">
+            {keywords.map((keyword, i) => (
+              <span key={keyword + i}>#{keyword}</span>
+            ))}
+          </div>
         </div>
       </Link>
     </article>
