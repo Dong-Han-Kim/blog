@@ -3,11 +3,10 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useTheme } from 'next-themes';
-import { Menu, X } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { Default_Nav_items } from '@/constants/menu';
 import { cn } from '@/lib/utils/cn';
-import { SearchTrigger } from '@/components/search/SearchTrigger';
+import { SearchTrigger, SearchTriggerMobile } from '@/components/search/SearchTrigger';
 import ThemeButton from './ThemeButton';
 import MobileNavPortal from './MobileNavPortal';
 import MobileMenu from './MobileMenu';
@@ -16,7 +15,6 @@ import { usePostCategory } from '@/hooks/usePostCategory';
 export default function TopNav() {
   const pathname = usePathname();
   const postCategory = usePostCategory();
-  const { resolvedTheme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [showPortal, setShowPortal] = useState(false);
@@ -85,7 +83,7 @@ export default function TopNav() {
 
           {/* Mobile controls */}
           <div className="flex md:hidden items-center gap-12">
-            <SearchTrigger />
+            <SearchTriggerMobile />
             <ThemeButton />
             {isMounted && (
               <button
