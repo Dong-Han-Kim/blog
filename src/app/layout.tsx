@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import Nav from '@/components/shared/Nav';
-import SideNav from '../components/shared/SideNav';
+import TopNav from '@/components/shared/TopNav';
 import type { Viewport } from 'next';
 import { ThemeProvider } from 'next-themes';
 import 'prism-themes/themes/prism-material-dark.css';
@@ -17,7 +16,7 @@ const pretendard = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'blog92',
+  title: 'b.log()',
   description: 'This is my blog',
   icons: {
     icon: '/favicon.ico',
@@ -46,11 +45,8 @@ export default function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       <body className={pretendard.className}>
         <ThemeProvider attribute="class" defaultTheme="system">
-          <header>
-            <Nav />
-            <SideNav />
-          </header>
-          <main className="flex max-w-7xl mx-auto w-full gap-20 my-25">
+          <TopNav />
+          <main className="max-w-7xl mx-auto w-full py-40">
             {children}
           </main>
           <SearchCommand />
