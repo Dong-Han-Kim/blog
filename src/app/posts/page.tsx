@@ -13,9 +13,9 @@ export default function PostsPage() {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
-    <div className="w-full px-10 md:px-20 lg:px-50">
-      <h1 className="text-3xl font-bold mb-20">전체 글</h1>
-      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+    <div className="w-full px-16 md:px-24 lg:px-48">
+      <h1 className="text-2xl font-semibold mb-32">전체 글</h1>
+      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24">
         {allPosts.map((post) => (
           <Card
             key={post.slug}
