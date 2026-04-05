@@ -7,8 +7,8 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="w-full px-10 md:px-20 lg:px-50 max-w-[800px] mx-auto">
-      <h1 className="text-3xl font-bold mb-20">소개</h1>
+    <div className="w-full px-16 md:px-24 lg:px-48 max-w-[800px] mx-auto">
+      <h1 className="text-2xl font-semibold mb-32">소개</h1>
       <div className="prose dark:prose-invert">
         <p>기술 블로그에 오신 것을 환영합니다.</p>
       </div>
