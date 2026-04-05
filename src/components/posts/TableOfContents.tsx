@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 interface TocItem {
   id: string;
@@ -11,29 +11,49 @@ interface TocItem {
 export function TableOfContents() {
   const [headings, setHeadings] = useState<TocItem[]>([]);
   const [activeId, setActiveId] = useState<string>('');
+  const headingElementsRef = useRef<Element[]>([]);
 
   useEffect(() => {
     const article = document.querySelector('article');
     if (!article) return;
 
-    const elements = article.querySelectorAll('h2, h3');
-    const items: TocItem[] = Array.from(elements).map((el) => ({
+    const elements = Array.from(article.querySelectorAll('h2, h3'));
+    headingElementsRef.current = elements;
+
+    const items: TocItem[] = elements.map((el) => ({
       id: el.id,
       text: el.textContent ?? '',
       level: Number(el.tagName.charAt(1)),
     }));
     setHeadings(items);
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.find((e) => e.isIntersecting);
-        if (visible?.target.id) setActiveId(visible.target.id);
-      },
-      { rootMargin: '0px 0px -80% 0px', threshold: 0.1 },
-    );
+    // Set initial active heading: the last heading that's above viewport center
+    const setClosestHeading = () => {
+      const scrollY = window.scrollY;
+      const offset = 100;
 
-    elements.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+      let current = '';
+      for (const el of elements) {
+        const top = (el as HTMLElement).offsetTop;
+        if (top - offset <= scrollY) {
+          current = el.id;
+        }
+      }
+      // If no heading is above scroll position, use the first one
+      if (!current && elements.length > 0) {
+        current = elements[0].id;
+      }
+      setActiveId(current);
+    };
+
+    setClosestHeading();
+
+    const handleScroll = () => {
+      requestAnimationFrame(setClosestHeading);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   if (headings.length === 0) return null;
