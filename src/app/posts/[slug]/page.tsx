@@ -107,7 +107,7 @@ export default async function PostPage({ params }: PageProps) {
   }
 
   return (
-    <div className="w-full px-10 md:px-20 lg:px-50">
+    <div className="w-full px-16 md:px-24 lg:px-48">
       <div className="flex justify-center">
         <article className="w-full max-w-[800px]">
           <header className="mb-32">
@@ -129,12 +129,12 @@ export default async function PostPage({ params }: PageProps) {
                 {post.frontmatter.description}
               </p>
             )}
-            <div className="flex flex-wrap gap-6 mt-16">
+            <div className="flex flex-wrap gap-8 mt-16">
               {post.frontmatter.tags.map((tag) => (
                 <Link
                   key={tag}
                   href={`/tags/${tag}`}
-                  className="text-sm px-10 py-4 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-400 hover:text-blue-500 transition-colors"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   #{tag}
                 </Link>
