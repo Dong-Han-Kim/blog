@@ -2,6 +2,20 @@ import { PostCard } from '@/types/common';
 import Link from 'next/link';
 import { cn } from '@/lib/utils/cn';
 
+const categoryLineColor: Record<string, string> = {
+  frontend: 'border-blue-500 dark:border-blue-400',
+  backend: 'border-emerald-500 dark:border-emerald-400',
+  devops: 'border-amber-500 dark:border-amber-400',
+  database: 'border-violet-500 dark:border-violet-400',
+  projects: 'border-cyan-500 dark:border-cyan-400',
+  til: 'border-rose-400 dark:border-rose-400',
+  nextjs: 'border-slate-500 dark:border-slate-400',
+};
+
+function getCategoryColor(category: string) {
+  return categoryLineColor[category.toLowerCase()] ?? 'border-gray-900 dark:border-gray-200';
+}
+
 function Card({
   slug,
   category,
@@ -16,7 +30,8 @@ function Card({
       <Link
         href={`/posts/${slug}`}
         className={cn(
-          'block border-l-2 border-gray-900 dark:border-gray-200 pl-16 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors',
+          'block border-l-2 pl-16 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors',
+          getCategoryColor(category),
           featured ? 'py-20' : 'py-12',
         )}
       >
