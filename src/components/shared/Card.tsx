@@ -1,5 +1,6 @@
 import { PostCard } from '@/types/common';
 import Link from 'next/link';
+import { cn } from '@/lib/utils/cn';
 
 function Card({
   slug,
@@ -8,21 +9,35 @@ function Card({
   description,
   date,
   keywords,
+  featured = false,
 }: PostCard) {
   return (
-    <article key={slug}>
+    <article className={cn(featured && 'md:col-span-2')}>
       <Link
         href={`/posts/${slug}`}
-        className="block border-l-2 border-gray-900 dark:border-gray-200 pl-16 py-12 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors"
+        className={cn(
+          'block border-l-2 border-gray-900 dark:border-gray-200 pl-16 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors',
+          featured ? 'py-20' : 'py-12',
+        )}
       >
         <span className="text-xs uppercase tracking-[2px] text-muted-foreground">
           {category}
         </span>
-        <h3 className="text-lg font-semibold mt-4 mb-4 line-clamp-1">
+        <h3
+          className={cn(
+            'font-semibold mt-4 mb-4 line-clamp-2',
+            featured ? 'text-2xl' : 'text-lg line-clamp-1',
+          )}
+        >
           {title}
         </h3>
         {description && (
-          <p className="text-sm text-muted-foreground line-clamp-1 mb-12">
+          <p
+            className={cn(
+              'text-sm text-muted-foreground mb-12',
+              featured ? 'line-clamp-2' : 'line-clamp-1',
+            )}
+          >
             {description}
           </p>
         )}

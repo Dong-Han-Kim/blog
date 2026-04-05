@@ -16,6 +16,7 @@ export interface PostCard {
   description: string | null;
   date: string;
   keywords: string[];
+  featured?: boolean;
 }
 
 export interface CategoryContent {

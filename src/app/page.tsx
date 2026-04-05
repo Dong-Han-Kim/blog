@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <div className="w-full px-16 md:px-24 lg:px-48">
       <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24">
-        {sortedPosts.map((post) => {
+        {sortedPosts.map((post, index) => {
           if (post.draft) return null;
           return (
             <Card
@@ -27,6 +27,7 @@ export default function Home() {
               description={post.description}
               date={post.date}
               keywords={post.keywords}
+              featured={index === 0}
             />
           );
         })}
