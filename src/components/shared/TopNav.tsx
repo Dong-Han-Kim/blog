@@ -42,7 +42,7 @@ export default function TopNav() {
 
   return (
     <nav className="w-full border-b border-gray-200 dark:border-gray-800">
-      <div className="max-w-7xl mx-auto px-16 md:px-24">
+      <div className="max-w-7xl mx-auto px-16 md:px-24 lg:px-48">
         {/* Desktop nav */}
         <div className="flex items-center justify-between h-64">
           {/* Logo */}

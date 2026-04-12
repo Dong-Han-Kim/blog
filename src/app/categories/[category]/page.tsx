@@ -48,7 +48,7 @@ export default async function CategoryPage({ params }: PageProps) {
   if (sortedPosts.length === 0) {
     const accentColor = categoryLineColor[category.toLowerCase()] ?? 'border-gray-900 dark:border-gray-200';
     return (
-      <div className="w-full px-10 md:px-20 lg:px-50">
+      <div className="w-full px-16 md:px-24 lg:px-48">
         <h1 className="text-3xl font-bold mb-20">{category}</h1>
         <div className={`border-l-2 ${accentColor} pl-16 py-40 flex flex-col gap-8`}>
           <span className="font-mono text-muted-foreground">// coming soon</span>
@@ -65,9 +65,9 @@ export default async function CategoryPage({ params }: PageProps) {
   }
 
   return (
-    <div className="w-full px-10 md:px-20 lg:px-50">
+    <div className="w-full px-16 md:px-24 lg:px-48">
       <h1 className="text-3xl font-bold mb-20">{category}</h1>
-      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24">
         {sortedPosts.map((post) => (
           <Card
             key={post.slug}

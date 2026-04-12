@@ -23,7 +23,7 @@ export default function Home() {
           웹 개발의 경험과 학습을 기록합니다.
         </p>
       </section>
-      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24">
         {sortedPosts.map((post, index) => {
           if (post.draft) return null;
           return (

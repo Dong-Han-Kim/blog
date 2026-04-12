@@ -34,9 +34,9 @@ export default async function TagPage({ params }: PageProps) {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
-    <div className="w-full px-10 md:px-20 lg:px-50">
+    <div className="w-full px-16 md:px-24 lg:px-48">
       <h1 className="text-3xl font-bold mb-20">#{decoded}</h1>
-      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24">
         {sortedPosts.map((post) => (
           <Card
             key={post.slug}

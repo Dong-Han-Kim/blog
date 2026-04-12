@@ -26,7 +26,7 @@ function Card({
   featured = false,
 }: PostCard) {
   return (
-    <article className={cn(featured && 'md:col-span-2')}>
+    <article className={cn(featured && 'md:col-span-2 lg:col-span-2')}>
       <Link
         href={`/posts/${slug}`}
         className={cn(
@@ -56,9 +56,9 @@ function Card({
             {description}
           </p>
         )}
-        <div className="flex items-center justify-between">
-          <time className="text-xs text-muted-foreground">{date}</time>
-          <div className="flex gap-8 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
+          <time className="text-xs text-muted-foreground shrink-0">{date}</time>
+          <div className="flex flex-wrap gap-x-8 gap-y-4 text-xs text-muted-foreground">
             {keywords.map((keyword, i) => (
               <span key={keyword + i}>#{keyword}</span>
             ))}
