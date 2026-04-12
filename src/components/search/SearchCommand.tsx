@@ -96,8 +96,8 @@ export function SearchCommand() {
               value={post.slug}
               onSelect={() => handleSelect(post.slug)}
             >
-              <div className="flex flex-col gap-2">
-                <span className="font-medium">{post.title}</span>
+              <div className="flex flex-col gap-4 py-2">
+                <span className="text-sm font-medium">{post.title}</span>
                 <span className="text-xs text-muted-foreground">
                   {post.category} · {post.tags.map((t) => `#${t}`).join(' ')}
                 </span>
