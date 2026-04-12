@@ -119,7 +119,7 @@ export function getPostsByCategory(category: string): PostMeta[] {
       'code' in error &&
       error.code === 'ENOENT'
     ) {
-      notFound();
+      return [];
     } else {
       console.error(`Error reading category ${category}: ${error}`);
       redirect('/');
