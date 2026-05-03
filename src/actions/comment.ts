@@ -1,7 +1,7 @@
 'use server';
 
 import { headers } from 'next/headers';
-import { eq } from 'drizzle-orm';
+import { eq, asc } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 
 import { db } from '@/lib/db';
@@ -10,10 +10,34 @@ import { commentFormSchema, deleteCommentSchema, updateCommentSchema } from '@/l
 import { isHoneypotFilled } from '@/lib/spam/honeypot';
 import { checkRateLimit } from '@/lib/spam/rate-limit';
 import { containsBannedWord } from '@/lib/spam/banned-words';
+import type { Comment } from '@/types/comment';
 
 interface ActionResult {
   success: boolean;
   error?: string;
+}
+
+export async function getCommentsByPostSlug(postSlug: string): Promise<Comment[]> {
+  const rows = await db
+    .select({
+      id: comments.id,
+      postSlug: comments.postSlug,
+      authorName: comments.authorName,
+      content: comments.content,
+      parentId: comments.parentId,
+      createdAt: comments.createdAt,
+      updatedAt: comments.updatedAt,
+    })
+    .from(comments)
+    .where(eq(comments.postSlug, postSlug))
+    .orderBy(asc(comments.createdAt));
+
+  return rows.map((c) => ({
+    ...c,
+    parentId: c.parentId ?? null,
+    createdAt: c.createdAt.toISOString(),
+    updatedAt: c.updatedAt?.toISOString() ?? null,
+  }));
 }
 
 export async function createComment(formData: {

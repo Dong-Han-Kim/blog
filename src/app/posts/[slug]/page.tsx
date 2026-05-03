@@ -9,10 +9,8 @@ import { Callout, CodeBlock, ImageWithCaption } from '@/components/mdx';
 import { TableOfContents } from '@/components/posts/TableOfContents';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { db } from '@/lib/db';
-import { comments } from '@/lib/db/schema';
-import { eq, asc } from 'drizzle-orm';
 import { CommentSection } from '@/components/comments/CommentSection';
+import { getCommentsByPostSlug } from '@/actions/comment';
 import type { Comment } from '@/types/comment';
 
 // Comments are fetched at request time; disable static prerendering for this route
@@ -82,26 +80,7 @@ export default async function PostPage({ params }: PageProps) {
 
   let initialComments: Comment[] = [];
   try {
-    const rawComments = await db
-      .select({
-        id: comments.id,
-        postSlug: comments.postSlug,
-        authorName: comments.authorName,
-        content: comments.content,
-        parentId: comments.parentId,
-        createdAt: comments.createdAt,
-        updatedAt: comments.updatedAt,
-      })
-      .from(comments)
-      .where(eq(comments.postSlug, slug))
-      .orderBy(asc(comments.createdAt));
-
-    initialComments = rawComments.map((c) => ({
-      ...c,
-      parentId: c.parentId ?? null,
-      createdAt: c.createdAt.toISOString(),
-      updatedAt: c.updatedAt?.toISOString() ?? null,
-    }));
+    initialComments = await getCommentsByPostSlug(slug);
   } catch (error) {
     console.error('댓글 조회 실패:', error);
   }

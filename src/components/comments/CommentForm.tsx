@@ -28,14 +28,12 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
     formState: { errors, isSubmitting },
   } = useForm<CommentFormData>({
     resolver: zodResolver(commentFormSchema),
-    defaultValues: {
-      parentId: parentId,
-    },
   });
 
   const onSubmit = async (data: CommentFormData) => {
     const result = await createComment({
       ...data,
+      parentId,
       postSlug,
       honeypot: (document.getElementById('website') as HTMLInputElement)?.value,
     });

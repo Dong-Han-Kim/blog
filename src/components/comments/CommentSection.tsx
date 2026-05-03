@@ -11,6 +11,7 @@ import {
   removeCommentFromTree,
   updateCommentInTree,
 } from '@/lib/comments/tree';
+import { getCommentsByPostSlug } from '@/actions/comment';
 import type { Comment, CommentWithChildren } from '@/types/comment';
 
 interface CommentSectionProps {
@@ -41,9 +42,14 @@ export function CommentSection({ postSlug, initialComments }: CommentSectionProp
     setCommentTree((prev) => removeCommentFromTree(prev, commentId));
   }, []);
 
-  const handleReconnect = useCallback(() => {
-    window.location.reload();
-  }, []);
+  const handleReconnect = useCallback(async () => {
+    try {
+      const fresh = await getCommentsByPostSlug(postSlug);
+      setCommentTree(buildCommentTree(fresh));
+    } catch (err) {
+      console.warn('[CommentSection] 댓글 재조회 실패:', err);
+    }
+  }, [postSlug]);
 
   useCommentRealtime({
     postSlug,
