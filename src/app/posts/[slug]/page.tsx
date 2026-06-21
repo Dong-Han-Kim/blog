@@ -5,6 +5,7 @@ import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 
 import { getAllPosts, getPostBySlug } from '@/lib/mdx';
+import { remarkStripFirstH1 } from '@/lib/remark-strip-title';
 import { Callout, CodeBlock, ImageWithCaption } from '@/components/mdx';
 import { TableOfContents } from '@/components/posts/TableOfContents';
 import Link from 'next/link';
@@ -67,7 +68,7 @@ export default async function PostPage({ params }: PageProps) {
     components: mdxComponents,
     options: {
       mdxOptions: {
-        remarkPlugins: [remarkGfm],
+        remarkPlugins: [remarkGfm, remarkStripFirstH1],
         rehypePlugins: [
           rehypeSlug,
           [rehypePrettyCode, { theme: 'github-dark-default', keepBackground: true }],
