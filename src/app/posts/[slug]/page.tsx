@@ -3,24 +3,39 @@ import { compileMDX } from 'next-mdx-remote/rsc';
 import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
+import Link from 'next/link';
+import type { Metadata } from 'next';
+import type { ComponentProps } from 'react';
 
 import { getAllPosts, getPostBySlug } from '@/lib/mdx';
 import { remarkStripFirstH1 } from '@/lib/remark-strip-title';
+import { crtTheme } from '@/lib/shiki-theme';
 import { Callout, CodeBlock, ImageWithCaption } from '@/components/mdx';
 import { TableOfContents } from '@/components/posts/TableOfContents';
-import Link from 'next/link';
-import type { Metadata } from 'next';
+import { PromptLine } from '@/components/terminal/PromptLine';
+import { FooterPrompt } from '@/components/terminal/FooterPrompt';
+import { CategoryBadge } from '@/components/terminal/CategoryBadge';
 import { CommentSection } from '@/components/comments/CommentSection';
 import { getCommentsByPostSlug } from '@/actions/comment';
 import type { Comment } from '@/types/comment';
 
 // Comments are fetched at request time; disable static prerendering for this route
 export const dynamic = 'force-dynamic';
+// 참고(QA-H1): 미존재 slug는 getPostBySlug의 notFound()가 404 페이지를 렌더한다.
+// 단, 이 라우트는 스트리밍(loading.tsx + force-dynamic)이라 HTTP 상태는 200이며
+// Next가 noindex 메타를 주입해 SEO를 방어한다 (스트림 시작 후 상태코드 변경 불가 —
+// Next 공식 문서 명시). dynamicParams=false는 force-dynamic 하에서 무효라 쓰지 않는다
 
 const mdxComponents = {
   Callout,
   CodeBlock,
   ImageWithCaption,
+  // 코드 펜스 전체를 헤더 바(언어명 + COPY) 래퍼로 감싼다 (설계 §7.5)
+  pre: CodeBlock,
+  // 인용 블록 — .post-body(globals, A 소유)에 규칙이 없어 컴포넌트 매핑으로 최소 스타일
+  blockquote: (props: ComponentProps<'blockquote'>) => (
+    <blockquote className="my-24 border-l border-rule pl-16 text-text-muted" {...props} />
+  ),
 };
 
 interface PageProps {
@@ -71,7 +86,8 @@ export default async function PostPage({ params }: PageProps) {
         remarkPlugins: [remarkGfm, remarkStripFirstH1],
         rehypePlugins: [
           rehypeSlug,
-          [rehypePrettyCode, { theme: 'github-dark-default', keepBackground: true }],
+          // 3단계 그린 인광 하이라이트 — 배경·테두리는 CodeBlock 래퍼 담당 (설계 §6.2)
+          [rehypePrettyCode, { theme: crtTheme, keepBackground: false, defaultLang: 'text' }],
         ],
       },
     },
@@ -87,82 +103,76 @@ export default async function PostPage({ params }: PageProps) {
   }
 
   return (
-    <div className="w-full px-16 md:px-24 lg:px-48">
-      <div className="flex justify-center">
-        <article className="w-full max-w-[800px]">
-          <header className="mb-32">
-            <div className="flex items-center gap-8 text-sm text-gray-500 dark:text-gray-400 mb-12">
-              <Link
-                href={`/categories/${post.frontmatter.category}`}
-                className="hover:text-blue-500 transition-colors"
-              >
-                {post.frontmatter.category}
-              </Link>
-              <span>·</span>
-              <time>{post.frontmatter.date}</time>
-            </div>
-            <h1 className="text-4xl font-bold mb-16 leading-tight">
-              {post.frontmatter.title}
-            </h1>
-            {post.frontmatter.description && (
-              <p className="text-lg text-gray-600 dark:text-gray-400">
-                {post.frontmatter.description}
-              </p>
-            )}
-            <div className="flex flex-wrap gap-8 mt-16">
-              {post.frontmatter.tags.map((tag) => (
-                <Link
-                  key={tag}
-                  href={`/tags/${tag}`}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  #{tag}
-                </Link>
-              ))}
-            </div>
-          </header>
+    // 상세 페이지 하단 패딩 64px — layout의 pb-60과의 4px 차 보정 (설계 §2.6)
+    <div className="pb-4">
+      {/* 브레드크럼 프롬프트 */}
+      <PromptLine command={`cat posts/${slug}.md`} className="mt-20 mb-56" />
 
-          <div className="prose prose-lg dark:prose-invert max-w-none">
-            {mdxContent}
-          </div>
+      {/* 타이틀 블록 */}
+      <header className="mb-56 max-w-780">
+        <div className="mb-20 flex items-center gap-18 text-[11px] leading-[1.9] text-text-dim">
+          <CategoryBadge
+            category={post.frontmatter.category.toUpperCase()}
+            href={`/categories/${post.frontmatter.category}`}
+          />
+          <time dateTime={post.frontmatter.date}>{post.frontmatter.date}</time>
+          <span className="text-text-faint">{post.frontmatter.readingTime} min read</span>
+        </div>
+        <h1 className="font-display text-post-h1 text-text-strong max-md:text-[22px]">
+          {post.frontmatter.title}
+        </h1>
+        {post.frontmatter.description && (
+          <p className="mt-22 text-[14px] leading-[2] text-text-muted">
+            {post.frontmatter.description}
+          </p>
+        )}
+        <div className="mt-22 flex flex-wrap gap-12 text-[11px] text-text-dim">
+          {post.frontmatter.tags.map((tag) => (
+            <Link
+              key={tag}
+              href={`/tags/${encodeURIComponent(tag)}`}
+              className="hover:text-text-strong"
+            >
+              #{tag}
+            </Link>
+          ))}
+        </div>
+      </header>
 
-          <nav className="mt-48 pt-32 border-t border-gray-200 dark:border-gray-700 flex justify-between">
-            {prev ? (
-              <Link
-                href={`/posts/${prev.slug}`}
-                className="group flex flex-col"
-              >
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  이전 글
-                </span>
-                <span className="group-hover:text-blue-500 transition-colors">
+      {/* 본문 + 목차 그리드 (900–1199에서 목차 180px, max-lg에서 접힘 바가 본문 위) */}
+      <div className="lg:grid lg:grid-cols-[1fr_216px] lg:items-start lg:gap-56 lg:max-xl:grid-cols-[1fr_180px]">
+        <TableOfContents />
+
+        <div className="min-w-0 lg:order-1">
+          <article className="post-body">{mdxContent}</article>
+
+          {/* 이전/다음 — 없는 쪽 미렌더, 모바일 세로 스택 */}
+          <nav className="mt-64 flex justify-between gap-20 border-t border-rule pt-28 max-md:flex-col max-md:gap-18">
+            {prev && (
+              <Link href={`/posts/${prev.slug}`} className="hover:opacity-75">
+                <p className="mb-8 text-[11px] text-text-faint">← PREV</p>
+                <p className="max-w-300 text-[13px] leading-[1.8] text-text-muted">
                   {prev.title}
-                </span>
+                </p>
               </Link>
-            ) : (
-              <div />
             )}
-            {next ? (
+            {next && (
               <Link
                 href={`/posts/${next.slug}`}
-                className="group flex flex-col items-end"
+                className="ml-auto text-right hover:opacity-75 max-md:ml-0 max-md:text-left"
               >
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  다음 글
-                </span>
-                <span className="group-hover:text-blue-500 transition-colors">
+                <p className="mb-8 text-[11px] text-text-faint">NEXT →</p>
+                <p className="max-w-300 text-[13px] leading-[1.8] text-text-muted">
                   {next.title}
-                </span>
+                </p>
               </Link>
-            ) : (
-              <div />
             )}
           </nav>
 
           <CommentSection postSlug={slug} initialComments={initialComments} />
-        </article>
 
-        <TableOfContents />
+          <FooterPrompt command="cd .." cursor className="mt-48" />
+        </div>
       </div>
     </div>
   );

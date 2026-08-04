@@ -64,7 +64,7 @@ export function EditCommentDialog({ commentId, onVerified, children }: EditComme
               onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
               placeholder="비밀번호를 입력하세요"
             />
-            {error && <p className="text-sm text-red-500 mt-6">{error}</p>}
+            {error && <p className="mt-6 text-[11px] text-error">error: {error}</p>}
           </div>
           <div className="flex justify-end gap-10">
             <Button variant="ghost" className="h-44 px-20" onClick={() => setOpen(false)}>

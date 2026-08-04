@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { postFrontmatterSchema } from './validations/posts';
+import { calcReadingTime } from './reading-time';
 import { notFound, redirect } from 'next/navigation';
 import { ZodError } from 'zod';
 import { PostMeta } from '@/types/common';
@@ -23,12 +24,13 @@ export function getAllPosts(): PostMeta[] {
       return files.map((file) => {
         const filePath = path.join(categoryDir, file);
         const fileContents = fs.readFileSync(filePath, 'utf-8');
-        const { data } = matter(fileContents);
+        const { data, content } = matter(fileContents);
         const frontmatter = postFrontmatterSchema.parse(data);
 
         return {
           ...frontmatter,
           slug: file.replace(/\.md$/, ''),
+          readingTime: calcReadingTime(content),
         };
       });
     });
@@ -67,12 +69,10 @@ export function getPostBySlug(slug: string) {
       const frontmatter = postFrontmatterSchema.parse(data);
 
       return {
-        frontmatter: { ...frontmatter, slug },
+        frontmatter: { ...frontmatter, slug, readingTime: calcReadingTime(content) },
         content,
       };
     }
-
-    notFound();
   } catch (error: unknown) {
     if (error instanceof ZodError) {
       console.error(`Error reading post ${slug}: ${error.message}`);
@@ -88,6 +88,10 @@ export function getPostBySlug(slug: string) {
       redirect('/');
     }
   }
+
+  // 슬러그 미존재 — try 안에서 던지면 catch가 NEXT_HTTP_ERROR를 삼키고
+  // redirect('/')로 낙하하므로(소프트 404) 반드시 try 밖에서 던진다 (QA-H1)
+  notFound();
 }
 
 export function getPostsByCategory(category: string): PostMeta[] {
@@ -100,12 +104,13 @@ export function getPostsByCategory(category: string): PostMeta[] {
     return files.map((file) => {
       const filePath = path.join(categoryDir, file);
       const fileContents = fs.readFileSync(filePath, 'utf-8');
-      const { data } = matter(fileContents);
+      const { data, content } = matter(fileContents);
       const frontmatter = postFrontmatterSchema.parse(data);
 
       return {
         ...frontmatter,
         slug: file.replace(/\.md$/, ''),
+        readingTime: calcReadingTime(content),
       };
     });
   } catch (error: unknown) {
@@ -153,6 +158,7 @@ export function getAllPostsWithContent(): (PostMeta & { content: string })[] {
         return {
           ...frontmatter,
           slug: file.replace(/\.md$/, ''),
+          readingTime: calcReadingTime(content),
           content,
         };
       })

@@ -2,15 +2,18 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+// CRT 리스킨 (설계 §4): radius/shadow/ring/transition 제거, caret accent,
+// 포커스 1px accent 테두리. 배경·크기는 소비처에서 지정한다.
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <input
       type={type}
       data-slot="input"
       className={cn(
-        "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-        "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+        "w-full min-w-0 border border-input bg-transparent px-16 py-12 text-[13px] text-text-strong caret-accent outline-none placeholder:text-text-faint selection:bg-bg-selected selection:text-text-strong",
+        "focus-visible:border-accent",
+        "aria-invalid:border-error",
+        "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       {...props}

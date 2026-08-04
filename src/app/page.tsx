@@ -1,45 +1,37 @@
 import { getAllPosts } from '@/lib/mdx';
-import { PostMeta } from '../types/common';
+import { CATEGORY_CONTENT } from '@/constants/category-content';
+import { CategoryTabs } from '@/components/posts/CategoryTabs';
+import { PostList } from '@/components/posts/PostList';
+import { FooterPrompt } from '@/components/terminal/FooterPrompt';
 
-import Card from '@/components/shared/Card';
-
+/**
+ * 홈 — 포스트 목록 (핸드오버 2a/7a, 설계 §7.1).
+ * 히어로 2줄 + 통계, 카테고리 탭, 목록(더 보기 포함), 푸터 `exit`.
+ */
 export default function Home() {
-  const allPosts: PostMeta[] = getAllPosts();
+  const posts = getAllPosts()
+    .filter((post) => !post.draft)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  const sortedPosts = allPosts.sort((a, b) => {
-    if (!a.date || !b.date) return 0;
-    const firstDate = new Date(a.date).getTime();
-    const secondDate = new Date(b.date).getTime();
-    return secondDate - firstDate;
-  });
+  const categoryCount = Object.keys(CATEGORY_CONTENT).length;
+  const year = new Date().getFullYear();
 
   return (
-    <div className="w-full px-16 md:px-24 lg:px-48">
-      <section className="mb-48 pt-16">
-        <h1 className="font-mono text-4xl md:text-5xl font-bold tracking-tight mb-12">
-          b.log()
+    <>
+      <section className="mt-64 mb-66 max-w-800 max-md:mt-32 max-md:mb-28">
+        <h1 className="font-display text-hero text-text-strong max-md:text-[19px] max-md:leading-[1.85]">
+          프론트엔드부터 <br className="md:hidden" />
+          인프라까지,
+          <br />
+          배운 것을 기록합니다.
         </h1>
-        <p className="text-lg text-muted-foreground max-w-[480px]">
-          웹 개발의 경험과 학습을 기록합니다.
+        <p className="mt-24 text-[13px] leading-[2] text-text-hint max-md:mt-14 max-md:text-[11px]">
+          {posts.length} posts · {categoryCount} categories · {year}
         </p>
       </section>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24">
-        {sortedPosts.map((post, index) => {
-          if (post.draft) return null;
-          return (
-            <Card
-              key={post.slug}
-              slug={post.slug}
-              category={post.category}
-              title={post.title}
-              description={post.description}
-              date={post.date}
-              keywords={post.keywords}
-              featured={index === 0}
-            />
-          );
-        })}
-      </div>
-    </div>
+      <CategoryTabs active="ALL" />
+      <PostList posts={posts} />
+      <FooterPrompt command="exit" className="mt-60" />
+    </>
   );
 }

@@ -8,10 +8,14 @@ import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { CommentAvatar } from './CommentAvatar';
 import { EditCommentDialog } from './EditCommentDialog';
 import { DeleteCommentDialog } from './DeleteCommentDialog';
 import { CommentForm } from './CommentForm';
 import { updateComment } from '@/actions/comment';
+import { formatCommentTime } from '@/lib/comments/format';
+import { SITE_OWNER_NAME } from '@/constants/site';
+import { cn } from '@/lib/utils/cn';
 import type { CommentWithChildren } from '@/types/comment';
 
 const editContentSchema = z.object({
@@ -28,6 +32,15 @@ interface CommentItemProps {
   editingPassword: string | null;
   onStartEditing: (commentId: string, password: string) => void;
   onStopEditing: () => void;
+  /** 루트 댓글 전용 — 접힌 스레드 여부 (설계 §7.6) */
+  collapsed?: boolean;
+  /** 루트 댓글 전용 — 스레드 토글 핸들러 */
+  onToggleThread?: (commentId: string) => void;
+}
+
+// 서브트리 답글 총수 (스레드 토글 라벨용)
+function countReplies(comment: CommentWithChildren): number {
+  return comment.children.reduce((sum, child) => sum + 1 + countReplies(child), 0);
 }
 
 export function CommentItem({
@@ -37,6 +50,8 @@ export function CommentItem({
   editingPassword,
   onStartEditing,
   onStopEditing,
+  collapsed = false,
+  onToggleThread,
 }: CommentItemProps) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
@@ -80,100 +95,125 @@ export function CommentItem({
     onStopEditing();
   };
 
-  const indentPx = comment.depth * 24;
+  const isAuthor = comment.authorName === SITE_OWNER_NAME;
+  const isReply = comment.depth > 0;
   const isUpdated = !!comment.updatedAt;
-
-  const formattedDate = new Date(comment.createdAt).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  const replyCount = countReplies(comment);
 
   return (
-    <div style={{ marginLeft: `${indentPx}px` }}>
-      <div className="py-20 border-b border-gray-100 dark:border-gray-800">
-        <div className="flex items-center gap-8 mb-10">
-          <span className="font-semibold text-sm">{comment.authorName}</span>
-          <span className="text-xs text-gray-400">{formattedDate}</span>
-          {isUpdated && (
-            <span className="text-xs text-gray-400 italic">(수정됨)</span>
-          )}
-        </div>
-
-        {isEditing ? (
-          <form onSubmit={handleSubmit(handleEditSubmit)} className="space-y-12">
-            <Textarea className="min-h-120" {...register('content')} rows={3} />
-            {errors.content && (
-              <p className="text-sm text-red-500">{errors.content.message}</p>
-            )}
-            <div className="flex gap-10">
-              <Button type="submit" className="h-40 px-20" disabled={isSubmittingEdit}>
-                {isSubmittingEdit ? '수정 중...' : '수정 완료'}
-              </Button>
-              <Button type="button" className="h-40 px-20" variant="ghost" onClick={handleCancelEdit}>
-                취소
-              </Button>
-            </div>
-          </form>
-        ) : (
-          <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-            {comment.content}
-          </p>
+    <div>
+      <div
+        className={cn(
+          'grid grid-cols-[44px_1fr] items-start gap-20 py-26 max-md:grid-cols-[26px_1fr] max-md:gap-14 max-md:py-20',
+          isReply ? 'border-t border-rule-weak' : 'border-t border-rule'
         )}
+        // 답글 들여쓰기 44px × depth (핸드오버 §2 댓글, 설계 §7.6: 24px → 44px)
+        style={comment.depth > 0 ? { paddingLeft: comment.depth * 44 } : undefined}
+      >
+        <CommentAvatar
+          name={comment.authorName}
+          variant={isAuthor ? 'outline' : 'filled'}
+        />
 
-        {!isEditing && (
-          <div className="flex gap-12 mt-12">
+        <div className="min-w-0">
+          {/* 메타 행: 이름 · AUTHOR 배지 · 시각 · (수정됨) · 우측 액션 */}
+          <div className="flex flex-wrap items-baseline gap-14 text-[11px] text-text-dim max-md:gap-10">
+            <span className="text-[13px] text-text-strong">{comment.authorName}</span>
+            {isAuthor && (
+              <span className="border border-text-faint px-6 py-2 text-[10px] text-text-muted">
+                AUTHOR
+              </span>
+            )}
+            <span>
+              <span className="max-md:hidden">{formatCommentTime(comment.createdAt)}</span>
+              <span className="md:hidden">{formatCommentTime(comment.createdAt, true)}</span>
+            </span>
+            {isUpdated && <span className="text-text-faint">(수정됨)</span>}
+
+            {!isEditing && (
+              <span className="ml-auto flex shrink-0 gap-12 text-text-faint">
+                <button
+                  type="button"
+                  className="hover:text-text-strong"
+                  onClick={() => setShowReplyForm(!showReplyForm)}
+                >
+                  답글
+                </button>
+                <EditCommentDialog commentId={comment.id} onVerified={handleEditVerified}>
+                  <button type="button" className="hover:text-text-strong">
+                    수정
+                  </button>
+                </EditCommentDialog>
+                <DeleteCommentDialog commentId={comment.id}>
+                  <button type="button" className="hover:text-error">
+                    삭제
+                  </button>
+                </DeleteCommentDialog>
+              </span>
+            )}
+          </div>
+
+          {isEditing ? (
+            <form onSubmit={handleSubmit(handleEditSubmit)} className="mt-12 space-y-12">
+              <Textarea {...register('content')} rows={3} />
+              {errors.content && (
+                <p className="text-[11px] text-error">error: {errors.content.message}</p>
+              )}
+              <div className="flex gap-10">
+                <Button type="submit" disabled={isSubmittingEdit}>
+                  {isSubmittingEdit ? '[ SENDING ]' : '수정 완료'}
+                </Button>
+                <Button type="button" variant="ghost" onClick={handleCancelEdit}>
+                  취소
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <p className="mt-12 text-[13px] leading-[2.05] whitespace-pre-wrap text-text-body">
+              {comment.content}
+            </p>
+          )}
+
+          {/* 스레드 토글 — 답글 있는 루트 댓글만, 즉시 토글 (핸드오버 §2 댓글) */}
+          {!isReply && replyCount > 0 && onToggleThread && (
             <button
               type="button"
-              className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors py-4 px-2"
-              onClick={() => setShowReplyForm(!showReplyForm)}
+              onClick={() => onToggleThread(comment.id)}
+              className="mt-14 inline-flex items-center gap-8 border border-text-faint px-10 py-5 text-[11px] text-text-muted hover:border-accent hover:text-text-strong"
             >
-              답글
+              <span className="text-accent">{collapsed ? '[+]' : '[−]'}</span>
+              <span>
+                답글 {replyCount}개 {collapsed ? '펼치기' : '접기'}
+              </span>
             </button>
-            <EditCommentDialog commentId={comment.id} onVerified={handleEditVerified}>
-              <button
-                type="button"
-                className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors py-4 px-2"
-              >
-                수정
-              </button>
-            </EditCommentDialog>
-            <DeleteCommentDialog commentId={comment.id}>
-              <button
-                type="button"
-                className="text-xs text-gray-400 hover:text-red-500 transition-colors py-4 px-2"
-              >
-                삭제
-              </button>
-            </DeleteCommentDialog>
-          </div>
-        )}
+          )}
 
-        {showReplyForm && (
-          <div className="mt-16 pl-16 border-l-2 border-gray-200 dark:border-gray-700">
-            <CommentForm
-              postSlug={postSlug}
-              parentId={comment.id}
-              onCancel={() => setShowReplyForm(false)}
-              onSuccess={() => setShowReplyForm(false)}
-            />
-          </div>
-        )}
+          {showReplyForm && (
+            <div className="mt-16">
+              <CommentForm
+                postSlug={postSlug}
+                parentId={comment.id}
+                onCancel={() => setShowReplyForm(false)}
+                onSuccess={() => setShowReplyForm(false)}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
-      {comment.children.map((child) => (
-        <CommentItem
-          key={child.id}
-          comment={child}
-          postSlug={postSlug}
-          editingCommentId={editingCommentId}
-          editingPassword={editingCommentId === child.id ? editingPassword : null}
-          onStartEditing={onStartEditing}
-          onStopEditing={onStopEditing}
-        />
-      ))}
+      {/* 접힌 스레드는 답글 서브트리를 DOM에서 제거 (무전환 즉시 토글) */}
+      {!collapsed &&
+        comment.children.map((child) => (
+          <CommentItem
+            key={child.id}
+            comment={child}
+            postSlug={postSlug}
+            editingCommentId={editingCommentId}
+            editingPassword={editingCommentId === child.id ? editingPassword : null}
+            onStartEditing={onStartEditing}
+            onStopEditing={onStopEditing}
+          />
+        ))}
     </div>
   );
 }

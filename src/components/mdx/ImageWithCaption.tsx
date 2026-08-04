@@ -8,6 +8,10 @@ interface ImageWithCaptionProps {
   height?: number;
 }
 
+/**
+ * 이미지 (핸드오버 §9): 1px text-faint 박스 + `[ IMAGE — {설명} ]` 캡션(11px text-faint).
+ * 이미지 로딩 중에도 같은 박스가 자리를 지킨다.
+ */
 export function ImageWithCaption({
   src,
   alt,
@@ -16,19 +20,13 @@ export function ImageWithCaption({
   height = 400,
 }: ImageWithCaptionProps) {
   return (
-    <figure className="my-24">
-      <Image
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        className="rounded-lg mx-auto"
-      />
-      {caption && (
-        <figcaption className="text-center text-sm text-gray-500 dark:text-gray-400 mt-8">
-          {caption}
-        </figcaption>
-      )}
+    <figure className="my-30">
+      <div className="border border-text-faint">
+        <Image src={src} alt={alt} width={width} height={height} className="mx-auto" />
+      </div>
+      <figcaption className="mt-8 text-center text-[11px] text-text-faint">
+        [ IMAGE — {caption ?? alt} ]
+      </figcaption>
     </figure>
   );
 }

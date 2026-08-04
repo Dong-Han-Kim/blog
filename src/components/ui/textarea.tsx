@@ -2,12 +2,17 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+// CRT 리스킨 (설계 §4): radius/shadow/ring/transition 제거, caret accent,
+// 포커스 1px accent 테두리. 크기는 소비처에서 지정한다.
 function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
   return (
     <textarea
       data-slot="textarea"
       className={cn(
-        "flex field-sizing-content min-h-16 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:aria-invalid:ring-destructive/40",
+        "flex field-sizing-content w-full resize-y border border-input bg-transparent px-16 py-12 text-[13px] leading-[2] text-text-body caret-accent outline-none placeholder:text-text-faint",
+        "focus-visible:border-accent",
+        "aria-invalid:border-error",
+        "disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       {...props}

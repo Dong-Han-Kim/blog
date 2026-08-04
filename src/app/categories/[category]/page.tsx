@@ -1,18 +1,13 @@
-import Link from 'next/link';
+import type { Metadata } from 'next';
 import { getPostsByCategory, getAllPosts } from '@/lib/mdx';
 import { Default_Nav_items } from '@/constants/menu';
-import Card from '@/components/shared/Card';
-import type { Metadata } from 'next';
-
-const categoryLineColor: Record<string, string> = {
-  frontend: 'border-blue-500 dark:border-blue-400',
-  backend: 'border-emerald-500 dark:border-emerald-400',
-  devops: 'border-amber-500 dark:border-amber-400',
-  database: 'border-violet-500 dark:border-violet-400',
-  projects: 'border-cyan-500 dark:border-cyan-400',
-  til: 'border-rose-400 dark:border-rose-400',
-  nextjs: 'border-slate-500 dark:border-slate-400',
-};
+import { CATEGORY_CONTENT } from '@/constants/category-content';
+import { CategoryTabs } from '@/components/posts/CategoryTabs';
+import { PostList } from '@/components/posts/PostList';
+import { DottedRule } from '@/components/terminal/DottedRule';
+import { FooterPrompt } from '@/components/terminal/FooterPrompt';
+import { PromptLine } from '@/components/terminal/PromptLine';
+import { TerminalButton } from '@/components/terminal/TerminalButton';
 
 interface PageProps {
   params: Promise<{ category: string }>;
@@ -30,56 +25,67 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { category } = await params;
+  const content = CATEGORY_CONTENT[category.toLowerCase()];
   return {
-    title: `${category} 카테고리`,
-    description: `${category} 관련 글 모음`,
+    title: `${content?.name ?? category} 카테고리`,
+    description: content?.description ?? `${category} 관련 글 모음`,
   };
 }
 
+/**
+ * 카테고리 페이지 (핸드오버 6b, 0건은 8a — 설계 §7.3).
+ * 브레드크럼 `cd categories/{slug}` + 46px 대문자 타이틀 + 설명 +
+ * 우측 `{n} ENTRIES`/경로 + 탭 + 필터된 목록(인덱스 01부터 재시작).
+ */
 export default async function CategoryPage({ params }: PageProps) {
   const { category } = await params;
+  const slug = category.toLowerCase();
+  const content = CATEGORY_CONTENT[slug];
 
-  const posts = getPostsByCategory(category);
-
-  const sortedPosts = posts
+  const posts = getPostsByCategory(category)
     .filter((post) => !post.draft)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  if (sortedPosts.length === 0) {
-    const accentColor = categoryLineColor[category.toLowerCase()] ?? 'border-gray-900 dark:border-gray-200';
-    return (
-      <div className="w-full px-16 md:px-24 lg:px-48">
-        <h1 className="text-3xl font-bold mb-20">{category}</h1>
-        <div className={`border-l-2 ${accentColor} pl-16 py-40 flex flex-col gap-8`}>
-          <span className="font-mono text-muted-foreground">// coming soon</span>
-          <p className="text-sm text-muted-foreground">아직 작성된 글이 없습니다.</p>
-          <Link
-            href="/"
-            className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground transition-colors mt-8"
-          >
-            다른 글 둘러보기
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="w-full px-16 md:px-24 lg:px-48">
-      <h1 className="text-3xl font-bold mb-20">{category}</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24">
-        {sortedPosts.map((post) => (
-          <Card
-            key={post.slug}
-            slug={post.slug}
-            category={post.category}
-            title={post.title}
-            description={post.description}
-            date={post.date}
-            keywords={post.keywords}
-          />
-        ))}
-      </div>
-    </div>
+    <>
+      <PromptLine command={`cd categories/${slug}`} className="mt-44 mb-26" />
+      <header className="mb-44 flex items-end justify-between gap-32">
+        <div>
+          <h1 className="font-display text-cat-title text-text-strong uppercase">
+            {content?.name ?? category}
+          </h1>
+          {content?.description && (
+            <p className="mt-12 text-[13px] leading-[2] text-text-muted">
+              {content.description}
+            </p>
+          )}
+        </div>
+        <div className="shrink-0 text-right text-[11px] leading-[2] text-text-dim">
+          <div>{posts.length} ENTRIES</div>
+          <div className="text-text-faint">categories/{slug}/</div>
+        </div>
+      </header>
+      <CategoryTabs active={slug} />
+      {posts.length === 0 ? (
+        <section>
+          <DottedRule left="0 ENTRIES" className="mb-2" />
+          <div className="border-y border-rule py-52 text-center">
+            <p className="text-[13px] leading-[2.2] text-error">
+              ls: categories/{slug}: 아직 글이 없습니다
+            </p>
+            <p className="mt-14 text-[12px] text-text-dim">
+              이 카테고리는 준비 중입니다.
+            </p>
+            <TerminalButton href="/" className="mt-30">
+              <span className="text-text-faint">$</span>
+              <span>cd ~ — 전체 글 보기</span>
+            </TerminalButton>
+          </div>
+        </section>
+      ) : (
+        <PostList posts={posts} />
+      )}
+      <FooterPrompt command="cd .." className="mt-56" />
+    </>
   );
 }

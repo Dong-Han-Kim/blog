@@ -1,171 +1,372 @@
 @import 'tailwindcss';
-@import "tw-animate-css";
 
-@plugin "@tailwindcss/typography";
+/*
+ * 레트로 CRT 터미널 파운데이션 (retro-crt-redesign U1/U2)
+ * 색·타이포·간격의 단일 출처: design_handoff_blog92_retro_crt/README.md
+ */
 
-@theme inline {
+@theme {
+  /* 1px 베이스 — 수치 유틸리티는 픽셀 단위 (px-16 = 16px). 기존 관례 유지 */
   --spacing: 0.0625rem;
-  --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
 
-  --color-bg-light: #ffffff;
-  --color-text-light: #000000;
+  /* ── 핸드오버 Colors 표 20개 — hex는 표의 값 그대로 ── */
+  --color-bg: #050705;
+  --color-bg-raised: #071008;
+  --color-bg-hover: #0a1a0e;
+  --color-bg-selected: #123320;
+  --color-code-inline-bg: #0d2411;
+  --color-text-strong: #eaffef;
+  --color-text-body: #cfeedb;
+  --color-text-muted: #7ad79b;
+  --color-text-dim: #55b678;
+  --color-text-faint: #2a7a48;
+  --color-accent: #5cff8c;
+  --color-code-token: #a8e9bf;
+  --color-error: #e08b8b;
+  --color-error-bg: #1a0d0d;
+  --color-skeleton: #0d2411;
+  --color-track: #194c2b;
+  --color-rule: #2a7a48;
+  --color-rule-weak: #194c2b;
+  --color-rule-inner: #1c5a33;
+  --color-invert-bg: #cfeedb;
+  /* 핸드오버 본문 스펙에만 등장하는 리터럴 2개 — 표 밖 값이지만 토큰화 (하드코딩 금지 원칙) */
+  --color-text-hint: #6cd08f; /* 헤더 '검색... ⌘K', 히어로 통계 */
+  --color-bg-field: #050c06; /* 팔레트 모달 배경, 폼 입력 칸 배경 */
+  /* 다이얼로그/팔레트 백드롭 (핸드오버 rgba(3,6,3,.72)) */
+  --color-backdrop: rgba(3, 6, 3, 0.72);
 
-  --color-bg-dark: #0f172a; /* slate-900 정도 */
-  --color-text-dark: #f8fafc;
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
+  /* ── 폰트 체인 (Galmuri self-host, lib/fonts.ts) ── */
+  --font-sans: var(--font-galmuri11), ui-monospace, monospace;
+  --font-display: var(--font-galmuri14), var(--font-galmuri11), ui-monospace,
+    monospace;
+
+  /* ── 타이포 스케일 (데스크톱 기준, 모바일은 컴포넌트에서 max-md: 오버라이드) ── */
+  --text-glyph-404: 96px;
+  --text-glyph-404--line-height: 1;
+  --text-cat-title: 46px;
+  --text-cat-title--line-height: 1.3;
+  --text-post-h1: 34px;
+  --text-post-h1--line-height: 1.65;
+  --text-hero: 30px;
+  --text-hero--line-height: 1.8;
+  --text-wordmark: 26px;
+  --text-wordmark--line-height: 1;
+  --text-post-h2: 22px;
+  --text-post-h2--line-height: 1.6;
+  --text-list-title: 21px;
+  --text-list-title--line-height: 1.6;
+  --text-index: 28px;
+  --text-index--line-height: 1;
+  --text-body-md: 14px;
+  --text-body-md--line-height: 2.15;
+  --text-sub: 13px;
+  --text-sub--line-height: 1.95;
+  --text-code-md: 13px;
+  --text-code-md--line-height: 2.1;
+  --text-meta: 11px;
+  --text-meta--line-height: 2;
+  --text-micro: 10px;
+  --text-micro--line-height: 2;
+
+  /* ── 브레이크포인트 (핸드오버 4구간: ≤767 / 768–899 / 900–1199 / ≥1200) ── */
+  --breakpoint-sm: 40rem; /* 유지(사용처 정리 대상) */
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 900px;
+  --breakpoint-xl: 1200px;
+
+  /* ── 애니메이션: blink 커서만 유틸리티로 노출 ── */
+  --animate-blink: blink 1.05s steps(1) infinite;
+}
+
+/* shadcn 브리지 — 유지되는 ui/*가 참조하는 시맨틱 유틸리티를 CRT 토큰 별칭으로 생성.
+ * 주의: shadcn의 accent(호버 배경)는 CRT accent(#5cff8c 인광)와 의미가 다르다.
+ * accent는 브리지하지 않는다 — ui/*에서 bg-bg-hover 등으로 명시 교체 (설계 §2.1). */
+@theme inline {
+  --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-background: var(--background); /* slate-50 정도 */ --radius-sm: calc(var(--radius) - 4px); --radius-md: calc(var(--radius) - 2px); --radius-lg: var(--radius); --radius-xl: calc(var(--radius) + 4px);
-}
-
-@custom-variant dark (&:where(.dark, .dark *));
-
-html {
-  scrollbar-gutter: stable;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
-    'Pretendard Variable', Pretendard, Roboto, 'Noto Sans KR', 'Segoe UI',
-    'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-    sans-serif;
-}
-
-html.dark {
-  color: #ffffff;
-}
-
-body {
-  /* font-family: Pretendard; */
-  overflow-x: hidden;
-
-  @apply bg-[var(--color-bg-light)] text-[var(--color-text-light)] transition-colors duration-300;
-}
-
-.dark body {
-  @apply bg-[var(--color-bg-dark)] text-[var(--color-text-dark)];
-}
-
-/* global.css - 기존 line-numbers 관련 CSS 전부 삭제하고 이것만 사용 */
-
-pre {
-  position: relative;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  overflow-x: auto;
-  background: #1e293b;
-  counter-reset: line;
-}
-
-pre code {
-  display: block;
-}
-
-/* line-number 클래스가 있는 span에 번호 추가 */
-span.line-number {
-  counter-increment: line;
-  display: block;
-  position: relative;
-  padding-left: 3.5rem;
-}
-
-span.line-number::before {
-  content: counter(line);
-  position: absolute;
-  left: 0;
-  width: 2.5rem;
-  text-align: right;
-  color: #64748b;
-  user-select: none;
-  padding-right: 1rem;
-  border-right: 1px solid #334155;
-}
-
-/* 다크모드 */
-.dark pre {
-  background: #0f172a;
-}
-
-.dark span.line-number::before {
-  color: #475569;
-  border-right-color: #1e293b;
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-}
-
-.dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
+  --radius: 0px;
+  --background: var(--color-bg);
+  --foreground: var(--color-text-body);
+  --popover: var(--color-bg-field);
+  --popover-foreground: var(--color-text-body);
+  --primary: var(--color-text-faint); /* SUBMIT류 채움 버튼 배경 */
+  --primary-foreground: var(--color-bg);
+  --secondary: var(--color-bg-raised);
+  --secondary-foreground: var(--color-text-body);
+  --muted: var(--color-bg-raised);
+  --muted-foreground: var(--color-text-dim);
+  --destructive: var(--color-error);
+  --border: var(--color-rule);
+  --input: var(--color-rule-inner);
+  --ring: var(--color-accent);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: var(--border);
+    text-shadow: none;
   }
+
+  html {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg);
+    color: var(--color-text-body);
+    letter-spacing: 0;
+    scrollbar-gutter: stable;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    overflow-x: hidden;
+  }
+
+  /* 픽셀 폰트 합성 볼드 전면 차단 — 강조는 색(text-strong)으로만 */
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    font-weight: 400;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    text-wrap: pretty;
+  }
+
+  /* 포커스 링 톤 통일 — 브라우저 기본 파란 링 대체 (QA-L3). 가시성 유지 */
+  :focus-visible {
+    outline: 1px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+/* ── 키프레임 (핸드오버 값 그대로) ── */
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes nz {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-2%, 1%);
+  }
+  50% {
+    transform: translate(1%, -2%);
+  }
+  75% {
+    transform: translate(-1%, -1%);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* ── CRT 3레이어 (U2) — 강도는 핸드오버 수치 고정, 더 세게 금지 ── */
+@layer components {
+  .crt-scanlines {
+    background: repeating-linear-gradient(
+      rgba(0, 0, 0, 0.14) 0 1px,
+      rgba(0, 0, 0, 0) 1px 3px
+    );
+  }
+
+  .crt-noise {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22160%22><filter id=%22n%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22/></filter><rect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22/></svg>');
+    opacity: 0.022;
+    animation: nz 1.3s steps(3) infinite;
+    will-change: transform; /* transform 전용 애니메이션 — 컴포짓 한정 (R5) */
+  }
+
+  .crt-vignette {
+    background: radial-gradient(
+      ellipse 92% 90% at 50% 50%,
+      rgba(0, 0, 0, 0) 68%,
+      rgba(0, 0, 0, 0.18) 94%,
+      rgba(0, 0, 0, 0.34) 100%
+    );
+  }
+
+  [data-crt='off'] .crt-layer {
+    display: none;
+  }
+
+  /* ── 코드블록 줄번호 (U9 소비, globals 몫 선반영 — 설계 §6.3) ── */
+  figure[data-rehype-pretty-code-figure] code {
+    counter-reset: line;
+  }
+
+  figure[data-rehype-pretty-code-figure] [data-line]::before {
+    counter-increment: line;
+    content: counter(line);
+    display: inline-block;
+    width: 34px;
+    margin-right: 16px;
+    text-align: right;
+    padding-right: 8px;
+    color: var(--color-text-faint);
+    border-right: 1px solid var(--color-rule-inner);
+  }
+
+  @media (max-width: 767px) {
+    figure[data-rehype-pretty-code-figure] [data-line]::before {
+      display: none;
+    }
+  }
+
+  /* ── 상세 본문 요소 (U9 소비, globals 몫 선반영 — 설계 §7.5, 값은 핸드오버) ── */
+  .post-body {
+    font-size: 14px;
+    line-height: 2.15;
+    color: var(--color-text-body);
+  }
+
+  .post-body p {
+    margin: 24px 0;
+  }
+
+  .post-body h2 {
+    font-size: 22px;
+    line-height: 1.6;
+    color: var(--color-text-strong);
+    border-left: 3px solid var(--color-accent);
+    padding-left: 14px;
+    margin: 48px 0 20px;
+  }
+
+  /* h3 — h2(22px+accent 바) 축소형: 18px, 바 없음(위계 구분), text-strong.
+     핸드오버 미명세라 h2와 본문(14px) 사이 자연 스텝으로 선택 (리뷰 H-1) */
+  .post-body h3 {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--color-text-strong);
+    margin: 40px 0 16px;
+  }
+
+  .post-body :not(pre) > code {
+    background: var(--color-code-inline-bg);
+    color: var(--color-code-token);
+    padding: 2px 6px;
+    font-size: 13px;
+  }
+
+  .post-body ul,
+  .post-body ol {
+    padding-left: 22px;
+    margin: 24px 0;
+  }
+
+  .post-body ul {
+    list-style: disc;
+  }
+
+  .post-body ol {
+    list-style: decimal;
+  }
+
+  .post-body strong,
+  .post-body b {
+    color: var(--color-text-strong);
+  }
+
+  .post-body a {
+    color: var(--color-text-muted);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* GFM 테이블 — 핸드오버 톤(1px rule 보더, bg-raised 헤더, radius 0).
+     넓은 표는 자체 가로 스크롤 (display:block + overflow-x) */
+  .post-body table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 13px;
+    line-height: 1.9;
+  }
+
+  .post-body th,
+  .post-body td {
+    border: 1px solid var(--color-rule-weak);
+    padding: 8px 14px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .post-body td {
+    white-space: normal;
+    min-width: 80px;
+  }
+
+  .post-body thead th {
+    background: var(--color-bg-raised);
+    color: var(--color-text-strong);
+  }
+
+  @media (max-width: 767px) {
+    .post-body {
+      font-size: 13px;
+      line-height: 2.1;
+    }
+
+    .post-body h2 {
+      font-size: 16px;
+      padding-left: 12px;
+    }
+
+    .post-body h3 {
+      font-size: 15px;
+    }
+  }
+}
+
+/* 모바일 탭 가로 스크롤용 스크롤바 숨김 (U5 소비) */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* reduced-motion: 노이즈·blink 정지 (레이어 자체는 유지) */
+@media (prefers-reduced-motion: reduce) {
+  .animate-blink,
+  .crt-noise {
+    animation: none;
   }
 }

@@ -1,47 +1,39 @@
 import { ReactNode } from 'react';
+import { cn } from '@/lib/utils/cn';
 
-const variants = {
-  info: {
-    border: 'border-blue-500',
-    bg: 'bg-blue-50 dark:bg-blue-950/30',
-    icon: 'ℹ️',
-  },
-  warning: {
-    border: 'border-yellow-500',
-    bg: 'bg-yellow-50 dark:bg-yellow-950/30',
-    icon: '⚠️',
-  },
-  tip: {
-    border: 'border-green-500',
-    bg: 'bg-green-50 dark:bg-green-950/30',
-    icon: '💡',
-  },
-  danger: {
-    border: 'border-red-500',
-    bg: 'bg-red-50 dark:bg-red-950/30',
-    icon: '🚨',
-  },
+// 기존 콘텐츠 호환을 위해 타입 4종 유지, 라벨만 `! {LABEL}` 패턴으로 매핑 (설계 §7.5)
+const LABELS = {
+  info: '! NOTE',
+  tip: '! TIP',
+  warning: '! WARN',
+  danger: '! ERROR',
 } as const;
 
 interface CalloutProps {
-  type?: keyof typeof variants;
+  type?: keyof typeof LABELS;
   title?: string;
   children: ReactNode;
 }
 
+/**
+ * NOTE 콜아웃 (핸드오버 §2): 1px accent 테두리 + bg-hover, 라벨 11px accent,
+ * 본문 13px/2.05 text-body. danger만 error 색 계열.
+ */
 export function Callout({ type = 'info', title, children }: CalloutProps) {
-  const variant = variants[type];
+  const isDanger = type === 'danger';
 
   return (
-    <div
-      className={`my-24 border-l-4 ${variant.border} ${variant.bg} rounded-r-lg p-16`}
-    >
-      {title && (
-        <p className="font-bold mb-8">
-          {variant.icon} {title}
-        </p>
+    <aside
+      className={cn(
+        'my-30 border bg-bg-hover p-[18px_20px]',
+        isDanger ? 'border-error' : 'border-accent'
       )}
-      <div className="text-sm leading-relaxed">{children}</div>
-    </div>
+    >
+      <p className={cn('mb-10 text-[11px]', isDanger ? 'text-error' : 'text-accent')}>
+        {LABELS[type]}
+        {title ? ` — ${title}` : ''}
+      </p>
+      <div className="text-[13px] leading-[2.05] text-text-body">{children}</div>
+    </aside>
   );
 }

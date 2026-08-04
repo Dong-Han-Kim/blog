@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 
 import { CommentForm } from './CommentForm';
 import { CommentList } from './CommentList';
+import { DottedRule } from '@/components/terminal/DottedRule';
 import { useCommentRealtime } from '@/hooks/useCommentRealtime';
 import {
   buildCommentTree,
@@ -27,6 +28,8 @@ export function CommentSection({ postSlug, initialComments }: CommentSectionProp
     commentId: string;
     password: string;
   } | null>(null);
+  // 접힌 스레드(루트 댓글 id) — 기본 빈 집합 = 전부 펼침 (핸드오버 State Management)
+  const [collapsedThreads, setCollapsedThreads] = useState<Set<string>>(new Set());
 
   const handleInsert = useCallback((comment: Comment) => {
     setCommentTree((prev) => addCommentToTree(prev, comment));
@@ -67,23 +70,38 @@ export function CommentSection({ postSlug, initialComments }: CommentSectionProp
     setEditingState(null);
   };
 
+  const handleToggleThread = useCallback((commentId: string) => {
+    setCollapsedThreads((prev) => {
+      const next = new Set(prev);
+      if (next.has(commentId)) next.delete(commentId);
+      else next.add(commentId);
+      return next;
+    });
+  }, []);
+
   const commentCount = countComments(commentTree);
 
   return (
-    <section className="mt-48 pt-32 border-t border-gray-200 dark:border-gray-700">
-      <h2 className="text-xl font-bold mb-20">댓글 {commentCount > 0 && `(${commentCount})`}</h2>
+    <section className="mt-64">
+      <DottedRule
+        left={`COMMENTS (${commentCount})`}
+        right={<span className="text-text-faint">OLDEST ↑</span>}
+      />
 
-      <CommentForm postSlug={postSlug} />
+      <CommentList
+        comments={commentTree}
+        postSlug={postSlug}
+        editingCommentId={editingState?.commentId ?? null}
+        editingPassword={editingState?.password ?? null}
+        onStartEditing={handleStartEditing}
+        onStopEditing={handleStopEditing}
+        collapsedThreads={collapsedThreads}
+        onToggleThread={handleToggleThread}
+      />
 
-      <div className="mt-32">
-        <CommentList
-          comments={commentTree}
-          postSlug={postSlug}
-          editingCommentId={editingState?.commentId ?? null}
-          editingPassword={editingState?.password ?? null}
-          onStartEditing={handleStartEditing}
-          onStopEditing={handleStopEditing}
-        />
+      {/* 핸드오버 구조: 목록 → NEW COMMENT 폼 (설계 §7.6) */}
+      <div className="mt-40">
+        <CommentForm postSlug={postSlug} />
       </div>
     </section>
   );

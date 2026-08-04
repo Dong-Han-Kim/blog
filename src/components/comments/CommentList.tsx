@@ -10,6 +10,9 @@ interface CommentListProps {
   editingPassword: string | null;
   onStartEditing: (commentId: string, password: string) => void;
   onStopEditing: () => void;
+  /** 접힌 루트 스레드 id 집합 (설계 §7.6) */
+  collapsedThreads: Set<string>;
+  onToggleThread: (commentId: string) => void;
 }
 
 export function CommentList({
@@ -19,11 +22,13 @@ export function CommentList({
   editingPassword,
   onStartEditing,
   onStopEditing,
+  collapsedThreads,
+  onToggleThread,
 }: CommentListProps) {
   if (comments.length === 0) {
     return (
-      <div className="text-center py-40">
-        <p className="text-gray-400 text-sm">
+      <div className="mt-20 border-y border-rule py-52 text-center">
+        <p className="text-[12px] text-text-dim">
           아직 댓글이 없어요. 첫 번째 댓글을 남겨주세요!
         </p>
       </div>
@@ -31,7 +36,7 @@ export function CommentList({
   }
 
   return (
-    <div>
+    <div className="mt-20">
       {comments.map((comment) => (
         <CommentItem
           key={comment.id}
@@ -41,8 +46,12 @@ export function CommentList({
           editingPassword={editingCommentId === comment.id ? editingPassword : null}
           onStartEditing={onStartEditing}
           onStopEditing={onStopEditing}
+          collapsed={collapsedThreads.has(comment.id)}
+          onToggleThread={onToggleThread}
         />
       ))}
+      {/* 마지막 댓글 아래 닫는 룰 (핸드오버 §2 댓글) */}
+      <div aria-hidden className="border-t border-rule" />
     </div>
   );
 }

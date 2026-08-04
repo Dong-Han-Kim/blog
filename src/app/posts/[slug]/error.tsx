@@ -1,7 +1,9 @@
 'use client';
 
-import Link from 'next/link';
+import { PromptLine } from '@/components/terminal/PromptLine';
+import { TerminalButton } from '@/components/terminal/TerminalButton';
 
+// 상세 에러 경계 — CRT 톤 최소 적용 (설계 §7.8): 프롬프트 + error 라인 + reset 버튼
 export default function PostError({
   reset,
 }: {
@@ -9,24 +11,14 @@ export default function PostError({
   reset: () => void;
 }) {
   return (
-    <div className="w-full h-screen flex flex-col items-center justify-center gap-16">
-      <h2 className="text-2xl font-bold">페이지를 불러올 수 없어요</h2>
-      <p className="text-gray-500">
-        일시적인 오류가 발생했어요. 잠시 후 다시 시도해주세요.
+    <div className="mt-76">
+      <PromptLine command="cat posts/….md" className="text-[13px]" />
+      <p className="mt-16 text-[13px] leading-[2.2] text-error">
+        error: 페이지를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.
       </p>
-      <div className="flex gap-12">
-        <button
-          onClick={reset}
-          className="px-16 py-8 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-        >
-          다시 시도
-        </button>
-        <Link
-          href="/"
-          className="px-16 py-8 border border-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-        >
-          홈으로 돌아가기
-        </Link>
+      <div className="mt-30 flex flex-wrap gap-12">
+        <TerminalButton onClick={reset}>$ retry — 다시 시도</TerminalButton>
+        <TerminalButton href="/">$ cd ~ — 홈으로</TerminalButton>
       </div>
     </div>
   );

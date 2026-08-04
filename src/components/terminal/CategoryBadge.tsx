@@ -1,0 +1,29 @@
+import Link from 'next/link';
+import { cn } from '@/lib/utils/cn';
+
+interface CategoryBadgeProps {
+  category: string;
+  href?: string;
+  className?: string;
+}
+
+/**
+ * 역상 카테고리 배지 (설계 §5): 배경 text-faint + 글자 bg, 11px, padding 3px 8px.
+ * href가 있으면 링크 + 호버 시 배경 accent (핸드오버 역상 호버 규칙).
+ */
+export function CategoryBadge({ category, href, className }: CategoryBadgeProps) {
+  const badgeClass = cn(
+    'inline-block bg-text-faint px-8 py-3 text-meta leading-none text-bg',
+    className
+  );
+
+  if (href) {
+    return (
+      <Link href={href} className={cn(badgeClass, 'hover:bg-accent')}>
+        {category}
+      </Link>
+    );
+  }
+
+  return <span className={badgeClass}>{category}</span>;
+}

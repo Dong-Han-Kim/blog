@@ -1,34 +1,18 @@
-import { Skeleton } from '@/components/ui/skeleton';
+import { BlinkCursor } from '@/components/terminal/BlinkCursor';
+import { PromptLine } from '@/components/terminal/PromptLine';
 
+/**
+ * 상세 로딩 (설계 §7.9): loading에서는 slug 취득이 불가하므로 `cat posts/` 고정
+ * 프리픽스 + `…`. 진행 바·ASCII 게이지는 실제 크기 미상이라 미구현 (핸드오버 허용).
+ */
 export default function PostLoading() {
   return (
-    <div className="w-full px-10 md:px-20 lg:px-50" aria-label="로딩 중">
-      <div className="flex justify-center">
-        <article className="w-full max-w-[800px]">
-          <header className="mb-32">
-            <div className="flex items-center gap-8 mb-12">
-              <Skeleton className="h-16 w-60" />
-              <Skeleton className="h-16 w-80" />
-            </div>
-            <Skeleton className="h-40 w-full mb-16" />
-            <Skeleton className="h-20 w-2/3 mb-16" />
-            <div className="flex gap-6 mt-16">
-              <Skeleton className="h-24 w-50 rounded-full" />
-              <Skeleton className="h-24 w-60 rounded-full" />
-              <Skeleton className="h-24 w-45 rounded-full" />
-            </div>
-          </header>
-          <div className="space-y-16">
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-5/6" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-160 w-full" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-4/5" />
-          </div>
-        </article>
-      </div>
+    <div aria-label="로딩 중" className="mt-40 text-[13px] leading-[2.3]">
+      <PromptLine command="cat posts/….md" className="text-[13px] leading-[2.3]" />
+      <p className="flex items-center gap-8 text-text-dim">
+        loading ...
+        <BlinkCursor />
+      </p>
     </div>
   );
 }
