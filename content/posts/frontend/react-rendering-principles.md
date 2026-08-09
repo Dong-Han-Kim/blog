@@ -8,6 +8,8 @@ description: 'React가 UI를 어떻게 효율적으로 업데이트하는지, �
 
 # 💬 옵션 필드
 draft: false
+series: 'React 렌더링 Deep Dive'
+seriesOrder: 1
 
 # 📚 SEO용
 keywords: ['React', 'Virtual DOM', 'Reconciliation', 'Rendering', 'Fiber', 'key']
