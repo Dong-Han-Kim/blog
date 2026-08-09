@@ -10,18 +10,38 @@ export function buildCommentTree(comments: Comment[]): CommentWithChildren[] {
     map.set(comment.id, { ...comment, children: [], depth: 0 });
   }
 
+  // 1단계: 링크만 수행 — depth는 전체 연결이 끝난 뒤 계산해야
+  // 자식이 부모보다 먼저 오는 입력에서도 결과가 같다 (입력 순서 무관)
   for (const comment of comments) {
     const node = map.get(comment.id)!;
     if (comment.parentId && map.has(comment.parentId)) {
-      const parent = map.get(comment.parentId)!;
-      node.depth = Math.min(parent.depth + 1, MAX_INDENT_DEPTH);
-      parent.children.push(node);
+      map.get(comment.parentId)!.children.push(node);
     } else {
       roots.push(node);
     }
   }
 
+  // 2단계: 루트부터 재귀로 depth 부여 (MAX_INDENT_DEPTH 캡 유지)
+  assignDepth(roots, 0);
+
   return roots;
+}
+
+function assignDepth(nodes: CommentWithChildren[], depth: number): void {
+  for (const node of nodes) {
+    node.depth = depth;
+    assignDepth(node.children, Math.min(depth + 1, MAX_INDENT_DEPTH));
+  }
+}
+
+/** 트리 전체에서 해당 id의 댓글 존재 여부 — 로컬 삽입과 Realtime INSERT 중복 방지용 */
+export function commentExistsInTree(
+  roots: CommentWithChildren[],
+  commentId: string,
+): boolean {
+  return roots.some(
+    (root) => root.id === commentId || commentExistsInTree(root.children, commentId),
+  );
 }
 
 export function addCommentToTree(

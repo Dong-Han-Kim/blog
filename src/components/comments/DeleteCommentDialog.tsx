@@ -18,10 +18,12 @@ import { deleteComment } from '@/actions/comment';
 
 interface DeleteCommentDialogProps {
   commentId: string;
+  /** 삭제 성공 시 호출 — Realtime 없이도 트리에서 즉시 제거 */
+  onDeleted?: () => void;
   children: React.ReactNode;
 }
 
-export function DeleteCommentDialog({ commentId, children }: DeleteCommentDialogProps) {
+export function DeleteCommentDialog({ commentId, onDeleted, children }: DeleteCommentDialogProps) {
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -37,6 +39,7 @@ export function DeleteCommentDialog({ commentId, children }: DeleteCommentDialog
       setOpen(false);
       setPassword('');
       toast.success('댓글이 삭제되었어요.');
+      onDeleted?.();
     } else {
       setError(result.error ?? '일시적인 오류가 발생했어요.');
     }

@@ -1,6 +1,6 @@
 'use client';
 
-import type { CommentWithChildren } from '@/types/comment';
+import type { Comment, CommentWithChildren } from '@/types/comment';
 import { CommentItem } from './CommentItem';
 
 interface CommentListProps {
@@ -10,6 +10,12 @@ interface CommentListProps {
   editingPassword: string | null;
   onStartEditing: (commentId: string, password: string) => void;
   onStopEditing: () => void;
+  /** 답글 작성 성공 시 트리 즉시 삽입 (Realtime 미의존) */
+  onCommentCreated: (comment: Comment) => void;
+  /** 수정 성공 시 트리 즉시 반영 */
+  onCommentUpdated: (comment: Comment) => void;
+  /** 삭제 성공 시 트리에서 즉시 제거 */
+  onCommentDeleted: (commentId: string) => void;
   /** 접힌 루트 스레드 id 집합 (설계 §7.6) */
   collapsedThreads: Set<string>;
   onToggleThread: (commentId: string) => void;
@@ -22,6 +28,9 @@ export function CommentList({
   editingPassword,
   onStartEditing,
   onStopEditing,
+  onCommentCreated,
+  onCommentUpdated,
+  onCommentDeleted,
   collapsedThreads,
   onToggleThread,
 }: CommentListProps) {
@@ -46,6 +55,9 @@ export function CommentList({
           editingPassword={editingCommentId === comment.id ? editingPassword : null}
           onStartEditing={onStartEditing}
           onStopEditing={onStopEditing}
+          onCommentCreated={onCommentCreated}
+          onCommentUpdated={onCommentUpdated}
+          onCommentDeleted={onCommentDeleted}
           collapsed={collapsedThreads.has(comment.id)}
           onToggleThread={onToggleThread}
         />

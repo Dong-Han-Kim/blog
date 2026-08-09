@@ -16,7 +16,7 @@ import { updateComment } from '@/actions/comment';
 import { formatCommentTime } from '@/lib/comments/format';
 import { SITE_OWNER_NAME } from '@/constants/site';
 import { cn } from '@/lib/utils/cn';
-import type { CommentWithChildren } from '@/types/comment';
+import type { Comment, CommentWithChildren } from '@/types/comment';
 
 const editContentSchema = z.object({
   content: z
@@ -32,6 +32,12 @@ interface CommentItemProps {
   editingPassword: string | null;
   onStartEditing: (commentId: string, password: string) => void;
   onStopEditing: () => void;
+  /** 답글 작성 성공 시 트리 즉시 삽입 (Realtime 미의존) */
+  onCommentCreated: (comment: Comment) => void;
+  /** 수정 성공 시 트리 즉시 반영 */
+  onCommentUpdated: (comment: Comment) => void;
+  /** 삭제 성공 시 트리에서 즉시 제거 */
+  onCommentDeleted: (commentId: string) => void;
   /** 루트 댓글 전용 — 접힌 스레드 여부 (설계 §7.6) */
   collapsed?: boolean;
   /** 루트 댓글 전용 — 스레드 토글 핸들러 */
@@ -50,6 +56,9 @@ export function CommentItem({
   editingPassword,
   onStartEditing,
   onStopEditing,
+  onCommentCreated,
+  onCommentUpdated,
+  onCommentDeleted,
   collapsed = false,
   onToggleThread,
 }: CommentItemProps) {
@@ -75,20 +84,30 @@ export function CommentItem({
     if (!editingPassword) return;
     setIsSubmittingEdit(true);
 
-    const result = await updateComment({
-      commentId: comment.id,
-      password: editingPassword,
-      content: data.content,
-    });
+    // 서버 액션이 throw하는 실패(네트워크/500)도 토스트로 수렴하고,
+    // 어떤 경로든 전송 중 상태를 반드시 해제한다 (CommentForm의 catch 패턴)
+    try {
+      const result = await updateComment({
+        commentId: comment.id,
+        password: editingPassword,
+        content: data.content,
+      });
 
-    if (result.success) {
-      onStopEditing();
-      toast.success('댓글이 수정되었어요.');
-    } else {
-      toast.error(result.error ?? '일시적인 오류가 발생했어요.');
+      if (result.success) {
+        onStopEditing();
+        // 서버가 돌려준 갱신 결과를 즉시 트리에 반영 (Realtime 미의존)
+        if (result.comment) {
+          onCommentUpdated(result.comment);
+        }
+        toast.success('댓글이 수정되었어요.');
+      } else {
+        toast.error(result.error ?? '일시적인 오류가 발생했어요.');
+      }
+    } catch {
+      toast.error('요청이 실패했어요. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setIsSubmittingEdit(false);
     }
-
-    setIsSubmittingEdit(false);
   };
 
   const handleCancelEdit = () => {
@@ -144,7 +163,10 @@ export function CommentItem({
                     수정
                   </button>
                 </EditCommentDialog>
-                <DeleteCommentDialog commentId={comment.id}>
+                <DeleteCommentDialog
+                  commentId={comment.id}
+                  onDeleted={() => onCommentDeleted(comment.id)}
+                >
                   <button type="button" className="hover:text-error">
                     삭제
                   </button>
@@ -194,7 +216,10 @@ export function CommentItem({
                 postSlug={postSlug}
                 parentId={comment.id}
                 onCancel={() => setShowReplyForm(false)}
-                onSuccess={() => setShowReplyForm(false)}
+                onSuccess={(created) => {
+                  onCommentCreated(created);
+                  setShowReplyForm(false);
+                }}
               />
             </div>
           )}
@@ -212,6 +237,9 @@ export function CommentItem({
             editingPassword={editingCommentId === child.id ? editingPassword : null}
             onStartEditing={onStartEditing}
             onStopEditing={onStopEditing}
+            onCommentCreated={onCommentCreated}
+            onCommentUpdated={onCommentUpdated}
+            onCommentDeleted={onCommentDeleted}
           />
         ))}
     </div>

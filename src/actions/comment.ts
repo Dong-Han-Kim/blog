@@ -17,6 +17,50 @@ interface ActionResult {
   error?: string;
 }
 
+// 뮤테이션 성공 시 생성/수정된 댓글을 함께 반환 — 클라이언트가 Realtime 없이도
+// 즉시 트리에 반영할 수 있게 한다 (허니팟 성공 위장 시에는 comment 없음)
+interface CommentActionResult extends ActionResult {
+  comment?: Comment;
+}
+
+// .returning() 공용 컬럼 셋 — passwordHash는 클라이언트로 절대 내보내지 않는다
+const commentColumns = {
+  id: comments.id,
+  postSlug: comments.postSlug,
+  authorName: comments.authorName,
+  content: comments.content,
+  parentId: comments.parentId,
+  createdAt: comments.createdAt,
+  updatedAt: comments.updatedAt,
+};
+
+// Postgres FK 위반(23503) 판별 — postgres-js 에러 객체의 code 프로퍼티 기준
+function isForeignKeyViolation(err: unknown): boolean {
+  return (
+    typeof err === 'object' &&
+    err !== null &&
+    'code' in err &&
+    (err as { code?: unknown }).code === '23503'
+  );
+}
+
+function serializeComment(row: {
+  id: string;
+  postSlug: string;
+  authorName: string;
+  content: string;
+  parentId: string | null;
+  createdAt: Date;
+  updatedAt: Date | null;
+}): Comment {
+  return {
+    ...row,
+    parentId: row.parentId ?? null,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt?.toISOString() ?? null,
+  };
+}
+
 export async function getCommentsByPostSlug(postSlug: string): Promise<Comment[]> {
   const rows = await db
     .select({
@@ -32,12 +76,7 @@ export async function getCommentsByPostSlug(postSlug: string): Promise<Comment[]
     .where(eq(comments.postSlug, postSlug))
     .orderBy(asc(comments.createdAt));
 
-  return rows.map((c) => ({
-    ...c,
-    parentId: c.parentId ?? null,
-    createdAt: c.createdAt.toISOString(),
-    updatedAt: c.updatedAt?.toISOString() ?? null,
-  }));
+  return rows.map(serializeComment);
 }
 
 export async function createComment(formData: {
@@ -47,7 +86,7 @@ export async function createComment(formData: {
   parentId?: string;
   honeypot?: string;
   postSlug: string;
-}): Promise<ActionResult> {
+}): Promise<CommentActionResult> {
   // 1. 허니팟 체크 — 봇에게는 성공한 척
   if (isHoneypotFilled(formData.honeypot)) {
     return { success: true };
@@ -85,22 +124,33 @@ export async function createComment(formData: {
   // 5. 비밀번호 해싱 + DB 저장
   const passwordHash = await bcrypt.hash(parsed.data.password, 10);
 
-  await db.insert(comments).values({
-    postSlug: formData.postSlug,
-    authorName: parsed.data.authorName,
-    passwordHash,
-    content: parsed.data.content,
-    parentId: parsed.data.parentId ?? null,
-  });
+  try {
+    const [created] = await db
+      .insert(comments)
+      .values({
+        postSlug: formData.postSlug,
+        authorName: parsed.data.authorName,
+        passwordHash,
+        content: parsed.data.content,
+        parentId: parsed.data.parentId ?? null,
+      })
+      .returning(commentColumns);
 
-  return { success: true };
+    return { success: true, comment: serializeComment(created) };
+  } catch (err) {
+    // 답글 작성 도중 부모 댓글이 삭제된 레이스 — FK 위반을 사용자 메시지로 매핑
+    if (isForeignKeyViolation(err)) {
+      return { success: false, error: '원 댓글이 삭제되어 답글을 남길 수 없어요.' };
+    }
+    throw err;
+  }
 }
 
 export async function updateComment(formData: {
   commentId: string;
   password: string;
   content: string;
-}): Promise<ActionResult> {
+}): Promise<CommentActionResult> {
   // 1. Zod 검증
   const parsed = updateCommentSchema.safeParse(formData);
   if (!parsed.success) {
@@ -129,16 +179,22 @@ export async function updateComment(formData: {
     return { success: false, error: '비밀번호가 일치하지 않아요. 다시 확인해주세요.' };
   }
 
-  // 4. 업데이트
-  await db
+  // 4. 업데이트 — 갱신된 content/updatedAt을 반환해 클라이언트가 즉시 반영
+  const [updated] = await db
     .update(comments)
     .set({
       content: parsed.data.content,
       updatedAt: new Date(),
     })
-    .where(eq(comments.id, parsed.data.commentId));
+    .where(eq(comments.id, parsed.data.commentId))
+    .returning(commentColumns);
 
-  return { success: true };
+  // 비밀번호 검증과 업데이트 사이에 부모 CASCADE 삭제 등으로 대상이 사라진 레이스
+  if (!updated) {
+    return { success: false, error: '댓글을 찾을 수 없어요.' };
+  }
+
+  return { success: true, comment: serializeComment(updated) };
 }
 
 export async function deleteComment(formData: {

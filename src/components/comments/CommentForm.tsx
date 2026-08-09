@@ -8,6 +8,7 @@ import { BlinkCursor } from '@/components/terminal/BlinkCursor';
 import { cn } from '@/lib/utils/cn';
 import { commentFormSchema, type CommentFormData } from '@/lib/validations/comment';
 import { createComment } from '@/actions/comment';
+import type { Comment } from '@/types/comment';
 
 const CONTENT_MAX = 1000; // 서버 규칙 우선 (설계 D11 — 핸드오버 500자 대신 1000자)
 const CONTENT_WARN = 800; // 카운터 accent 전환 지점 (핸드오버 400/500 비율 적용)
@@ -16,7 +17,8 @@ interface CommentFormProps {
   postSlug: string;
   parentId?: string;
   onCancel?: () => void;
-  onSuccess?: () => void;
+  /** 성공 시 생성된 댓글 전달 — 허니팟 성공 위장에는 댓글이 없으므로 호출 생략 */
+  onSuccess?: (comment: Comment) => void;
 }
 
 /**
@@ -64,7 +66,11 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
       if (result.success) {
         setFailure(null);
         reset();
-        onSuccess?.();
+        // Realtime 없이도 즉시 화면 반영 — 허니팟 성공 위장(comment 없음)은
+        // 콜백을 생략해 봇에게 성공한 척을 유지한다
+        if (result.comment) {
+          onSuccess?.(result.comment);
+        }
       } else {
         setFailure(result.error ?? '일시적인 오류가 발생했어요. 잠시 후 다시 시도해주세요.');
       }

@@ -1,4 +1,12 @@
-import { pgTable, uuid, text, varchar, timestamp, index } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  uuid,
+  text,
+  varchar,
+  timestamp,
+  index,
+  type AnyPgColumn,
+} from 'drizzle-orm/pg-core';
 
 export const comments = pgTable(
   'comments',
@@ -8,7 +16,10 @@ export const comments = pgTable(
     authorName: varchar('author_name', { length: 50 }).notNull(),
     passwordHash: text('password_hash').notNull(),
     content: text('content').notNull(),
-    parentId: uuid('parent_id'),
+    // self-FK — 부모 댓글 삭제 시 대댓글도 함께 삭제 (고아 레코드 방지)
+    parentId: uuid('parent_id').references((): AnyPgColumn => comments.id, {
+      onDelete: 'cascade',
+    }),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true }),
   },

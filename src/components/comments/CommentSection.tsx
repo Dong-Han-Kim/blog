@@ -9,6 +9,7 @@ import { useCommentRealtime } from '@/hooks/useCommentRealtime';
 import {
   buildCommentTree,
   addCommentToTree,
+  commentExistsInTree,
   removeCommentFromTree,
   updateCommentInTree,
 } from '@/lib/comments/tree';
@@ -31,8 +32,12 @@ export function CommentSection({ postSlug, initialComments }: CommentSectionProp
   // 접힌 스레드(루트 댓글 id) — 기본 빈 집합 = 전부 펼침 (핸드오버 State Management)
   const [collapsedThreads, setCollapsedThreads] = useState<Set<string>>(new Set());
 
+  // 로컬 삽입(뮤테이션 성공 콜백)과 Realtime INSERT가 같은 댓글로 두 번 들어와도
+  // id 존재 가드로 한 번만 반영된다
   const handleInsert = useCallback((comment: Comment) => {
-    setCommentTree((prev) => addCommentToTree(prev, comment));
+    setCommentTree((prev) =>
+      commentExistsInTree(prev, comment.id) ? prev : addCommentToTree(prev, comment),
+    );
   }, []);
 
   const handleUpdate = useCallback((comment: Comment) => {
@@ -41,8 +46,12 @@ export function CommentSection({ postSlug, initialComments }: CommentSectionProp
     );
   }, []);
 
+  // DELETE 구독은 무필터라 타 게시글 삭제 이벤트도 들어온다 — 트리에 있는 id만
+  // 반영해 무관한 이벤트로 인한 전체 리렌더를 피한다
   const handleDelete = useCallback((commentId: string) => {
-    setCommentTree((prev) => removeCommentFromTree(prev, commentId));
+    setCommentTree((prev) =>
+      commentExistsInTree(prev, commentId) ? removeCommentFromTree(prev, commentId) : prev,
+    );
   }, []);
 
   const handleReconnect = useCallback(async () => {
@@ -95,13 +104,16 @@ export function CommentSection({ postSlug, initialComments }: CommentSectionProp
         editingPassword={editingState?.password ?? null}
         onStartEditing={handleStartEditing}
         onStopEditing={handleStopEditing}
+        onCommentCreated={handleInsert}
+        onCommentUpdated={handleUpdate}
+        onCommentDeleted={handleDelete}
         collapsedThreads={collapsedThreads}
         onToggleThread={handleToggleThread}
       />
 
       {/* 핸드오버 구조: 목록 → NEW COMMENT 폼 (설계 §7.6) */}
       <div className="mt-40">
-        <CommentForm postSlug={postSlug} />
+        <CommentForm postSlug={postSlug} onSuccess={handleInsert} />
       </div>
     </section>
   );

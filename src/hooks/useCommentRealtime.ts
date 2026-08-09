@@ -55,10 +55,12 @@ export function useCommentRealtime({
       .on(
         'postgres_changes',
         {
+          // DELETE 페이로드의 old에는 replica identity 기본값상 PK(id)만 담기므로
+          // post_slug 필터를 걸면 이벤트가 절대 발화하지 않는다 — 필터 없이 구독하고
+          // 트리에 없는 id는 removeCommentFromTree가 no-op으로 흘려보낸다
           event: 'DELETE',
           schema: 'public',
           table: 'comments',
-          filter: `post_slug=eq.${postSlug}`,
         },
         (payload) => {
           const deletedId = (payload.old as { id: string }).id;
