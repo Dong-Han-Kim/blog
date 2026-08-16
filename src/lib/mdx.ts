@@ -168,12 +168,21 @@ export function sortSeriesPosts(posts: PostMeta[]): PostMeta[] {
   });
 }
 
-/** 시리즈명이 일치(trim 후 완전 일치)하는 비-draft 포스트를 정렬해 반환 */
-export function getPostsBySeries(seriesName: string): PostMeta[] {
+/**
+ * 이미 로드된 전체 포스트에서 시리즈 편 목록을 도출한다.
+ * getSeriesForPost가 getAllPosts() 1회 결과를 재사용하기 위한 내부 정본 —
+ * 필터(draft 제외, trim 후 완전 일치)와 정렬(sortSeriesPosts) 규칙은 여기 한 곳에만 둔다.
+ */
+function filterSeriesPosts(allPosts: PostMeta[], seriesName: string): PostMeta[] {
   const name = seriesName.trim();
   return sortSeriesPosts(
-    getAllPosts().filter((post) => !post.draft && post.series?.trim() === name)
+    allPosts.filter((post) => !post.draft && post.series?.trim() === name)
   );
+}
+
+/** 시리즈명이 일치(trim 후 완전 일치)하는 비-draft 포스트를 정렬해 반환 */
+export function getPostsBySeries(seriesName: string): PostMeta[] {
+  return filterSeriesPosts(getAllPosts(), seriesName);
 }
 
 /**
@@ -182,7 +191,8 @@ export function getPostsBySeries(seriesName: string): PostMeta[] {
  * 자체 try/catch를 두지 않는다 (동일 진입점 이중 래핑 시 redirect 중복 위험, 설계 §3.2)
  */
 export function getSeriesForPost(slug: string): SeriesInfo | null {
-  const current = getAllPosts().find((post) => post.slug === slug);
+  const allPosts = getAllPosts();
+  const current = allPosts.find((post) => post.slug === slug);
   if (!current) return null;
 
   if (!current.series) {
@@ -194,7 +204,8 @@ export function getSeriesForPost(slug: string): SeriesInfo | null {
     return null;
   }
 
-  const posts = getPostsBySeries(current.series);
+  // getAllPosts() 재호출 없이 위에서 읽은 allPosts를 재사용 (요청당 md 파싱 1회)
+  const posts = filterSeriesPosts(allPosts, current.series);
   // 시리즈 전 편이 draft면 발행 편 0 → 박스 미렌더 (설계 §6.4)
   if (posts.length === 0) return null;
 
