@@ -5,7 +5,7 @@ import { eq, asc } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 
 import { db } from '@/lib/db';
-import { comments } from '@/lib/db/schema';
+import { comments, commentSecrets } from '@/lib/db/schema';
 import { commentFormSchema, deleteCommentSchema, updateCommentSchema } from '@/lib/validations/comment';
 import { isHoneypotFilled } from '@/lib/spam/honeypot';
 import { checkRateLimit } from '@/lib/spam/rate-limit';
@@ -42,6 +42,23 @@ function isForeignKeyViolation(err: unknown): boolean {
     'code' in err &&
     (err as { code?: unknown }).code === '23503'
   );
+}
+
+// comment_secrets는 comments와 1:1 (FK cascade)이므로 secrets 단독 조회로
+// 존재 확인과 해시 획득을 동시에 처리한다
+async function verifyPassword(
+  commentId: string,
+  password: string,
+): Promise<'ok' | 'not_found' | 'wrong_password'> {
+  const [secret] = await db
+    .select({ passwordHash: commentSecrets.passwordHash })
+    .from(commentSecrets)
+    .where(eq(commentSecrets.commentId, commentId))
+    .limit(1);
+
+  if (!secret) return 'not_found';
+  const valid = await bcrypt.compare(password, secret.passwordHash);
+  return valid ? 'ok' : 'wrong_password';
 }
 
 function serializeComment(row: {
@@ -125,16 +142,26 @@ export async function createComment(formData: {
   const passwordHash = await bcrypt.hash(parsed.data.password, 10);
 
   try {
-    const [created] = await db
-      .insert(comments)
-      .values({
-        postSlug: formData.postSlug,
-        authorName: parsed.data.authorName,
+    // 댓글 본문과 해시를 원자적으로 저장 — 해시는 Realtime 브로드캐스트 대상이
+    // 아닌 comment_secrets에만 기록한다
+    const created = await db.transaction(async (tx) => {
+      const [row] = await tx
+        .insert(comments)
+        .values({
+          postSlug: formData.postSlug,
+          authorName: parsed.data.authorName,
+          content: parsed.data.content,
+          parentId: parsed.data.parentId ?? null,
+        })
+        .returning(commentColumns);
+
+      await tx.insert(commentSecrets).values({
+        commentId: row.id,
         passwordHash,
-        content: parsed.data.content,
-        parentId: parsed.data.parentId ?? null,
-      })
-      .returning(commentColumns);
+      });
+
+      return row;
+    });
 
     return { success: true, comment: serializeComment(created) };
   } catch (err) {
@@ -163,19 +190,12 @@ export async function updateComment(formData: {
     return { success: false, error: '부적절한 표현이 포함되어 있어요. 내용을 수정해주세요.' };
   }
 
-  // 3. 댓글 조회 + 비밀번호 검증
-  const [comment] = await db
-    .select()
-    .from(comments)
-    .where(eq(comments.id, parsed.data.commentId))
-    .limit(1);
-
-  if (!comment) {
+  // 3. 비밀번호 검증 (secrets 단독 조회)
+  const verified = await verifyPassword(parsed.data.commentId, parsed.data.password);
+  if (verified === 'not_found') {
     return { success: false, error: '댓글을 찾을 수 없어요.' };
   }
-
-  const isPasswordValid = await bcrypt.compare(parsed.data.password, comment.passwordHash);
-  if (!isPasswordValid) {
+  if (verified === 'wrong_password') {
     return { success: false, error: '비밀번호가 일치하지 않아요. 다시 확인해주세요.' };
   }
 
@@ -208,23 +228,16 @@ export async function deleteComment(formData: {
     return { success: false, error: firstError };
   }
 
-  // 2. 댓글 조회 + 비밀번호 검증
-  const [comment] = await db
-    .select()
-    .from(comments)
-    .where(eq(comments.id, parsed.data.commentId))
-    .limit(1);
-
-  if (!comment) {
+  // 2. 비밀번호 검증 (secrets 단독 조회)
+  const verified = await verifyPassword(parsed.data.commentId, parsed.data.password);
+  if (verified === 'not_found') {
     return { success: false, error: '댓글을 찾을 수 없어요.' };
   }
-
-  const isPasswordValid = await bcrypt.compare(parsed.data.password, comment.passwordHash);
-  if (!isPasswordValid) {
+  if (verified === 'wrong_password') {
     return { success: false, error: '비밀번호가 일치하지 않아요. 다시 확인해주세요.' };
   }
 
-  // 3. 삭제 (CASCADE로 대댓글도 삭제됨)
+  // 3. 삭제 (CASCADE로 대댓글·comment_secrets도 함께 삭제됨)
   await db.delete(comments).where(eq(comments.id, parsed.data.commentId));
 
   return { success: true };
@@ -234,18 +247,11 @@ export async function verifyCommentPassword(formData: {
   commentId: string;
   password: string;
 }): Promise<ActionResult> {
-  const [comment] = await db
-    .select()
-    .from(comments)
-    .where(eq(comments.id, formData.commentId))
-    .limit(1);
-
-  if (!comment) {
+  const verified = await verifyPassword(formData.commentId, formData.password);
+  if (verified === 'not_found') {
     return { success: false, error: '댓글을 찾을 수 없어요.' };
   }
-
-  const isPasswordValid = await bcrypt.compare(formData.password, comment.passwordHash);
-  if (!isPasswordValid) {
+  if (verified === 'wrong_password') {
     return { success: false, error: '비밀번호가 일치하지 않아요. 다시 확인해주세요.' };
   }
 

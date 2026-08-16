@@ -15,6 +15,13 @@
       "when": 1786278776327,
       "tag": "0001_flowery_christian_walker",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786868243508,
+      "tag": "0002_lumpy_whistler",
+      "breakpoints": true
     }
   ]
 }
