@@ -8,6 +8,8 @@ description: 'ES2015에서 도입된 Proxy가 해결하는 3가지 핵심 문제
 
 # 💬 옵션 필드
 draft: false
+series: 'JavaScript Proxy Deep Dive'
+seriesOrder: 1
 
 # 📚 SEO용
 keywords: ['JavaScript', 'Proxy', 'Reflect', 'Metaprogramming', 'ES2015', 'Vue 3']

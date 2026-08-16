@@ -7,10 +7,11 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import type { ComponentProps } from 'react';
 
-import { getAllPosts, getPostBySlug } from '@/lib/mdx';
+import { getAllPosts, getPostBySlug, getSeriesForPost } from '@/lib/mdx';
 import { remarkStripFirstH1 } from '@/lib/remark-strip-title';
 import { crtTheme } from '@/lib/shiki-theme';
 import { Callout, CodeBlock, ImageWithCaption } from '@/components/mdx';
+import { SeriesNav } from '@/components/posts/SeriesNav';
 import { TableOfContents } from '@/components/posts/TableOfContents';
 import { PromptLine } from '@/components/terminal/PromptLine';
 import { FooterPrompt } from '@/components/terminal/FooterPrompt';
@@ -94,6 +95,7 @@ export default async function PostPage({ params }: PageProps) {
   });
 
   const { prev, next } = getAdjacentPosts(slug);
+  const series = getSeriesForPost(slug);
 
   let initialComments: Comment[] = [];
   try {
@@ -138,6 +140,9 @@ export default async function PostPage({ params }: PageProps) {
           ))}
         </div>
       </header>
+
+      {/* 시리즈 박스 — 본문 진입 전 연재 컨텍스트, TOC 그리드 밖 (설계 §4.2) */}
+      {series && <SeriesNav series={series} className="mb-56 max-w-780" />}
 
       {/* 본문 + 목차 그리드 (900–1199에서 목차 180px, max-lg에서 접힘 바가 본문 위) */}
       <div className="lg:grid lg:grid-cols-[1fr_216px] lg:items-start lg:gap-56 lg:max-xl:grid-cols-[1fr_180px]">

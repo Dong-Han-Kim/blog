@@ -8,6 +8,8 @@ description: 'Proxy의 3요소인 target, handler, trap의 동작 원리와 rece
 
 # 💬 옵션 필드
 draft: false
+series: 'JavaScript Proxy Deep Dive'
+seriesOrder: 2
 
 # 📚 SEO용
 keywords: ['JavaScript', 'Proxy', 'Reflect', 'Metaprogramming', 'ES2015', 'Vue 3']

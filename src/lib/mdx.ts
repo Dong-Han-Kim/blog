@@ -136,3 +136,77 @@ export function getPostsByTag(tag: string): PostMeta[] {
   const allPosts = getAllPosts();
   return allPosts.filter((post) => post.tags.includes(tag));
 }
+
+/** 시리즈 파생 정보. slug 기준 1회 계산해 페이지에 전달 (설계 §3) */
+export interface SeriesInfo {
+  /** 시리즈명 (표시용, trim 적용) */
+  name: string;
+  /** draft 제외, sortSeriesPosts 규칙으로 정렬된 전체 편 목록 */
+  posts: PostMeta[];
+  /** posts 내 현재 글 인덱스 (0-based). 현재 글이 draft면 -1 */
+  currentIndex: number;
+  /** 시리즈 내 이전/다음 편 (없거나 currentIndex === -1이면 null) */
+  prev: PostMeta | null;
+  next: PostMeta | null;
+}
+
+/**
+ * 시리즈 정렬 정본 (설계 §3.1) — 컴포넌트는 이 순서를 그대로 신뢰한다.
+ * 1. seriesOrder ?? Infinity (order 있는 편이 앞, 누락 편은 뒤)
+ * 2. date 오름차순 (동률 시)
+ * 3. slug localeCompare (최종 결정성 — proxy 3부작처럼 date 전부 동일 케이스 대비)
+ * 표시 번호는 seriesOrder 원값이 아니라 정렬 후 배열 인덱스 + 1을 쓴다.
+ */
+export function sortSeriesPosts(posts: PostMeta[]): PostMeta[] {
+  return [...posts].sort((a, b) => {
+    const orderA = a.seriesOrder ?? Number.POSITIVE_INFINITY;
+    const orderB = b.seriesOrder ?? Number.POSITIVE_INFINITY;
+    if (orderA !== orderB) return orderA - orderB;
+    // date는 YYYY-MM-DD 고정 형식이라 문자열 비교가 시간순과 일치한다
+    if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+    return a.slug.localeCompare(b.slug);
+  });
+}
+
+/** 시리즈명이 일치(trim 후 완전 일치)하는 비-draft 포스트를 정렬해 반환 */
+export function getPostsBySeries(seriesName: string): PostMeta[] {
+  const name = seriesName.trim();
+  return sortSeriesPosts(
+    getAllPosts().filter((post) => !post.draft && post.series?.trim() === name)
+  );
+}
+
+/**
+ * 해당 slug 글의 시리즈 컨텍스트를 도출한다. 글이 시리즈 미소속이면 null.
+ * 내부에서 getAllPosts()만 사용(빌드 타임 파일시스템) — 에러 처리는 거기에 위임하고
+ * 자체 try/catch를 두지 않는다 (동일 진입점 이중 래핑 시 redirect 중복 위험, 설계 §3.2)
+ */
+export function getSeriesForPost(slug: string): SeriesInfo | null {
+  const current = getAllPosts().find((post) => post.slug === slug);
+  if (!current) return null;
+
+  if (!current.series) {
+    if (current.seriesOrder !== undefined) {
+      console.warn(
+        `[series] ${slug}: seriesOrder만 있고 series가 없어 시리즈로 취급하지 않습니다.`
+      );
+    }
+    return null;
+  }
+
+  const posts = getPostsBySeries(current.series);
+  // 시리즈 전 편이 draft면 발행 편 0 → 박스 미렌더 (설계 §6.4)
+  if (posts.length === 0) return null;
+
+  const currentIndex = posts.findIndex((post) => post.slug === slug);
+  return {
+    name: current.series.trim(),
+    posts,
+    currentIndex,
+    prev: currentIndex > 0 ? posts[currentIndex - 1] : null,
+    next:
+      currentIndex >= 0 && currentIndex < posts.length - 1
+        ? posts[currentIndex + 1]
+        : null,
+  };
+}

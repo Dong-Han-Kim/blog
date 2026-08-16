@@ -8,6 +8,8 @@ description: 'Proxy의 단짝 Reflect의 역할과, 유효성 검사·읽기 전
 
 # 💬 옵션 필드
 draft: false
+series: 'JavaScript Proxy Deep Dive'
+seriesOrder: 3
 
 # 📚 SEO용
 keywords: ['JavaScript', 'Proxy', 'Reflect', 'Metaprogramming', 'ES2015', 'Vue 3']
