@@ -96,7 +96,7 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
       ? 'text-error'
       : contentLength > CONTENT_WARN
         ? 'text-accent'
-        : 'text-text-faint';
+        : 'text-text-dim';
 
   const submitDisabled = hasErrors || isSubmitting;
 
@@ -136,7 +136,7 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
                 errors.authorName && 'border-b border-error pb-6'
               )}
             >
-              <label htmlFor={`${fieldId}-name`} className="text-[11px] text-text-faint">
+              <label htmlFor={`${fieldId}-name`} className="text-[11px] text-text-dim">
                 NAME
               </label>
               <input
@@ -161,7 +161,7 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
                 errors.password && 'border-b border-error pb-6'
               )}
             >
-              <label htmlFor={`${fieldId}-password`} className="text-[11px] text-text-faint">
+              <label htmlFor={`${fieldId}-password`} className="text-[11px] text-text-dim">
                 PASS
               </label>
               <input
@@ -234,7 +234,7 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
                 'px-18 py-8 text-[12px]',
                 submitDisabled
                   ? 'pointer-events-none bg-track text-text-dim'
-                  : 'bg-text-faint text-bg hover:bg-accent'
+                  : 'bg-text-dim text-bg hover:bg-accent'
               )}
             >
               {isSubmitting ? '[ SENDING ]' : '[ SUBMIT ]'}

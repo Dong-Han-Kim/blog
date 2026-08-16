@@ -19,7 +19,9 @@
   --color-text-body: #cfeedb;
   --color-text-muted: #7ad79b;
   --color-text-dim: #55b678;
-  --color-text-faint: #2a7a48;
+  /* faint: 핸드오버 원값 #2a7a48은 AA 3.66~3.83으로 불합격 — 동일 hue(142.5°)에서
+   * bg/bg-field/bg-raised 모두 4.85~5.07을 갓 넘기는 최소 승급 (QA fix-contrast-aa) */
+  --color-text-faint: #349057;
   --color-accent: #5cff8c;
   --color-code-token: #a8e9bf;
   --color-error: #e08b8b;
@@ -105,7 +107,7 @@
   --foreground: var(--color-text-body);
   --popover: var(--color-bg-field);
   --popover-foreground: var(--color-text-body);
-  --primary: var(--color-text-faint); /* SUBMIT류 채움 버튼 배경 */
+  --primary: var(--color-text-dim); /* SUBMIT류 채움 버튼 배경 (faint는 AA 3.82 불합격 — dim 승급) */
   --primary-foreground: var(--color-bg);
   --secondary: var(--color-bg-raised);
   --secondary-foreground: var(--color-text-body);

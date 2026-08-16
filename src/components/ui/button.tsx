@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 // CRT 리스킨 (설계 §4): radius/shadow/transition/ring 제거, 포커스는 1px accent 테두리.
-// default = SUBMIT류 채움(primary = text-faint 배경, 호버 accent 인광),
+// default = SUBMIT류 채움(primary = text-dim 배경, 호버 accent 인광),
 // outline = 터미널 버튼 패턴. 크기는 소비처에서 지정 가능.
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-8 whitespace-nowrap border border-transparent outline-none shrink-0 focus-visible:border-accent disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-error [&_svg]:pointer-events-none [&_svg]:shrink-0",

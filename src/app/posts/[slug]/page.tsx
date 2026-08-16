@@ -116,7 +116,7 @@ export default async function PostPage({ params }: PageProps) {
             href={`/categories/${post.frontmatter.category}`}
           />
           <time dateTime={post.frontmatter.date}>{post.frontmatter.date}</time>
-          <span className="text-text-faint">{post.frontmatter.readingTime} min read</span>
+          <span className="text-text-dim">{post.frontmatter.readingTime} min read</span>
         </div>
         <h1 className="font-display text-post-h1 text-text-strong max-md:text-[22px]">
           {post.frontmatter.title}
@@ -150,7 +150,7 @@ export default async function PostPage({ params }: PageProps) {
           <nav className="mt-64 flex justify-between gap-20 border-t border-rule pt-28 max-md:flex-col max-md:gap-18">
             {prev && (
               <Link href={`/posts/${prev.slug}`} className="hover:opacity-75">
-                <p className="mb-8 text-[11px] text-text-faint">← PREV</p>
+                <p className="mb-8 text-[11px] text-text-dim">← PREV</p>
                 <p className="max-w-300 text-[13px] leading-[1.8] text-text-muted">
                   {prev.title}
                 </p>
@@ -161,7 +161,7 @@ export default async function PostPage({ params }: PageProps) {
                 href={`/posts/${next.slug}`}
                 className="ml-auto text-right hover:opacity-75 max-md:ml-0 max-md:text-left"
               >
-                <p className="mb-8 text-[11px] text-text-faint">NEXT →</p>
+                <p className="mb-8 text-[11px] text-text-dim">NEXT →</p>
                 <p className="max-w-300 text-[13px] leading-[1.8] text-text-muted">
                   {next.title}
                 </p>

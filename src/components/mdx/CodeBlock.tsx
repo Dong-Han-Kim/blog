@@ -51,7 +51,7 @@ export function CodeBlock({ children, className, ...props }: CodeBlockProps) {
         <button
           type="button"
           onClick={handleCopy}
-          className="text-text-faint hover:text-text-strong"
+          className="text-text-dim hover:text-text-strong"
           aria-label="코드 복사"
         >
           {copied ? '[ COPIED ]' : '[ COPY ]'}

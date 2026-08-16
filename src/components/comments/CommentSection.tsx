@@ -94,7 +94,7 @@ export function CommentSection({ postSlug, initialComments }: CommentSectionProp
     <section className="mt-64">
       <DottedRule
         left={`COMMENTS (${commentCount})`}
-        right={<span className="text-text-faint">OLDEST ↑</span>}
+        right={<span className="text-text-dim">OLDEST ↑</span>}
       />
 
       <CommentList
