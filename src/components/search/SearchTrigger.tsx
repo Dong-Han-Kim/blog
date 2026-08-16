@@ -22,7 +22,6 @@ export function SearchTrigger({ className }: SearchTriggerProps) {
         className
       )}
       onClick={openPalette}
-      aria-label="검색"
     >
       검색... ⌘K
     </button>
@@ -42,7 +41,7 @@ export function SearchTriggerMobile({ className }: SearchTriggerProps) {
         className
       )}
       onClick={openPalette}
-      aria-label="검색"
+      aria-label="⌘K 검색"
     >
       <span className="border border-rule px-9 py-5 text-[11px] text-text-muted">
         ⌘K
