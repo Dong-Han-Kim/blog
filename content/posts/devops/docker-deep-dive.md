@@ -17,7 +17,7 @@ keywords: ['Docker', 'Container', 'Linux Namespace', 'cgroups', 'OverlayFS', 'ru
 
 `docker run nginx` 한 줄을 칠 때, 그 안에서 무슨 일이 벌어지는지 설명할 수 있을까. 명령어를 외워서 쓰는 것과, 그 명령어가 커널 수준에서 무엇을 하는지 아는 것은 완전히 다른 이야기다.
 
-이 글은 **"컨테이너란 사실 무엇인가"**라는 본질에서 출발한다. 그리고 도커를 단 한 번도 쓰지 않고, 리눅스 기본 명령어만으로 **컨테이너를 직접 손으로 만들어 본다.** 그 경험 위에서 도커의 구조·이미지·네트워크가 왜 그렇게 설계됐는지를 이해하게 된다.
+이 글은 "**컨테이너란 사실 무엇인가**"라는 본질에서 출발한다. 그리고 도커를 단 한 번도 쓰지 않고, 리눅스 기본 명령어만으로 **컨테이너를 직접 손으로 만들어 본다.** 그 경험 위에서 도커의 구조·이미지·네트워크가 왜 그렇게 설계됐는지를 이해하게 된다.
 
 이 글의 가장 중요한 한 줄을 미리 말하면 이렇다.
 
@@ -25,7 +25,7 @@ keywords: ['Docker', 'Container', 'Linux Namespace', 'cgroups', 'OverlayFS', 'ru
 
 ## 1. 도커가 풀려던 문제: "내 컴퓨터에서는 되는데요"
 
-소프트웨어는 결코 혼자 동작하지 않는다. 특정 OS 버전, 시스템 라이브러리, 언어 런타임, 환경 변수, 설정 파일 — 이 모든 **환경(environment)**에 의존한다. 문제는 개발자의 노트북, 테스트 서버, 운영 서버의 환경이 미묘하게 다르다는 것이고, 그 결과가 악명 높은 *"works on my machine"*이다.
+소프트웨어는 결코 혼자 동작하지 않는다. 특정 OS 버전, 시스템 라이브러리, 언어 런타임, 환경 변수, 설정 파일 — 이 모든 **환경**(environment)에 의존한다. 문제는 개발자의 노트북, 테스트 서버, 운영 서버의 환경이 미묘하게 다르다는 것이고, 그 결과가 악명 높은 "*works on my machine*"이다.
 
 도커 이전의 해법들은 저마다 한계가 있었다.
 
@@ -70,7 +70,7 @@ keywords: ['Docker', 'Container', 'Linux Namespace', 'cgroups', 'OverlayFS', 'ru
 
 ### cgroups — 자원의 제한과 계측
 
-네임스페이스가 "볼 수 있는 것"이라면, cgroups는 **"쓸 수 있는 것"**이다. CPU·메모리·I/O·PID 개수를 그룹 단위로 제한한다. `docker run --memory=512m`이 정확히 이걸 설정한다. 한도를 넘으면 커널 OOM killer가 프로세스를 죽인다.
+네임스페이스가 "볼 수 있는 것"이라면, cgroups는 "**쓸 수 있는 것**"이다. CPU·메모리·I/O·PID 개수를 그룹 단위로 제한한다. `docker run --memory=512m`이 정확히 이걸 설정한다. 한도를 넘으면 커널 OOM killer가 프로세스를 죽인다.
 
 ### 유니온 파일시스템(OverlayFS) — 레이어와 Copy-on-Write
 
@@ -187,7 +187,7 @@ echo 0 > "$CG/memory.swap.max"               # 스왑도 차단해야 한도가 
 
 > **함정 하나**: `memory.max`만 걸면 스왑으로 빠져나가 OOM이 안 날 수 있다. 그래서 `memory.swap.max`도 0으로 막아야 한다. 도커가 `--memory`와 `--memory-swap`을 함께 다루는 이유다.
 
-일반 호스트라면, 이 cgroup에 등록된 프로세스가 50MB를 넘기는 순간 종료 코드 **137(=128+9, SIGKILL)**과 함께 OOM kill된다.
+일반 호스트라면, 이 cgroup에 등록된 프로세스가 50MB를 넘기는 순간 종료 코드 **137**(=128+9, SIGKILL)과 함께 OOM kill된다.
 
 ### 우리가 만든 것 정리
 
@@ -221,11 +221,11 @@ docker CLI → dockerd → containerd → containerd-shim → runc → [컨테�
 - **dockerd**: 고수준 기능(API, 이미지 빌드, 네트워크·볼륨).
 - **containerd**: 컨테이너 수명주기 관리(이미지 풀, 스토리지, 감독). CNCF 표준 런타임.
 - **containerd-shim**: 컨테이너의 입출력·종료코드를 붙들어, containerd가 재시작돼도 컨테이너가 안 죽게 한다.
-- **runc**: 최하위 OCI 런타임. **OCI 번들(rootfs + config.json)**을 받아 4장의 그 syscall들을 실제로 호출한다.
+- **runc**: 최하위 OCI 런타임. **OCI 번들**(rootfs + config.json)을 받아 4장의 그 syscall들을 실제로 호출한다.
 
 ### OCI 표준 — 도커 말고도 대안이 존재하는 이유
 
-2015년 **OCI(Open Container Initiative)**가 런타임·이미지·배포 스펙을 표준화했다. 덕분에 도커가 만든 이미지를 Podman, CRI-O 등도 똑같이 실행할 수 있다. 도커는 이제 "유일한 길"이 아니라 "한 구현체"다.
+2015년 **OCI**(Open Container Initiative)가 런타임·이미지·배포 스펙을 표준화했다. 덕분에 도커가 만든 이미지를 Podman, CRI-O 등도 똑같이 실행할 수 있다. 도커는 이제 "유일한 길"이 아니라 "한 구현체"다.
 
 > **4장 실습과의 연결**: runc가 받는 `config.json`은 우리가 손으로 친 모든 결정("어떤 네임스페이스를, cgroup 한도는 얼마, 엔트리포인트는 무엇")을 선언적으로 적은 명세서다. runc는 **우리가 손으로 한 절차를 자동·표준화**하는 도구일 뿐이다.
 
@@ -316,7 +316,7 @@ ENTRYPOINT ["myapp"]
 
 1. 레지스트리에서 `nginx` 이미지의 **없는 레이어만** 내려받는다(콘텐츠 주소 기반).
 2. 읽기 전용 레이어들을 OverlayFS로 합치고, 위에 **쓰기 레이어**를 얹어 rootfs를 만든다.
-3. 이 rootfs와 실행 설정으로 **OCI 번들(config.json)**을 구성한다.
+3. 이 rootfs와 실행 설정으로 **OCI 번들**(config.json)을 구성한다.
 4. containerd가 shim을 통해 **runc**를 호출한다.
 5. runc가 **(4장에서 우리가 손으로 한 그대로)** 네임스페이스 생성 → cgroups 한도 → veth 네트워크 → pivot_root → old_root 언마운트 → capability 드롭·seccomp → 엔트리포인트(nginx)를 PID 1로 exec 한다.
 6. shim이 그 프로세스의 입출력·종료코드를 붙들고 살아남는다.
