@@ -136,32 +136,3 @@ export function getPostsByTag(tag: string): PostMeta[] {
   const allPosts = getAllPosts();
   return allPosts.filter((post) => post.tags.includes(tag));
 }
-
-export function getAllPostsWithContent(): (PostMeta & { content: string })[] {
-  const categories = fs.readdirSync(postsDirectory);
-
-  return categories.flatMap((category) => {
-    const categoryDir = path.join(postsDirectory, category);
-    if (!fs.statSync(categoryDir).isDirectory()) return [];
-
-    const files = fs
-      .readdirSync(categoryDir)
-      .filter((file) => file.endsWith('.md'));
-
-    return files
-      .map((file) => {
-        const filePath = path.join(categoryDir, file);
-        const fileContents = fs.readFileSync(filePath, 'utf-8');
-        const { data, content } = matter(fileContents);
-        const frontmatter = postFrontmatterSchema.parse(data);
-
-        return {
-          ...frontmatter,
-          slug: file.replace(/\.md$/, ''),
-          readingTime: calcReadingTime(content),
-          content,
-        };
-      })
-      .filter((post) => !post.draft);
-  });
-}

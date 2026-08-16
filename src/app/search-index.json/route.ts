@@ -1,7 +1,7 @@
-import { getAllPostsWithContent } from '@/lib/mdx';
+import { getAllPosts } from '@/lib/mdx';
 
 export function GET() {
-  const posts = getAllPostsWithContent();
+  const posts = getAllPosts().filter((post) => !post.draft);
 
   const index = posts.map((post) => ({
     slug: post.slug,
@@ -10,7 +10,6 @@ export function GET() {
     tags: post.tags,
     category: post.category,
     date: post.date,
-    content: post.content.slice(0, 2000),
   }));
 
   return Response.json(index);
