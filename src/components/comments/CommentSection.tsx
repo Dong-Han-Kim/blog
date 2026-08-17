@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 import { CommentForm } from './CommentForm';
 import { CommentList } from './CommentList';
 import { DottedRule } from '@/components/terminal/DottedRule';
+import { SortToggle } from '@/components/terminal/SortToggle';
 import { useCommentRealtime } from '@/hooks/useCommentRealtime';
 import {
   buildCommentTree,
@@ -13,6 +14,11 @@ import {
   removeCommentFromTree,
   updateCommentInTree,
 } from '@/lib/comments/tree';
+import {
+  DEFAULT_COMMENT_SORT,
+  sortRootComments,
+  type CommentSortOrder,
+} from '@/lib/comments/sort';
 import { getCommentsByPostSlug } from '@/actions/comment';
 import type { Comment, CommentWithChildren } from '@/types/comment';
 
@@ -31,6 +37,7 @@ export function CommentSection({ postSlug, initialComments }: CommentSectionProp
   } | null>(null);
   // 접힌 스레드(루트 댓글 id) — 기본 빈 집합 = 전부 펼침 (핸드오버 State Management)
   const [collapsedThreads, setCollapsedThreads] = useState<Set<string>>(new Set());
+  const [sortOrder, setSortOrder] = useState<CommentSortOrder>(DEFAULT_COMMENT_SORT);
 
   // 로컬 삽입(뮤테이션 성공 콜백)과 Realtime INSERT가 같은 댓글로 두 번 들어와도
   // id 존재 가드로 한 번만 반영된다
@@ -89,16 +96,32 @@ export function CommentSection({ postSlug, initialComments }: CommentSectionProp
   }, []);
 
   const commentCount = countComments(commentTree);
+  const oldest = sortOrder === 'oldest';
+
+  // 저장 상태(commentTree)는 createdAt asc 불변식 유지 — 정렬은 파생값만 (설계 §3.4).
+  // NEWEST 상태에서 새 댓글이 append돼도 파생 정렬이 맨 위로 올린다
+  const sortedTree = useMemo(
+    () => sortRootComments(commentTree, sortOrder),
+    [commentTree, sortOrder],
+  );
 
   return (
     <section className="mt-64">
       <DottedRule
         left={`COMMENTS (${commentCount})`}
-        right={<span className="text-text-dim">OLDEST ↑</span>}
+        right={
+          <SortToggle
+            label={oldest ? 'OLDEST ↑' : 'NEWEST ↓'}
+            srHint={oldest ? '누르면 최신순으로 정렬' : '누르면 등록순으로 정렬'}
+            onToggle={() =>
+              setSortOrder((order) => (order === 'oldest' ? 'newest' : 'oldest'))
+            }
+          />
+        }
       />
 
       <CommentList
-        comments={commentTree}
+        comments={sortedTree}
         postSlug={postSlug}
         editingCommentId={editingState?.commentId ?? null}
         editingPassword={editingState?.password ?? null}

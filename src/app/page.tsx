@@ -9,9 +9,8 @@ import { FooterPrompt } from '@/components/terminal/FooterPrompt';
  * 히어로 2줄 + 통계, 카테고리 탭, 목록(더 보기 포함), 푸터 `exit`.
  */
 export default function Home() {
-  const posts = getAllPosts()
-    .filter((post) => !post.draft)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  // 정렬은 PostList가 정본 함수(lib/posts/sort.ts)로 수행 — 페이지는 draft 필터만
+  const posts = getAllPosts().filter((post) => !post.draft);
 
   const categoryCount = Object.keys(CATEGORY_CONTENT).length;
   const year = new Date().getFullYear();

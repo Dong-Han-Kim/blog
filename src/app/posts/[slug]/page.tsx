@@ -8,6 +8,7 @@ import type { Metadata } from 'next';
 import type { ComponentProps } from 'react';
 
 import { getAllPosts, getPostBySlug, getSeriesForPost } from '@/lib/mdx';
+import { sortPostsByDate } from '@/lib/posts/sort';
 import { remarkStripFirstH1 } from '@/lib/remark-strip-title';
 import { crtTheme } from '@/lib/shiki-theme';
 import { Callout, CodeBlock, ImageWithCaption } from '@/components/mdx';
@@ -63,9 +64,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 function getAdjacentPosts(currentSlug: string) {
-  const allPosts = getAllPosts()
-    .filter((post) => !post.draft)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  // 정렬은 정본 함수(lib/posts/sort.ts, 기본 newest) — 최신순 기준 prev=이전(더 오래된) 글.
+  // 동일 날짜 글의 prev/next는 slug tie-break로 결정화된다 (리뷰 Low-2 의도된 변화)
+  const allPosts = sortPostsByDate(getAllPosts().filter((post) => !post.draft));
 
   const currentIndex = allPosts.findIndex((post) => post.slug === currentSlug);
   return {

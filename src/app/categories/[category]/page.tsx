@@ -42,9 +42,8 @@ export default async function CategoryPage({ params }: PageProps) {
   const slug = category.toLowerCase();
   const content = CATEGORY_CONTENT[slug];
 
-  const posts = getPostsByCategory(category)
-    .filter((post) => !post.draft)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  // 정렬은 PostList가 정본 함수(lib/posts/sort.ts)로 수행 — 페이지는 draft 필터만
+  const posts = getPostsByCategory(category).filter((post) => !post.draft);
 
   return (
     <>

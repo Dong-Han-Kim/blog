@@ -1,9 +1,15 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useMemo, useState, useTransition } from 'react';
 import type { PostMeta } from '@/types/common';
+import {
+  DEFAULT_POST_SORT,
+  sortPostsByDate,
+  type PostSortOrder,
+} from '@/lib/posts/sort';
 import { BlinkCursor } from '@/components/terminal/BlinkCursor';
 import { DottedRule } from '@/components/terminal/DottedRule';
+import { SortToggle } from '@/components/terminal/SortToggle';
 import { TerminalButton } from '@/components/terminal/TerminalButton';
 import { PostRow } from './PostRow';
 
@@ -22,9 +28,18 @@ interface PostListProps {
  */
 export function PostList({ posts, showFilename = true }: PostListProps) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [sortOrder, setSortOrder] = useState<PostSortOrder>(DEFAULT_POST_SORT);
   const [isPending, startTransition] = useTransition();
 
-  const visiblePosts = posts.slice(0, visibleCount);
+  // 정렬은 파생값 — props의 posts 순서에 의존하지 않는다 (정렬 정본: lib/posts/sort.ts).
+  // 기본값이 서버 프리렌더 순서와 같아 초기 10건 HTML은 불변 (SEO 인수조건 유지)
+  const sortedPosts = useMemo(
+    () => sortPostsByDate(posts, sortOrder),
+    [posts, sortOrder],
+  );
+  const newest = sortOrder === 'newest';
+
+  const visiblePosts = sortedPosts.slice(0, visibleCount);
   const handleMore = () =>
     startTransition(() => setVisibleCount((count) => count + PAGE_SIZE));
 
@@ -33,10 +48,16 @@ export function PostList({ posts, showFilename = true }: PostListProps) {
       <DottedRule
         left={`${posts.length} ENTRIES`}
         right={
-          <>
-            <span className="max-md:hidden">SORTED BY DATE ↓</span>
-            <span className="hidden max-md:inline">DATE ↓</span>
-          </>
+          <SortToggle
+            label={newest ? 'SORTED BY DATE ↓' : 'SORTED BY DATE ↑'}
+            shortLabel={newest ? 'DATE ↓' : 'DATE ↑'}
+            srHint={newest ? '누르면 오래된순으로 정렬' : '누르면 최신순으로 정렬'}
+            onToggle={() =>
+              // visibleCount는 유지 — 이미 로드한 진행 상태를 버리지 않는다 (설계 §3.4)
+              setSortOrder((order) => (order === 'newest' ? 'oldest' : 'newest'))
+            }
+            className="max-md:text-[10px]"
+          />
         }
         className="mb-2 max-md:gap-10 max-md:text-[10px]"
       />

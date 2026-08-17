@@ -51,11 +51,10 @@ export default async function TagPage({ params }: PageProps) {
 
   if (!posts || posts.length === 0) notFound();
 
-  const sortedPosts = posts
-    .filter((post) => !post.draft)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  // 정렬은 PostList가 정본 함수(lib/posts/sort.ts)로 수행 — 페이지는 draft 필터만
+  const publishedPosts = posts.filter((post) => !post.draft);
 
-  if (sortedPosts.length === 0) notFound();
+  if (publishedPosts.length === 0) notFound();
 
   const tagIndex = buildTagIndex();
 
@@ -75,12 +74,12 @@ export default async function TagPage({ params }: PageProps) {
           </p>
         </div>
         <div className="shrink-0 text-right text-[11px] leading-[2] text-text-dim">
-          <div>{sortedPosts.length} ENTRIES</div>
+          <div>{publishedPosts.length} ENTRIES</div>
           <div className="text-text-faint">tags/{decoded.toLowerCase()}/</div>
         </div>
       </header>
       <TagIndexPanel tags={tagIndex} current={decoded} />
-      <PostList posts={sortedPosts} />
+      <PostList posts={publishedPosts} />
     </>
   );
 }
