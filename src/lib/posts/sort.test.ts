@@ -25,6 +25,16 @@ function slugs(posts: PostMeta[]): string[] {
   return posts.map((post) => post.slug);
 }
 
+/** 배열의 모든 순열 — comparator total order(순열 불변) 검증용 */
+function permutations<T>(items: T[]): T[][] {
+  if (items.length <= 1) return [items];
+  return items.flatMap((item, index) =>
+    permutations([...items.slice(0, index), ...items.slice(index + 1)]).map(
+      (rest) => [item, ...rest],
+    ),
+  );
+}
+
 describe('sortPostsByDate (설계 §3.3 목록 정렬 정본)', () => {
   it('newest면 date 내림차순으로 정렬한다', () => {
     const sorted = sortPostsByDate(
@@ -74,6 +84,95 @@ describe('sortPostsByDate (설계 §3.3 목록 정렬 정본)', () => {
       'alpha',
       'zebra',
       'later',
+    ]);
+  });
+
+  it('동일 date + 같은 시리즈 + seriesOrder는 direction을 따른다 (newest면 후속편이 먼저)', () => {
+    const posts = [
+      makePost({
+        slug: 'linux-commands-1-basics',
+        date: '2026-08-26',
+        series: '리눅스 명령어',
+        seriesOrder: 1,
+      }),
+      makePost({
+        slug: 'linux-commands-2-server-ops',
+        date: '2026-08-26',
+        series: '리눅스 명령어',
+        seriesOrder: 2,
+      }),
+    ];
+    expect(slugs(sortPostsByDate(posts, 'newest'))).toEqual([
+      'linux-commands-2-server-ops',
+      'linux-commands-1-basics',
+    ]);
+    expect(slugs(sortPostsByDate(posts, 'oldest'))).toEqual([
+      'linux-commands-1-basics',
+      'linux-commands-2-server-ops',
+    ]);
+  });
+
+  it('동일 date라도 다른 시리즈(또는 시리즈 없음)면 그룹 키(시리즈명/slug) 오름차순으로 방향 무관하게 정렬한다', () => {
+    const posts = [
+      makePost({
+        slug: 'zebra',
+        date: '2026-01-01',
+        series: '시리즈 A',
+        seriesOrder: 1,
+      }),
+      makePost({
+        slug: 'alpha',
+        date: '2026-01-01',
+        series: '시리즈 B',
+        seriesOrder: 2,
+      }),
+      makePost({ slug: 'mango', date: '2026-01-01' }),
+    ];
+    // groupKey: mango(slug) < 시리즈 A(zebra) < 시리즈 B(alpha) — 코드 유닛 비교에서 Latin < Hangul (로케일 무관)
+    expect(slugs(sortPostsByDate(posts, 'newest'))).toEqual([
+      'mango',
+      'zebra',
+      'alpha',
+    ]);
+    expect(slugs(sortPostsByDate(posts, 'oldest'))).toEqual([
+      'mango',
+      'zebra',
+      'alpha',
+    ]);
+  });
+
+  it('동일 date + 같은 시리즈여도 한쪽만 seriesOrder가 있으면 비소속(그룹 키=slug)으로 취급한다', () => {
+    const posts = [
+      makePost({
+        slug: 'zebra',
+        date: '2026-01-01',
+        series: '같은 시리즈',
+        seriesOrder: 1,
+      }),
+      makePost({ slug: 'alpha', date: '2026-01-01', series: '같은 시리즈' }),
+    ];
+    expect(slugs(sortPostsByDate(posts, 'newest'))).toEqual(['alpha', 'zebra']);
+    expect(slugs(sortPostsByDate(posts, 'oldest'))).toEqual(['alpha', 'zebra']);
+  });
+
+  it('시리즈명은 trim 후 비교한다 (공백 차이는 같은 시리즈)', () => {
+    const posts = [
+      makePost({
+        slug: 'part-1',
+        date: '2026-01-01',
+        series: ' 리눅스 명령어 ',
+        seriesOrder: 1,
+      }),
+      makePost({
+        slug: 'part-2',
+        date: '2026-01-01',
+        series: '리눅스 명령어',
+        seriesOrder: 2,
+      }),
+    ];
+    expect(slugs(sortPostsByDate(posts, 'newest'))).toEqual([
+      'part-2',
+      'part-1',
     ]);
   });
 
@@ -127,7 +226,8 @@ describe('sortPostsByDate (설계 §3.3 목록 정렬 정본)', () => {
         const prev = sorted[i - 1];
         const curr = sorted[i];
         if (prev.date === curr.date) {
-          expect(prev.slug.localeCompare(curr.slug)).toBeLessThanOrEqual(0);
+          // 코드 유닛 비교 — 구현과 동일하게 로케일 무관이어야 어느 환경에서든 검증이 성립
+          expect(prev.slug <= curr.slug).toBe(true);
         } else if (newestFirst) {
           expect(prev.date > curr.date).toBe(true);
         } else {
@@ -138,6 +238,83 @@ describe('sortPostsByDate (설계 §3.3 목록 정렬 정본)', () => {
 
     assertInvariant(sortPostsByDate(posts, 'newest'), true);
     assertInvariant(sortPostsByDate(posts, 'oldest'), false);
+  });
+
+  // --- 리뷰 반영: total order(추이성) 검증 — 순열 불변 케이스 ---
+
+  it('동일 date에 시리즈 연작 + slug가 그 사이에 끼는 비시리즈 글이 섞여도 모든 입력 순열이 동일한 출력을 낸다', () => {
+    // 쌍 단위 분기 구현에서는 cmp(A,B)/cmp(A,X)/cmp(B,X)가 순환해 입력 순서마다
+    // 출력이 달랐다 ([B,X,A] 입력이면 1편이 2편보다 앞에 오는 회귀 재현).
+    const partOne = makePost({
+      slug: 'linux-commands-1-basics',
+      date: '2026-08-26',
+      series: '리눅스 명령어',
+      seriesOrder: 1,
+    });
+    const partTwo = makePost({
+      slug: 'linux-commands-2-server-ops',
+      date: '2026-08-26',
+      series: '리눅스 명령어',
+      seriesOrder: 2,
+    });
+    const standalone = makePost({
+      slug: 'linux-commands-1z-cheatsheet',
+      date: '2026-08-26',
+    });
+
+    // groupKey: slug(Latin) < 시리즈명(Hangul) → 비시리즈 글이 먼저, 시리즈 연작은 인접
+    const expectedNewest = [
+      'linux-commands-1z-cheatsheet',
+      'linux-commands-2-server-ops',
+      'linux-commands-1-basics',
+    ];
+    const expectedOldest = [
+      'linux-commands-1z-cheatsheet',
+      'linux-commands-1-basics',
+      'linux-commands-2-server-ops',
+    ];
+
+    for (const input of permutations([partOne, partTwo, standalone])) {
+      expect(slugs(sortPostsByDate(input, 'newest'))).toEqual(expectedNewest);
+      expect(slugs(sortPostsByDate(input, 'oldest'))).toEqual(expectedOldest);
+    }
+  });
+
+  it('같은 시리즈 3편 중 1편만 seriesOrder가 없어도 모든 입력 순열이 동일한 출력을 낸다', () => {
+    // order 없는 글은 비소속(그룹 키=slug)으로 취급 — 같은 클래스의 순환을 차단
+    const partOne = makePost({
+      slug: 'linux-commands-1-basics',
+      date: '2026-08-26',
+      series: '리눅스 명령어',
+      seriesOrder: 1,
+    });
+    const partTwo = makePost({
+      slug: 'linux-commands-2-server-ops',
+      date: '2026-08-26',
+      series: '리눅스 명령어',
+      seriesOrder: 2,
+    });
+    const orderless = makePost({
+      slug: 'linux-commands-appendix',
+      date: '2026-08-26',
+      series: '리눅스 명령어',
+    });
+
+    const expectedNewest = [
+      'linux-commands-appendix',
+      'linux-commands-2-server-ops',
+      'linux-commands-1-basics',
+    ];
+    const expectedOldest = [
+      'linux-commands-appendix',
+      'linux-commands-1-basics',
+      'linux-commands-2-server-ops',
+    ];
+
+    for (const input of permutations([partOne, partTwo, orderless])) {
+      expect(slugs(sortPostsByDate(input, 'newest'))).toEqual(expectedNewest);
+      expect(slugs(sortPostsByDate(input, 'oldest'))).toEqual(expectedOldest);
+    }
   });
 
   it('이미 정렬된 입력을 다시 정렬해도 결과가 같다 (멱등성)', () => {
