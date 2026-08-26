@@ -15,6 +15,10 @@ export const CATEGORY_CONTENT: CategoryContent = {
     name: 'DevOps',
     description: 'Docker·CI/CD·인프라 — 배포와 운영 자동화 기록',
   },
+  linux: {
+    name: 'Linux',
+    description: '명령어·셸·서버 운영 — 리눅스 실무 기록',
+  },
   database: {
     name: 'Database',
     description: '쿼리·인덱스·트랜잭션 — 데이터베이스 기록',
