@@ -19,7 +19,7 @@ keywords: ['Linux', '리눅스 명령어', 'CLI', 'Shell', 'grep', 'find', 'sed'
 
 터미널을 처음 열면 명령어가 수천 개처럼 보이지만, 실제로 하루에 쓰는 건 30개 남짓이다. 이 글은 그 30개를 "카테고리별 목록"이 아니라 **실제로 쓰게 되는 순서**대로 정리한 것이다. 각 명령어마다 "이걸 왜 쓰는지"를 먼저 적었다.
 
-1편은 로컬 개발 환경에서 쓰는 기본기, [2편](/posts/linux-commands-2-server-ops)은 서버에 SSH로 붙어서 장애를 다룰 때 쓰는 실무 명령어를 다룬다.
+1편은 로컬 개발 환경에서 쓰는 기본기, [2편](/posts/linux-commands-2-server-ops)은 서버에 SSH로 붙어서 장애를 다룰 때 쓰는 실무 명령어, [3편](/posts/linux-commands-3-shared-libraries)은 공유 라이브러리 로딩 문제를 `ldd`로 추적하는 법을 다룬다.
 
 ---
 

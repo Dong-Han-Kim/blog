@@ -12,7 +12,7 @@ series: '리눅스 명령어'
 seriesOrder: 3
 
 # 📚 SEO용
-keywords: ['ldd', 'readelf', 'soname', 'LD_LIBRARY_PATH', 'RPATH', 'RUNPATH', 'LD_PRELOAD', 'patchelf', 'glibc', 'ELF']
+keywords: ['Linux', '리눅스 명령어', 'ldd', 'readelf', 'soname', 'LD_LIBRARY_PATH', 'RPATH', 'RUNPATH', 'LD_PRELOAD', 'patchelf', 'glibc', 'ELF']
 ---
 
 # 리눅스 명령어, 실무에서 진짜 자주 쓰는 것들 (3) — 공유 라이브러리와 ldd
@@ -27,6 +27,8 @@ cannot open shared object file: No such file or directory
 내 노트북에서는 잘 돌던 게 서버에서는 안 뜬다. 코드는 그대로다. 이건 **프로그램이 실행되기 직전, 동적 링커가 필요한 라이브러리를 못 찾은 것**이다.
 
 이 글은 그 한 줄짜리 에러 뒤에서 실제로 무슨 일이 벌어지는지를 다룬다. `.so`가 정확히 무엇이고, 커널과 동적 링커가 어떤 순서로 그걸 찾아 붙이고, `ldd`가 그 과정 중 무엇을 보여주는지. 그리고 실무에서 마주치는 대표적인 실패 사례들을 어떻게 추적하는지.
+
+이 시리즈의 [1편](/posts/linux-commands-1-basics)은 로컬에서 쓰는 기본기를, [2편](/posts/linux-commands-2-server-ops)은 서버 운영 명령어를 다뤘다.
 
 > macOS에는 `ldd`가 없다. 같은 역할은 `otool -L`(의존성 목록), `dyld_info`, `DYLD_PRINT_LIBRARIES=1`이 한다. 개념은 거의 그대로 대응되지만, 이 글의 명령어는 리눅스 기준이다.
 

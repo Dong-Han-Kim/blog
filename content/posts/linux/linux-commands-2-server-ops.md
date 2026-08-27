@@ -19,7 +19,7 @@ keywords: ['Linux', '리눅스 명령어', '서버 운영', 'systemd', 'journalc
 
 [1편](/posts/linux-commands-1-basics)이 로컬에서 쓰는 기본기였다면, 2편은 **서버에 SSH로 붙은 상태에서 문제를 다룰 때** 쓰는 명령어다. 목록이 아니라 상황별로 정리했다. 실제로 장애 대응은 "어떤 명령어를 아느냐"보다 "어떤 순서로 좁혀 들어가느냐"의 문제이기 때문이다.
 
-예시는 RHEL 9 계열(`dnf`, `systemd`) 기준이지만 대부분 Ubuntu에서도 동일하다.
+예시는 RHEL 9 계열(`dnf`, `systemd`) 기준이지만 대부분 Ubuntu에서도 동일하다. 공유 라이브러리 로딩 에러(`error while loading shared libraries`)는 [3편](/posts/linux-commands-3-shared-libraries)에서 따로 다룬다.
 
 ---
 
