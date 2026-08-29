@@ -59,7 +59,9 @@ export function TagIndexPanel({ tags, current }: TagIndexPanelProps) {
             <li key={tag.name}>
               <Link
                 href={tagHref(tag.name)}
-                className="inline-block border border-text-faint px-9 py-4 text-[11px] leading-none text-text-muted hover:border-accent hover:text-text-strong"
+                // 24px 히트영역(WCAG 2.5.8) — 칩은 보더가 칠해지므로 09ccfcb의
+                // min-h+음수마진 기법을 쓸 수 없다. 투명 ::after로 포인터 타깃만 넓힌다.
+                className="relative inline-block border border-text-faint px-9 py-4 text-[11px] leading-none text-text-muted after:absolute after:inset-x-0 after:top-1/2 after:h-24 after:-translate-y-1/2 after:content-[''] hover:border-accent hover:text-text-strong"
               >
                 #{tag.name} <span className="text-text-faint">{tag.count}</span>
               </Link>
@@ -71,7 +73,8 @@ export function TagIndexPanel({ tags, current }: TagIndexPanelProps) {
             <button
               type="button"
               onClick={() => setExpanded(true)}
-              className="border border-text-faint px-9 py-4 text-[11px] leading-none text-text-muted hover:border-accent hover:text-text-strong"
+              // 24px 히트영역(WCAG 2.5.8) — 위 태그 칩과 동일 기법
+              className="relative border border-text-faint px-9 py-4 text-[11px] leading-none text-text-muted after:absolute after:inset-x-0 after:top-1/2 after:h-24 after:-translate-y-1/2 after:content-[''] hover:border-accent hover:text-text-strong"
             >
               +{hiddenCount} more
             </button>
