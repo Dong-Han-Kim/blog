@@ -10,6 +10,23 @@ import { notFound, redirect } from 'next/navigation';
 import { ZodError } from 'zod';
 import { PostMeta } from '@/types/common';
 
+/**
+ * ⚠️ 이 파일의 catch 블록 3개(getAllPosts / getPostBySlug / getPostsByCategory)는
+ * **의도적 중복**이다. 공통 헬퍼로 통합하지 말 것 (reuse-audit C-2 / H1-b, 2026-08-29 확정).
+ *
+ * ① notFound()/redirect()는 NEXT_HTTP_ERROR 계열 예외를 throw하는 API다. catch 로직을
+ *    헬퍼로 빼면 호출부가 `try { helper() } catch {}` 형태가 되거나 헬퍼 안에서 재throw가
+ *    필요해지고, 한 번만 실수해도 프레임워크 예외를 삼켜 소프트 404가 재발한다.
+ *    이 사고는 QA-H1로 이미 한 번 발생했다.
+ * ② ENOENT 처리가 함수마다 의도적으로 다르다
+ *    (getAllPosts → notFound / getPostBySlug → notFound / getPostsByCategory → return []).
+ *    분기를 파라미터로 받으면 "공통 함수 + 플래그"라는 가장 나쁜 형태의 추상화가 되고,
+ *    3줄을 줄이려고 제어 흐름을 흐리게 만든다.
+ * ③ console.error 메시지도 함수마다 달라 메시지 템플릿까지 파라미터가 된다.
+ *    결국 파라미터 3개짜리 헬퍼가 되어 중복 제거 이득이 사라진다.
+ *
+ * 다음 감사에서 이 3개 블록을 추출 후보로 다시 올리지 말 것.
+ */
 const postsDirectory = path.join(process.cwd(), 'content', 'posts');
 
 /** md 파일 1건의 파싱 결과 — 검증 완료 frontmatter + 본문 + 파생 읽기 시간 */
@@ -59,6 +76,7 @@ export function getAllPosts(): PostMeta[] {
     });
 
     return allPosts;
+  // 의도적 중복 — 통합 금지 (파일 상단 주석 / QA-H1 참조)
   } catch (error: unknown) {
     if (error instanceof ZodError) {
       console.error(`Frontmatter validation error: ${error.message}`);
@@ -94,6 +112,7 @@ export function getPostBySlug(slug: string) {
         content,
       };
     }
+  // 의도적 중복 — 통합 금지 (파일 상단 주석 / QA-H1 참조)
   } catch (error: unknown) {
     if (error instanceof ZodError) {
       console.error(`Error reading post ${slug}: ${error.message}`);
@@ -125,6 +144,7 @@ export function getPostsByCategory(category: string): PostMeta[] {
     return files.map((file) =>
       parsePostFile(path.join(categoryDir, file), file.replace(/\.md$/, '')),
     );
+  // 의도적 중복 — 통합 금지 (파일 상단 주석 / QA-H1 참조)
   } catch (error: unknown) {
     if (error instanceof ZodError) {
       console.error(
