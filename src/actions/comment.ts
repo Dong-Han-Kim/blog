@@ -61,6 +61,39 @@ async function verifyPassword(
   return valid ? 'ok' : 'wrong_password';
 }
 
+/** 실패 응답 공통 형태 — 타입 선언이라 'use server' export 제약과 무관하다 */
+type ActionFailure = { success: false; error: string };
+
+/**
+ * zod 첫 이슈 메시지 → 사용자 노출 문구 (reuse-audit C-7 / H5).
+ * issues[0]만 노출하는 현행 정책을 여기 한 곳에 고정한다.
+ * 구조적 타입을 쓰는 이유: ZodError<T>의 제네릭 변성 문제를 피하고 import를 줄인다.
+ */
+function firstIssueMessage(error: { issues: readonly { message: string }[] }): string {
+  return error.issues[0]?.message ?? '입력값을 확인해주세요.';
+}
+
+/** verifyPassword 결과를 실패 응답으로 매핑. 'ok'면 null(계속 진행) */
+function mapVerifyResult(
+  result: 'ok' | 'not_found' | 'wrong_password',
+): ActionFailure | null {
+  if (result === 'not_found') {
+    return { success: false, error: '댓글을 찾을 수 없어요.' };
+  }
+  if (result === 'wrong_password') {
+    return { success: false, error: '비밀번호가 일치하지 않아요. 다시 확인해주세요.' };
+  }
+  return null;
+}
+
+/** 금지어 포함 시 실패 응답, 아니면 null */
+function bannedWordError(content: string): ActionFailure | null {
+  if (containsBannedWord(content)) {
+    return { success: false, error: '부적절한 표현이 포함되어 있어요. 내용을 수정해주세요.' };
+  }
+  return null;
+}
+
 function serializeComment(row: {
   id: string;
   postSlug: string;
@@ -121,14 +154,12 @@ export async function createComment(formData: {
   });
 
   if (!parsed.success) {
-    const firstError = parsed.error.issues[0]?.message ?? '입력값을 확인해주세요.';
-    return { success: false, error: firstError };
+    return { success: false, error: firstIssueMessage(parsed.error) };
   }
 
   // 4. 금지어 체크
-  if (containsBannedWord(parsed.data.content)) {
-    return { success: false, error: '부적절한 표현이 포함되어 있어요. 내용을 수정해주세요.' };
-  }
+  const banned = bannedWordError(parsed.data.content);
+  if (banned) return banned;
 
   // 5. 비밀번호 해싱 + DB 저장
   const passwordHash = await bcrypt.hash(parsed.data.password, 10);
@@ -173,23 +204,18 @@ export async function updateComment(formData: {
   // 1. Zod 검증
   const parsed = updateCommentSchema.safeParse(formData);
   if (!parsed.success) {
-    const firstError = parsed.error.issues[0]?.message ?? '입력값을 확인해주세요.';
-    return { success: false, error: firstError };
+    return { success: false, error: firstIssueMessage(parsed.error) };
   }
 
   // 2. 금지어 체크
-  if (containsBannedWord(parsed.data.content)) {
-    return { success: false, error: '부적절한 표현이 포함되어 있어요. 내용을 수정해주세요.' };
-  }
+  const banned = bannedWordError(parsed.data.content);
+  if (banned) return banned;
 
   // 3. 비밀번호 검증 (secrets 단독 조회)
-  const verified = await verifyPassword(parsed.data.commentId, parsed.data.password);
-  if (verified === 'not_found') {
-    return { success: false, error: '댓글을 찾을 수 없어요.' };
-  }
-  if (verified === 'wrong_password') {
-    return { success: false, error: '비밀번호가 일치하지 않아요. 다시 확인해주세요.' };
-  }
+  const failure = mapVerifyResult(
+    await verifyPassword(parsed.data.commentId, parsed.data.password),
+  );
+  if (failure) return failure;
 
   // 4. 업데이트 — 갱신된 content/updatedAt을 반환해 클라이언트가 즉시 반영
   const [updated] = await db
@@ -216,18 +242,14 @@ export async function deleteComment(formData: {
   // 1. Zod 검증
   const parsed = deleteCommentSchema.safeParse(formData);
   if (!parsed.success) {
-    const firstError = parsed.error.issues[0]?.message ?? '입력값을 확인해주세요.';
-    return { success: false, error: firstError };
+    return { success: false, error: firstIssueMessage(parsed.error) };
   }
 
   // 2. 비밀번호 검증 (secrets 단독 조회)
-  const verified = await verifyPassword(parsed.data.commentId, parsed.data.password);
-  if (verified === 'not_found') {
-    return { success: false, error: '댓글을 찾을 수 없어요.' };
-  }
-  if (verified === 'wrong_password') {
-    return { success: false, error: '비밀번호가 일치하지 않아요. 다시 확인해주세요.' };
-  }
+  const failure = mapVerifyResult(
+    await verifyPassword(parsed.data.commentId, parsed.data.password),
+  );
+  if (failure) return failure;
 
   // 3. 삭제 (CASCADE로 대댓글·comment_secrets도 함께 삭제됨)
   await db.delete(comments).where(eq(comments.id, parsed.data.commentId));
@@ -239,13 +261,10 @@ export async function verifyCommentPassword(formData: {
   commentId: string;
   password: string;
 }): Promise<ActionResult> {
-  const verified = await verifyPassword(formData.commentId, formData.password);
-  if (verified === 'not_found') {
-    return { success: false, error: '댓글을 찾을 수 없어요.' };
-  }
-  if (verified === 'wrong_password') {
-    return { success: false, error: '비밀번호가 일치하지 않아요. 다시 확인해주세요.' };
-  }
+  const failure = mapVerifyResult(
+    await verifyPassword(formData.commentId, formData.password),
+  );
+  if (failure) return failure;
 
   return { success: true };
 }
