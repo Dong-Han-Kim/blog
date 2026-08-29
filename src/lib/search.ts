@@ -4,6 +4,8 @@
  * 부분 문자열. 빈 질의는 전체 목록.
  */
 
+import { countTags } from '@/lib/posts/tags';
+
 export interface SearchPost {
   slug: string;
   title: string;
@@ -28,13 +30,7 @@ export function filterPosts<T extends SearchPost>(
 
 /** 사용 빈도 상위 n개 태그 (0건 상태의 TRY 칩). 동률은 이름순으로 결정적 정렬 */
 export function topTags(posts: SearchPost[], n: number): string[] {
-  const counts = new Map<string, number>();
-  for (const post of posts) {
-    for (const tag of post.tags) {
-      counts.set(tag, (counts.get(tag) ?? 0) + 1);
-    }
-  }
-  return [...counts.entries()]
+  return [...countTags(posts).entries()]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .slice(0, n)
     .map(([tag]) => tag);

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getAllPosts, getPostsByTag, getPublishedPosts } from '@/lib/mdx';
+import { getPostsByTag, getPublishedPosts } from '@/lib/mdx';
+import { countTags } from '@/lib/posts/tags';
 import { PostList } from '@/components/posts/PostList';
 import { TagIndexPanel, type TagIndexEntry } from '@/components/posts/TagIndexPanel';
 import { PromptLine } from '@/components/terminal/PromptLine';
@@ -27,14 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 /** draft 제외 전체 글에서 태그 사용 빈도를 집계한다 (빈도 내림차순, 동률은 이름순) */
 function buildTagIndex(): TagIndexEntry[] {
-  const counts = new Map<string, number>();
-  getAllPosts()
-    .filter((post) => !post.draft)
-    .forEach((post) => {
-      post.tags.forEach((tag) => {
-        counts.set(tag, (counts.get(tag) ?? 0) + 1);
-      });
-    });
+  const counts = countTags(getPublishedPosts());
   return [...counts.entries()]
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));

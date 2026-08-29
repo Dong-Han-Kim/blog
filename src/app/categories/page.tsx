@@ -1,4 +1,5 @@
 import { getPublishedPosts } from '@/lib/mdx';
+import { countCategories } from '@/lib/posts/tags';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { PromptLine } from '@/components/terminal/PromptLine';
@@ -13,11 +14,7 @@ export const metadata: Metadata = {
 export default function CategoriesPage() {
   const allPosts = getPublishedPosts();
 
-  const categoryMap = new Map<string, number>();
-  allPosts.forEach((post) => {
-    categoryMap.set(post.category, (categoryMap.get(post.category) ?? 0) + 1);
-  });
-
+  const categoryMap = countCategories(allPosts);
   const categories = Array.from(categoryMap.entries()).sort((a, b) =>
     a[0].localeCompare(b[0])
   );
