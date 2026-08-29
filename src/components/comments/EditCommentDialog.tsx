@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ErrorLine } from '@/components/shared/ErrorLine';
 import { verifyCommentPassword } from '@/actions/comment';
 import { COMMENT_LIMITS } from '@/lib/validations/comment';
 
@@ -71,7 +72,7 @@ export function EditCommentDialog({ commentId, onVerified, children }: EditComme
               onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
               placeholder="비밀번호를 입력하세요"
             />
-            {error && <p className="mt-6 text-[11px] text-error">error: {error}</p>}
+            {error && <ErrorLine message={error} className="mt-6" />}
           </div>
           <div className="flex justify-end gap-10">
             <Button variant="ghost" className="h-44 px-20" onClick={() => setOpen(false)}>

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { ErrorLine } from '@/components/shared/ErrorLine';
 import { CommentAvatar } from './CommentAvatar';
 import { EditCommentDialog } from './EditCommentDialog';
 import { DeleteCommentDialog } from './DeleteCommentDialog';
@@ -173,9 +174,7 @@ export function CommentItem({
           {isEditing ? (
             <form onSubmit={handleSubmit(handleEditSubmit)} className="mt-12 space-y-12">
               <Textarea {...register('content')} rows={3} />
-              {errors.content && (
-                <p className="text-[11px] text-error">error: {errors.content.message}</p>
-              )}
+              {errors.content && <ErrorLine message={errors.content.message} />}
               <div className="flex gap-10">
                 <Button type="submit" disabled={isSubmittingEdit}>
                   {isSubmittingEdit ? '[ SENDING ]' : '수정 완료'}

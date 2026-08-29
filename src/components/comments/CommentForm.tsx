@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { BlinkCursor } from '@/components/terminal/BlinkCursor';
+import { ErrorLine } from '@/components/shared/ErrorLine';
 import { cn } from '@/lib/utils';
 import {
   COMMENT_LIMITS,
@@ -150,9 +151,7 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
               />
             </div>
             {errors.authorName && (
-              <p className="mt-8 text-[11px] text-error">
-                error: {errors.authorName.message}
-              </p>
+              <ErrorLine message={errors.authorName.message} className="mt-8" />
             )}
           </div>
           <div className="bg-bg-field p-[12px_16px]">
@@ -174,9 +173,7 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
               />
             </div>
             {errors.password && (
-              <p className="mt-8 text-[11px] text-error">
-                error: {errors.password.message}
-              </p>
+              <ErrorLine message={errors.password.message} className="mt-8" />
             )}
           </div>
         </div>
@@ -205,9 +202,7 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
           />
         </div>
         {errors.content && (
-          <p className="px-16 pb-12 text-[11px] text-error">
-            error: {errors.content.message}
-          </p>
+          <ErrorLine message={errors.content.message} className="px-16 pb-12" />
         )}
 
         {/* 푸터 — ⌘↵ 힌트 + SUBMIT (마크다운 미지원이라 힌트 표기 안 함, 설계 §7.6) */}
