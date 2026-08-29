@@ -9,6 +9,7 @@ import type { ComponentProps } from 'react';
 
 import { getAllPosts, getPostBySlug, getSeriesForPost } from '@/lib/mdx';
 import { sortPostsByDate } from '@/lib/posts/sort';
+import { tagHref } from '@/lib/routes';
 import { remarkStripFirstH1 } from '@/lib/remark-strip-title';
 import { crtTheme } from '@/lib/shiki-theme';
 import { Callout, CodeBlock, ImageWithCaption } from '@/components/mdx';
@@ -133,7 +134,7 @@ export default async function PostPage({ params }: PageProps) {
           {post.frontmatter.tags.map((tag) => (
             <Link
               key={tag}
-              href={`/tags/${encodeURIComponent(tag)}`}
+              href={tagHref(tag)}
               className="hover:text-text-strong"
             >
               #{tag}

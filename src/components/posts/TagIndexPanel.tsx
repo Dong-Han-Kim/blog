@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
+import { tagHref } from '@/lib/routes';
+
 /** 접힌 상태에서 보여줄 태그 칩 상한 (핸드오버 8c) */
 const VISIBLE_LIMIT = 16;
 
@@ -56,7 +58,7 @@ export function TagIndexPanel({ tags, current }: TagIndexPanelProps) {
           ) : (
             <li key={tag.name}>
               <Link
-                href={`/tags/${encodeURIComponent(tag.name)}`}
+                href={tagHref(tag.name)}
                 className="inline-block border border-text-faint px-9 py-4 text-[11px] leading-none text-text-muted hover:border-accent hover:text-text-strong"
               >
                 #{tag.name} <span className="text-text-faint">{tag.count}</span>

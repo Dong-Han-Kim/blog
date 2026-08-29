@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { tagHref } from '@/lib/routes';
 import type { PostMeta } from '@/types/common';
 
 interface PostRowProps {
@@ -60,7 +61,7 @@ export function PostRow({ post, index, showFilename = true }: PostRowProps) {
             {tags.map((tag) => (
               <li key={tag}>
                 <Link
-                  href={`/tags/${encodeURIComponent(tag)}`}
+                  href={tagHref(tag)}
                   // 24×24 최소 터치 타깃(WCAG 2.5.8) — 음수 마진으로 시각 리듬은 유지
                   className="relative z-10 -my-6 inline-flex min-h-24 min-w-24 items-center justify-center hover:text-text-strong"
                 >

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/mdx';
+import { tagHref } from '@/lib/routes';
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://blog92.vercel.app';
@@ -25,7 +26,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const tags = [...new Set(posts.flatMap((post) => post.tags))];
   const tagEntries: MetadataRoute.Sitemap = tags.map((tag) => ({
-    url: `${BASE_URL}/tags/${tag}`,
+    url: `${BASE_URL}${tagHref(tag)}`,
     changeFrequency: 'weekly',
     priority: 0.4,
   }));

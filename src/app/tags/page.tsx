@@ -1,4 +1,5 @@
 import { getAllPosts } from '@/lib/mdx';
+import { tagHref } from '@/lib/routes';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { PromptLine } from '@/components/terminal/PromptLine';
@@ -32,7 +33,7 @@ export default function TagsPage() {
         {tags.map(([name, count]) => (
           <Link
             key={name}
-            href={`/tags/${encodeURIComponent(name)}`}
+            href={tagHref(name)}
             className="border border-text-faint px-10 py-5 text-[11px] text-text-muted hover:border-accent hover:text-text-strong"
           >
             #{name} <span className="text-text-faint">{count}</span>
