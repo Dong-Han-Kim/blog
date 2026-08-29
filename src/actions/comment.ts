@@ -80,15 +80,7 @@ function serializeComment(row: {
 
 export async function getCommentsByPostSlug(postSlug: string): Promise<Comment[]> {
   const rows = await db
-    .select({
-      id: comments.id,
-      postSlug: comments.postSlug,
-      authorName: comments.authorName,
-      content: comments.content,
-      parentId: comments.parentId,
-      createdAt: comments.createdAt,
-      updatedAt: comments.updatedAt,
-    })
+    .select(commentColumns)
     .from(comments)
     .where(eq(comments.postSlug, postSlug))
     .orderBy(asc(comments.createdAt));
