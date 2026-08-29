@@ -1,8 +1,6 @@
 import { getAllPosts } from '@/lib/mdx';
 import { sortPostsByDate } from '@/lib/posts/sort';
-
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://blog92.vercel.app';
+import { SITE_URL } from '@/constants/site';
 
 function escapeXml(text: string): string {
   return text
@@ -22,8 +20,8 @@ export function GET() {
       (post) => `
     <item>
       <title>${escapeXml(post.title)}</title>
-      <link>${BASE_URL}/posts/${post.slug}</link>
-      <guid isPermaLink="true">${BASE_URL}/posts/${post.slug}</guid>
+      <link>${SITE_URL}/posts/${post.slug}</link>
+      <guid isPermaLink="true">${SITE_URL}/posts/${post.slug}</guid>
       <pubDate>${new Date(post.date).toUTCString()}</pubDate>
       <category>${escapeXml(post.category)}</category>
       ${post.description ? `<description>${escapeXml(post.description)}</description>` : ''}
@@ -35,11 +33,11 @@ export function GET() {
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>blog92</title>
-    <link>${BASE_URL}</link>
+    <link>${SITE_URL}</link>
     <description>blog92 기술 블로그</description>
     <language>ko</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
-    <atom:link href="${BASE_URL}/feed.xml" rel="self" type="application/rss+xml"/>${items}
+    <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml"/>${items}
   </channel>
 </rss>`;
 
