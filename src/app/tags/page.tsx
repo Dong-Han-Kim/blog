@@ -1,9 +1,9 @@
 import { getPublishedPosts } from '@/lib/mdx';
 import { countTags, sortTagsByCount } from '@/lib/posts/tags';
 import { tagHref } from '@/lib/routes';
-import Link from 'next/link';
 import type { Metadata } from 'next';
 import { IndexPageShell } from '@/components/shared/IndexPageShell';
+import { TerminalChip } from '@/components/terminal/TerminalChip';
 
 export const metadata: Metadata = {
   title: '태그',
@@ -20,13 +20,9 @@ export default function TagsPage() {
     <IndexPageShell command="ls tags/" title="태그">
       <div className="flex flex-wrap gap-8">
         {tags.map(([name, count]) => (
-          <Link
-            key={name}
-            href={tagHref(name)}
-            className="border border-text-faint px-10 py-5 text-[11px] text-text-muted hover:border-accent hover:text-text-strong"
-          >
+          <TerminalChip key={name} href={tagHref(name)}>
             #{name} <span className="text-text-faint">{count}</span>
-          </Link>
+          </TerminalChip>
         ))}
       </div>
     </IndexPageShell>

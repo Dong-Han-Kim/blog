@@ -17,6 +17,7 @@ import {
   type SearchPost,
 } from '@/lib/search';
 import { CRT_CHANGE_EVENT, getCrtEnabled, toggleCrt } from '@/lib/crt';
+import { TerminalChip } from '@/components/terminal/TerminalChip';
 
 /**
  * ⌘K 커맨드 팔레트 (설계 §7.7, 핸드오버 6a/7c/8a).
@@ -213,19 +214,17 @@ export function SearchCommand() {
                     TRY
                   </span>
                   {suggestedTags.map((tag) => (
-                    <button
+                    <TerminalChip
                       key={tag}
-                      type="button"
                       onClick={() => {
                         setQuery(tag);
                         // 칩 클릭으로 포커스가 버튼에 남으면 ↑↓/↵가 불능 —
                         // 입력창으로 복귀시켜 키보드 흐름 유지 (QA-M1)
                         inputRef.current?.focus();
                       }}
-                      className="border border-text-faint px-10 py-5 text-[11px] text-text-muted hover:border-accent hover:text-text-strong"
                     >
                       {tag}
-                    </button>
+                    </TerminalChip>
                   ))}
                 </div>
               </div>

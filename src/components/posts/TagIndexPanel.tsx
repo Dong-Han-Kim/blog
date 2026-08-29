@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 
+import { TerminalChip } from '@/components/terminal/TerminalChip';
 import { tagHref } from '@/lib/routes';
 
 /** 접힌 상태에서 보여줄 태그 칩 상한 (핸드오버 8c) */
@@ -48,36 +48,23 @@ export function TagIndexPanel({ tags, current }: TagIndexPanelProps) {
         {visible.map((tag) =>
           tag.name === current ? (
             <li key={tag.name}>
-              <span
-                aria-current="page"
-                className="inline-block bg-accent px-10 py-5 text-[11px] leading-none text-bg"
-              >
+              <TerminalChip variant="filled" ariaCurrent="page">
                 #{tag.name} <span className="opacity-60">{tag.count}</span>
-              </span>
+              </TerminalChip>
             </li>
           ) : (
             <li key={tag.name}>
-              <Link
-                href={tagHref(tag.name)}
-                // 24px 히트영역(WCAG 2.5.8) — 칩은 보더가 칠해지므로 09ccfcb의
-                // min-h+음수마진 기법을 쓸 수 없다. 투명 ::after로 포인터 타깃만 넓힌다.
-                className="relative inline-block border border-text-faint px-9 py-4 text-[11px] leading-none text-text-muted after:absolute after:inset-x-0 after:top-1/2 after:h-24 after:-translate-y-1/2 after:content-[''] hover:border-accent hover:text-text-strong"
-              >
+              <TerminalChip href={tagHref(tag.name)}>
                 #{tag.name} <span className="text-text-faint">{tag.count}</span>
-              </Link>
+              </TerminalChip>
             </li>
           )
         )}
         {hiddenCount > 0 && (
           <li>
-            <button
-              type="button"
-              onClick={() => setExpanded(true)}
-              // 24px 히트영역(WCAG 2.5.8) — 위 태그 칩과 동일 기법
-              className="relative border border-text-faint px-9 py-4 text-[11px] leading-none text-text-muted after:absolute after:inset-x-0 after:top-1/2 after:h-24 after:-translate-y-1/2 after:content-[''] hover:border-accent hover:text-text-strong"
-            >
+            <TerminalChip onClick={() => setExpanded(true)}>
               +{hiddenCount} more
-            </button>
+            </TerminalChip>
           </li>
         )}
       </ul>

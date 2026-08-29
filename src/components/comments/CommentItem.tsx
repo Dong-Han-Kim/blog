@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ErrorLine } from '@/components/shared/ErrorLine';
+import { TerminalChip } from '@/components/terminal/TerminalChip';
 import { CommentAvatar } from './CommentAvatar';
 import { EditCommentDialog } from './EditCommentDialog';
 import { DeleteCommentDialog } from './DeleteCommentDialog';
@@ -188,16 +189,15 @@ export function CommentItem({
 
           {/* 스레드 토글 — 답글 있는 루트 댓글만, 즉시 토글 (핸드오버 §2 댓글) */}
           {!isReply && replyCount > 0 && onToggleThread && (
-            <button
-              type="button"
+            <TerminalChip
               onClick={() => onToggleThread(comment.id)}
-              className="mt-14 inline-flex items-center gap-8 border border-text-faint px-10 py-5 text-[11px] text-text-muted hover:border-accent hover:text-text-strong"
+              className="mt-14 inline-flex items-center gap-8"
             >
               <span className="text-accent">{collapsed ? '[+]' : '[−]'}</span>
               <span>
                 답글 {replyCount}개 {collapsed ? '펼치기' : '접기'}
               </span>
-            </button>
+            </TerminalChip>
           )}
 
           {showReplyForm && (
