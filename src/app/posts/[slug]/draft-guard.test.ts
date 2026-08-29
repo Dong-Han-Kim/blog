@@ -24,11 +24,11 @@ const NOT_FOUND = 'NEXT_HTTP_ERROR_FALLBACK;404';
 
 const post = {
   frontmatter: {
-    title: '초안 제목',
+    title: '글 제목',
     date: '2026-01-01',
     category: 'til',
     tags: ['t'],
-    description: '초안 설명',
+    description: '글 설명',
     keywords: ['k'],
     draft: false,
     slug: 'sample',
@@ -107,7 +107,7 @@ describe('초안 글은 개발 환경에서 접근할 수 있다 (로컬 미리�
     const { generateMetadata } = await loadRoute();
 
     await expect(generateMetadata(params())).resolves.toMatchObject({
-      title: '초안 제목',
+      title: '글 제목',
     });
   });
 
@@ -127,8 +127,8 @@ describe('발행 글은 두 환경 모두에서 정상이다 (가드 과차단 �
       const { generateMetadata } = await loadRoute();
 
       await expect(generateMetadata(params())).resolves.toMatchObject({
-        title: '초안 제목',
-        description: '초안 설명',
+        title: '글 제목',
+        description: '글 설명',
       });
     });
 

@@ -6,8 +6,11 @@
  * 레벨 싱글턴이라 그 상태가 서버 프로세스의 모든 요청에 걸쳐 누적되고, 결과가
  * 요청마다 true/false로 진동한다(= 스팸이 그냥 통과한다).
  * `test()`는 존재 여부만 보므로 `g`로 얻는 이득도 없다.
+ *
+ * 주석만으로는 다음에 추가되는 패턴을 막지 못하므로 배열을 export해
+ * banned-words.test.ts가 플래그를 구조적으로 단언한다.
  */
-const BANNED_PATTERNS: RegExp[] = [
+export const BANNED_PATTERNS: RegExp[] = [
   /카지노/i,
   /도박/i,
   /대출/i,

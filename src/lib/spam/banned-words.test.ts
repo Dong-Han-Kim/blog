@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { containsBannedWord } from './banned-words';
+import { BANNED_PATTERNS, containsBannedWord } from './banned-words';
 
 const SPAM_SAMPLES = [
   ['카지노', '무료 카지노 가입 이벤트'],
@@ -79,5 +79,19 @@ describe('containsBannedWord', () => {
       const sequence = ['도박 사이트', '좋은 글이네요', '도박 사이트', '좋은 글이네요'];
       expect(sequence.map(containsBannedWord)).toEqual([true, false, true, false]);
     });
+  });
+});
+
+describe('패턴 플래그 — 상태 오염 재발 방지 (개수 무관)', () => {
+  it('어떤 패턴에도 g 플래그가 없다', () => {
+    // g가 하나라도 섞이면 그 패턴의 lastIndex가 요청 간 누적돼
+    // 스팸이 한 건 걸릴 때마다 다음 한 건이 통과한다.
+    const withG = BANNED_PATTERNS.filter((p) => p.global).map((p) => p.source);
+    expect(withG).toEqual([]);
+  });
+
+  it('모든 패턴이 대소문자를 무시한다', () => {
+    const withoutI = BANNED_PATTERNS.filter((p) => !p.ignoreCase).map((p) => p.source);
+    expect(withoutI).toEqual([]);
   });
 });
