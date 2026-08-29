@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getAllPosts } from '@/lib/mdx';
+import { sortPostsByDate } from '@/lib/posts/sort';
 import { BlinkCursor } from '@/components/terminal/BlinkCursor';
 import { DottedRule } from '@/components/terminal/DottedRule';
 import { PROMPT } from '@/components/terminal/PromptLine';
@@ -11,10 +12,9 @@ import { NotFoundPath } from '@/components/shared/NotFoundPath';
  * 경로가 클라이언트에서만 확정되어 서버 렌더와 상충 (설계 D9).
  */
 export default function NotFound() {
-  const recentPosts = getAllPosts()
-    .filter((post) => !post.draft)
-    .sort((a, b) => (a.date < b.date ? 1 : -1))
-    .slice(0, 2);
+  const recentPosts = sortPostsByDate(
+    getAllPosts().filter((post) => !post.draft),
+  ).slice(0, 2);
 
   const suggestions = [
     ...recentPosts.map((post) => ({
