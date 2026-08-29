@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,16 +13,12 @@ import { DeleteCommentDialog } from './DeleteCommentDialog';
 import { CommentForm } from './CommentForm';
 import { updateComment } from '@/actions/comment';
 import { formatCommentTime } from '@/lib/comments/format';
+import { updateCommentSchema } from '@/lib/validations/comment';
 import { SITE_OWNER_NAME } from '@/constants/site';
 import { cn } from '@/lib/utils';
 import type { Comment, CommentWithChildren } from '@/types/comment';
 
-const editContentSchema = z.object({
-  content: z
-    .string()
-    .min(1, '댓글 내용을 입력해주세요.')
-    .max(1000, '댓글은 1000자 이하여야 합니다.'),
-});
+const editContentSchema = updateCommentSchema.pick({ content: true });
 
 interface CommentItemProps {
   comment: CommentWithChildren;

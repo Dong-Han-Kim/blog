@@ -6,12 +6,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { BlinkCursor } from '@/components/terminal/BlinkCursor';
 import { cn } from '@/lib/utils';
-import { commentFormSchema, type CommentFormData } from '@/lib/validations/comment';
+import {
+  COMMENT_LIMITS,
+  commentFormSchema,
+  type CommentFormData,
+} from '@/lib/validations/comment';
 import { createComment } from '@/actions/comment';
 import type { Comment } from '@/types/comment';
-
-const CONTENT_MAX = 1000; // 서버 규칙 우선 (설계 D11 — 핸드오버 500자 대신 1000자)
-const CONTENT_WARN = 800; // 카운터 accent 전환 지점 (핸드오버 400/500 비율 적용)
 
 interface CommentFormProps {
   postSlug: string;
@@ -92,9 +93,9 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
   };
 
   const counterClass =
-    contentLength >= CONTENT_MAX
+    contentLength >= COMMENT_LIMITS.CONTENT_MAX
       ? 'text-error'
-      : contentLength > CONTENT_WARN
+      : contentLength > COMMENT_LIMITS.CONTENT_WARN
         ? 'text-accent'
         : 'text-text-dim';
 
@@ -123,7 +124,7 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
             {parentId ? 'REPLY' : 'NEW COMMENT'}
           </span>
           <span className={counterClass}>
-            {contentLength} / {CONTENT_MAX}
+            {contentLength} / {COMMENT_LIMITS.CONTENT_MAX}
           </span>
         </div>
 
@@ -194,7 +195,7 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
           <textarea
             id={`${fieldId}-content`}
             rows={4}
-            maxLength={CONTENT_MAX}
+            maxLength={COMMENT_LIMITS.CONTENT_MAX}
             spellCheck={false}
             placeholder="댓글을 입력하세요..."
             aria-label="댓글"

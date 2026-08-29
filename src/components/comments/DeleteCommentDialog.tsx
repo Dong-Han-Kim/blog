@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { deleteComment } from '@/actions/comment';
+import { COMMENT_LIMITS } from '@/lib/validations/comment';
 
 interface DeleteCommentDialogProps {
   commentId: string;
@@ -85,7 +86,7 @@ export function DeleteCommentDialog({ commentId, onDeleted, children }: DeleteCo
               variant="destructive"
               className="h-44 px-24"
               onClick={handleDelete}
-              disabled={isLoading || password.length < 4}
+              disabled={isLoading || password.length < COMMENT_LIMITS.PASSWORD_MIN}
             >
               {isLoading ? '삭제 중...' : '삭제'}
             </Button>

@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { verifyCommentPassword } from '@/actions/comment';
+import { COMMENT_LIMITS } from '@/lib/validations/comment';
 
 interface EditCommentDialogProps {
   commentId: string;
@@ -76,7 +77,7 @@ export function EditCommentDialog({ commentId, onVerified, children }: EditComme
             <Button variant="ghost" className="h-44 px-20" onClick={() => setOpen(false)}>
               취소
             </Button>
-            <Button className="h-44 px-24" onClick={handleVerify} disabled={isLoading || password.length < 4}>
+            <Button className="h-44 px-24" onClick={handleVerify} disabled={isLoading || password.length < COMMENT_LIMITS.PASSWORD_MIN}>
               {isLoading ? '확인 중...' : '확인'}
             </Button>
           </div>
