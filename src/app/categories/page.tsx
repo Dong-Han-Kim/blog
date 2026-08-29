@@ -3,8 +3,7 @@ import { countCategories } from '@/lib/posts/tags';
 import { compareStrings } from '@/lib/posts/sort';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { PromptLine } from '@/components/terminal/PromptLine';
-import { FooterPrompt } from '@/components/terminal/FooterPrompt';
+import { IndexPageShell } from '@/components/shared/IndexPageShell';
 
 export const metadata: Metadata = {
   title: '카테고리',
@@ -20,11 +19,7 @@ export default function CategoriesPage() {
   );
 
   return (
-    <>
-      <PromptLine command="ls categories/" className="mt-40 mb-26" />
-      <h1 className="mb-44 font-display text-wordmark text-text-strong max-md:text-[19px]">
-        카테고리
-      </h1>
+    <IndexPageShell command="ls categories/" title="카테고리">
       <div className="grid grid-cols-3 gap-12 max-md:grid-cols-1 md:max-lg:grid-cols-2">
         {categories.map(([name, count]) => (
           <Link
@@ -37,7 +32,6 @@ export default function CategoriesPage() {
           </Link>
         ))}
       </div>
-      <FooterPrompt command="cd .." cursor className="mt-48" />
-    </>
+    </IndexPageShell>
   );
 }

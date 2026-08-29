@@ -1,8 +1,7 @@
 import { getPublishedPosts } from '@/lib/mdx';
 import type { Metadata } from 'next';
 import { PostList } from '@/components/posts/PostList';
-import { PromptLine } from '@/components/terminal/PromptLine';
-import { FooterPrompt } from '@/components/terminal/FooterPrompt';
+import { IndexPageShell } from '@/components/shared/IndexPageShell';
 
 export const metadata: Metadata = {
   title: '전체 글 목록',
@@ -15,13 +14,8 @@ export default function PostsPage() {
   const allPosts = getPublishedPosts();
 
   return (
-    <>
-      <PromptLine command="ls posts/" className="mt-40 mb-26" />
-      <h1 className="mb-44 font-display text-wordmark text-text-strong max-md:text-[19px]">
-        전체 글
-      </h1>
+    <IndexPageShell command="ls posts/" title="전체 글">
       <PostList posts={allPosts} />
-      <FooterPrompt command="cd .." cursor className="mt-48" />
-    </>
+    </IndexPageShell>
   );
 }
