@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { CategoryBadge } from '@/components/terminal/CategoryBadge';
 import { cn } from '@/lib/utils';
 import type { SeriesInfo } from '@/lib/mdx';
 
@@ -15,8 +16,7 @@ interface SeriesNavProps {
  * - 현재 편: ▸ + accent 하이라이트, 링크 아님 (aria-current)
  * - 현재 글이 draft(currentIndex === -1)면 하이라이트·PREV/NEXT 없이 목록만,
  *   카운터는 `(N편)` 표기 (설계 §6.5)
- * - 배지 배경은 설계의 text-faint 대신 text-dim — CategoryBadge와 동일한
- *   WCAG AA 승급 관례(faint 역상은 대비 3.82 불합격, fix-contrast-aa)
+ * - [SERIES] 배지는 CategoryBadge 프리미티브 재사용 (역상 대비 근거는 거기 주석 참조)
  */
 export function SeriesNav({ series, className }: SeriesNavProps) {
   const { name, posts, currentIndex, prev, next } = series;
@@ -33,9 +33,7 @@ export function SeriesNav({ series, className }: SeriesNavProps) {
       {/* 헤더 행: [SERIES] 배지 + 시리즈명 + 편수 카운터 */}
       <div className="flex items-center justify-between gap-12 border-b border-rule-inner p-[12px_14px]">
         <div className="flex min-w-0 items-center gap-12">
-          <span className="inline-block shrink-0 bg-text-dim px-8 py-3 text-meta leading-none text-bg">
-            SERIES
-          </span>
+          <CategoryBadge category="SERIES" className="shrink-0" />
           <span className="truncate text-[13px] text-text-body">{name}</span>
         </div>
         <span className="shrink-0 text-meta text-text-faint">{counter}</span>

@@ -14,7 +14,9 @@ interface CategoryBadgeProps {
  */
 export function CategoryBadge({ category, href, className }: CategoryBadgeProps) {
   const badgeClass = cn(
-    'inline-block bg-text-dim px-8 py-3 text-meta leading-none text-bg',
+    // text-meta(명명 토큰)는 tailwind-merge가 색상으로 오인해 뒤의 text-bg에 밀려
+    // 제거된다 — 11px가 실제로 적용되도록 arbitrary 값으로 고정한다 (reuse-audit D-1)
+    'inline-block bg-text-dim px-8 py-3 text-[11px] leading-none text-bg',
     className
   );
 

@@ -4,7 +4,9 @@ import { useId, useRef, useState, type KeyboardEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { Button } from '@/components/ui/button';
 import { BlinkCursor } from '@/components/terminal/BlinkCursor';
+import { TerminalButton } from '@/components/terminal/TerminalButton';
 import { ErrorLine } from '@/components/shared/ErrorLine';
 import { cn } from '@/lib/utils';
 import {
@@ -215,26 +217,20 @@ export function CommentForm({ postSlug, parentId, onCancel, onSuccess }: Comment
               </span>
             )}
             {onCancel && (
-              <button
-                type="button"
-                onClick={onCancel}
-                className="border border-text-faint px-16 py-8 text-[12px] text-text-muted hover:border-accent hover:text-text-strong"
-              >
-                취소
-              </button>
+              <TerminalButton onClick={onCancel}>취소</TerminalButton>
             )}
-            <button
+            <Button
               type="submit"
               disabled={submitDisabled}
               className={cn(
-                'px-18 py-8 text-[12px]',
-                submitDisabled
-                  ? 'pointer-events-none bg-track text-text-dim'
-                  : 'bg-text-dim text-bg hover:bg-accent'
+                // disabled 표현은 현행 유지 — ui/Button 기본 disabled:opacity-50 대신
+                // 회색 채움(bg-track)과 포인터 차단을 쓴다 (D-1.5). opacity-100으로 무력화.
+                submitDisabled &&
+                  'pointer-events-none bg-track text-text-dim disabled:opacity-100',
               )}
             >
               {isSubmitting ? '[ SENDING ]' : '[ SUBMIT ]'}
-            </button>
+            </Button>
           </div>
         </div>
       </form>
