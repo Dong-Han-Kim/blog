@@ -31,17 +31,23 @@ export function EditCommentDialog({ commentId, onVerified, children }: EditComme
     setError('');
     setIsLoading(true);
 
-    const result = await verifyCommentPassword({ commentId, password });
+    // 서버 액션이 throw하는 실패(네트워크/500)도 에러 표시로 수렴하고,
+    // 어떤 경로든 로딩 상태를 반드시 해제한다 (DeleteCommentDialog와 동형)
+    try {
+      const result = await verifyCommentPassword({ commentId, password });
 
-    if (result.success) {
-      setOpen(false);
-      onVerified(password);
-      setPassword('');
-    } else {
-      setError(result.error ?? '일시적인 오류가 발생했어요.');
+      if (result.success) {
+        setOpen(false);
+        onVerified(password);
+        setPassword('');
+      } else {
+        setError(result.error ?? '일시적인 오류가 발생했어요.');
+      }
+    } catch {
+      setError('일시적인 오류가 발생했어요. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (
