@@ -4,6 +4,7 @@ import { Default_Nav_items } from '@/constants/menu';
 import { CATEGORY_CONTENT } from '@/constants/category-content';
 import { CategoryTabs } from '@/components/posts/CategoryTabs';
 import { PostList } from '@/components/posts/PostList';
+import { ArchiveHeader } from '@/components/shared/ArchiveHeader';
 import { DottedRule } from '@/components/terminal/DottedRule';
 import { FooterPrompt } from '@/components/terminal/FooterPrompt';
 import { PromptLine } from '@/components/terminal/PromptLine';
@@ -51,22 +52,13 @@ export default async function CategoryPage({ params }: PageProps) {
   return (
     <>
       <PromptLine command={`cd categories/${slug}`} className="mt-44 mb-26" />
-      <header className="mb-44 flex items-end justify-between gap-32">
-        <div>
-          <h1 className="font-display text-cat-title text-text-strong uppercase">
-            {content?.name ?? category}
-          </h1>
-          {content?.description && (
-            <p className="mt-12 text-[13px] leading-[2] text-text-muted">
-              {content.description}
-            </p>
-          )}
-        </div>
-        <div className="shrink-0 text-right text-[11px] leading-[2] text-text-dim">
-          <div>{posts.length} ENTRIES</div>
-          <div className="text-text-faint">categories/{slug}/</div>
-        </div>
-      </header>
+      <ArchiveHeader
+        title={content?.name ?? category}
+        titleClassName="text-cat-title uppercase"
+        description={content?.description}
+        entryCount={posts.length}
+        path={`categories/${slug}/`}
+      />
       <CategoryTabs active={slug} />
       {posts.length === 0 ? (
         <section>

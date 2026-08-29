@@ -4,6 +4,7 @@ import { getPostsByTag, getPublishedPosts } from '@/lib/mdx';
 import { countTags, sortTagsByCount } from '@/lib/posts/tags';
 import { PostList } from '@/components/posts/PostList';
 import { TagIndexPanel, type TagIndexEntry } from '@/components/posts/TagIndexPanel';
+import { ArchiveHeader } from '@/components/shared/ArchiveHeader';
 import { PromptLine } from '@/components/terminal/PromptLine';
 
 interface PageProps {
@@ -58,20 +59,13 @@ export default async function TagPage({ params }: PageProps) {
         command={`grep -rl "#${decoded}" posts/`}
         className="mt-44 mb-26"
       />
-      <header className="mb-40 flex items-end justify-between gap-32">
-        <div>
-          <h1 className="font-display text-[40px] leading-[1.3] text-text-strong">
-            #{decoded}
-          </h1>
-          <p className="mt-12 text-[12px] leading-[2] text-text-muted">
-            이 태그가 달린 글
-          </p>
-        </div>
-        <div className="shrink-0 text-right text-[11px] leading-[2] text-text-dim">
-          <div>{publishedPosts.length} ENTRIES</div>
-          <div className="text-text-faint">tags/{decoded.toLowerCase()}/</div>
-        </div>
-      </header>
+      <ArchiveHeader
+        title={`#${decoded}`}
+        titleClassName="text-[40px] leading-[1.3]"
+        description="이 태그가 달린 글"
+        entryCount={publishedPosts.length}
+        path={`tags/${decoded.toLowerCase()}/`}
+      />
       <TagIndexPanel tags={tagIndex} current={decoded} />
       <PostList posts={publishedPosts} />
     </>
