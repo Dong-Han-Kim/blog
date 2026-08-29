@@ -9,6 +9,7 @@ import type { ComponentProps } from 'react';
 
 import { getPostBySlug, getPublishedPosts, getSeriesForPost } from '@/lib/mdx';
 import { sortPostsByDate } from '@/lib/posts/sort';
+import { isPostViewable } from '@/lib/posts/visibility';
 import { tagHref } from '@/lib/routes';
 import { remarkStripFirstH1 } from '@/lib/remark-strip-title';
 import { crtTheme } from '@/lib/shiki-theme';
@@ -49,10 +50,21 @@ export async function generateStaticParams() {
   return getPublishedPosts().map((post) => ({ slug: post.slug }));
 }
 
+// 초안 차단 가드 — 목록/피드/사이트맵/검색은 getPublishedPosts()로 이미 걸러지므로
+// 남은 노출 경로는 URL 직접 접근뿐이다. mdx.ts의 getPostBySlug는 draft를 그대로
+// 돌려주는 것이 계약이라(mdx.contract.test.ts) 차단은 라우트에서 한다.
+// ⚠️ 반드시 기존 notFound() 경로를 그대로 쓴다 — 전용 화면이나 다른 응답을 주면
+//    "이 slug는 존재하지만 미발행"이라는 사실 자체가 새는 정보가 되므로,
+//    미존재 slug의 404와 구분되지 않아야 한다.
+// ⚠️ generateMetadata와 본문 양쪽에 건다 — 본문만 막으면 초안 제목·설명이
+//    <head>로 새어 나간다.
+// 프로덕션에서만 닫는 근거는 lib/posts/visibility.ts 참조(로컬 초안 미리보기 보존).
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = getPostBySlug(slug);
   if (!post) return {};
+  if (!isPostViewable(post.frontmatter)) notFound();
 
   return {
     title: post.frontmatter.title,
@@ -77,6 +89,8 @@ export default async function PostPage({ params }: PageProps) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
   if (!post) notFound();
+  // 초안 차단 (위 generateMetadata 상단 주석 참조)
+  if (!isPostViewable(post.frontmatter)) notFound();
 
   const { content: mdxContent } = await compileMDX({
     source: post.content,
