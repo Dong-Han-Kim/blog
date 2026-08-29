@@ -1,13 +1,45 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { postFrontmatterSchema } from './validations/posts';
+import {
+  postFrontmatterSchema,
+  type PostFrontmatter,
+} from './validations/posts';
 import { calcReadingTime } from './reading-time';
 import { notFound, redirect } from 'next/navigation';
 import { ZodError } from 'zod';
 import { PostMeta } from '@/types/common';
 
 const postsDirectory = path.join(process.cwd(), 'content', 'posts');
+
+/** md 파일 1건의 파싱 결과 — 검증 완료 frontmatter + 본문 + 파생 읽기 시간 */
+interface ParsedPostFile {
+  frontmatter: PostFrontmatter;
+  content: string;
+  readingTime: number;
+}
+
+/**
+ * md 파일 1건을 읽어 frontmatter(zod 검증)·본문·읽기 시간으로 분해한다.
+ *
+ * ⚠️ 이 함수는 **절대 try/catch를 갖지 않고 notFound()/redirect()를 호출하지 않는다.**
+ * ENOENT·ZodError를 그대로 호출자에게 던지는 것이 계약이며, 호출자(getAllPosts /
+ * getPostBySlug / getPostsByCategory)의 catch가 함수별로 다른 정책을 적용한다.
+ * 여기서 예외를 삼키면 QA-H1 소프트 404가 재발한다 (reuse-audit C-1.I1).
+ */
+function readPostFile(filePath: string): ParsedPostFile {
+  const fileContents = fs.readFileSync(filePath, 'utf-8');
+  const { data, content } = matter(fileContents);
+  const frontmatter = postFrontmatterSchema.parse(data);
+
+  return { frontmatter, content, readingTime: calcReadingTime(content) };
+}
+
+/** 파일 경로 + slug → PostMeta. readPostFile과 동일 계약(try/catch·notFound 금지) */
+function parsePostFile(filePath: string, slug: string): PostMeta {
+  const { frontmatter, readingTime } = readPostFile(filePath);
+  return { ...frontmatter, slug, readingTime };
+}
 
 export function getAllPosts(): PostMeta[] {
   try {
@@ -21,18 +53,9 @@ export function getAllPosts(): PostMeta[] {
         .readdirSync(categoryDir)
         .filter((file) => file.endsWith('.md'));
 
-      return files.map((file) => {
-        const filePath = path.join(categoryDir, file);
-        const fileContents = fs.readFileSync(filePath, 'utf-8');
-        const { data, content } = matter(fileContents);
-        const frontmatter = postFrontmatterSchema.parse(data);
-
-        return {
-          ...frontmatter,
-          slug: file.replace(/\.md$/, ''),
-          readingTime: calcReadingTime(content),
-        };
-      });
+      return files.map((file) =>
+        parsePostFile(path.join(categoryDir, file), file.replace(/\.md$/, '')),
+      );
     });
 
     return allPosts;
@@ -64,12 +87,10 @@ export function getPostBySlug(slug: string) {
       const filePath = path.join(categoryDir, `${slug}.md`);
       if (!fs.existsSync(filePath)) continue;
 
-      const file = fs.readFileSync(filePath, 'utf-8');
-      const { data, content } = matter(file);
-      const frontmatter = postFrontmatterSchema.parse(data);
+      const { frontmatter, content, readingTime } = readPostFile(filePath);
 
       return {
-        frontmatter: { ...frontmatter, slug, readingTime: calcReadingTime(content) },
+        frontmatter: { ...frontmatter, slug, readingTime },
         content,
       };
     }
@@ -101,18 +122,9 @@ export function getPostsByCategory(category: string): PostMeta[] {
       .readdirSync(categoryDir)
       .filter((file) => file.endsWith('.md'));
 
-    return files.map((file) => {
-      const filePath = path.join(categoryDir, file);
-      const fileContents = fs.readFileSync(filePath, 'utf-8');
-      const { data, content } = matter(fileContents);
-      const frontmatter = postFrontmatterSchema.parse(data);
-
-      return {
-        ...frontmatter,
-        slug: file.replace(/\.md$/, ''),
-        readingTime: calcReadingTime(content),
-      };
-    });
+    return files.map((file) =>
+      parsePostFile(path.join(categoryDir, file), file.replace(/\.md$/, '')),
+    );
   } catch (error: unknown) {
     if (error instanceof ZodError) {
       console.error(
