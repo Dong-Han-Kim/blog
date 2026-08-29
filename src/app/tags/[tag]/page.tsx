@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getAllPosts, getPostsByTag } from '@/lib/mdx';
+import { getAllPosts, getPostsByTag, getPublishedPosts } from '@/lib/mdx';
 import { PostList } from '@/components/posts/PostList';
 import { TagIndexPanel, type TagIndexEntry } from '@/components/posts/TagIndexPanel';
 import { PromptLine } from '@/components/terminal/PromptLine';
@@ -10,7 +10,8 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  const posts = getAllPosts();
+  // draft 전용 태그는 페이지 단에서 0건 → notFound()라 프리렌더 가치가 없다 (결정 D-4ⓐ)
+  const posts = getPublishedPosts();
   const tags = [...new Set(posts.flatMap((p) => p.tags))];
   return tags.map((tag) => ({ tag }));
 }

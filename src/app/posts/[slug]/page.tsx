@@ -7,12 +7,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import type { ComponentProps } from 'react';
 
-import {
-  getAllPosts,
-  getPostBySlug,
-  getPublishedPosts,
-  getSeriesForPost,
-} from '@/lib/mdx';
+import { getPostBySlug, getPublishedPosts, getSeriesForPost } from '@/lib/mdx';
 import { sortPostsByDate } from '@/lib/posts/sort';
 import { tagHref } from '@/lib/routes';
 import { remarkStripFirstH1 } from '@/lib/remark-strip-title';
@@ -51,10 +46,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  const posts = getAllPosts();
-  return posts
-    .filter((post) => !post.draft)
-    .map((post) => ({ slug: post.slug }));
+  return getPublishedPosts().map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

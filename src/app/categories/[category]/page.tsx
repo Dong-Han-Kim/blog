@@ -14,6 +14,9 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
+  // ⚠️ getPublishedPosts()로 바꾸지 않는다 (결정 D-4ⓐ, reuse-audit C-4).
+  // Default_Nav_items 합집합으로 "글이 없는 네비 카테고리"까지 프리렌더하는 것이 의도이며,
+  // draft 필터 유무와 무관하게 이 의도가 유지되어야 한다.
   const posts = getAllPosts();
   const postCategories = posts.map((p) => p.category);
   const navCategories = Default_Nav_items
