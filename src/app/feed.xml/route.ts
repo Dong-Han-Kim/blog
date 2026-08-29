@@ -1,4 +1,4 @@
-import { getAllPosts } from '@/lib/mdx';
+import { getPublishedPosts } from '@/lib/mdx';
 import { sortPostsByDate } from '@/lib/posts/sort';
 import { SITE_URL } from '@/constants/site';
 
@@ -13,7 +13,7 @@ function escapeXml(text: string): string {
 
 export function GET() {
   // 정렬은 정본 함수(lib/posts/sort.ts, 기본 newest) — 피드는 draft 필터만
-  const posts = sortPostsByDate(getAllPosts().filter((post) => !post.draft));
+  const posts = sortPostsByDate(getPublishedPosts());
 
   const items = posts
     .map(

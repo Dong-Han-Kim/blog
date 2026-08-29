@@ -1,4 +1,4 @@
-import { getAllPosts } from '@/lib/mdx';
+import { getPublishedPosts } from '@/lib/mdx';
 import type { Metadata } from 'next';
 import { PostList } from '@/components/posts/PostList';
 import { PromptLine } from '@/components/terminal/PromptLine';
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 // 미디자인 인덱스 — 톤만 맞춤 (설계 §7.10). Card 그리드 → 홈과 동일 PostList 재사용
 export default function PostsPage() {
   // 정렬은 PostList가 정본 함수(lib/posts/sort.ts)로 수행 — 페이지는 draft 필터만
-  const allPosts = getAllPosts().filter((post) => !post.draft);
+  const allPosts = getPublishedPosts();
 
   return (
     <>

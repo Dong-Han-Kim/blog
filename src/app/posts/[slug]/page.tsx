@@ -7,7 +7,12 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import type { ComponentProps } from 'react';
 
-import { getAllPosts, getPostBySlug, getSeriesForPost } from '@/lib/mdx';
+import {
+  getAllPosts,
+  getPostBySlug,
+  getPublishedPosts,
+  getSeriesForPost,
+} from '@/lib/mdx';
 import { sortPostsByDate } from '@/lib/posts/sort';
 import { tagHref } from '@/lib/routes';
 import { remarkStripFirstH1 } from '@/lib/remark-strip-title';
@@ -67,7 +72,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 function getAdjacentPosts(currentSlug: string) {
   // 정렬은 정본 함수(lib/posts/sort.ts, 기본 newest) — 최신순 기준 prev=이전(더 오래된) 글.
   // 동일 날짜 글의 prev/next는 같은 시리즈+seriesOrder면 시리즈 순서, 그 외 그룹 키(시리즈명/slug) tie-break로 결정화된다
-  const allPosts = sortPostsByDate(getAllPosts().filter((post) => !post.draft));
+  const allPosts = sortPostsByDate(getPublishedPosts());
 
   const currentIndex = allPosts.findIndex((post) => post.slug === currentSlug);
   return {

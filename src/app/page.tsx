@@ -1,4 +1,4 @@
-import { getAllPosts } from '@/lib/mdx';
+import { getPublishedPosts } from '@/lib/mdx';
 import { CATEGORY_CONTENT } from '@/constants/category-content';
 import { CategoryTabs } from '@/components/posts/CategoryTabs';
 import { PostList } from '@/components/posts/PostList';
@@ -10,7 +10,7 @@ import { FooterPrompt } from '@/components/terminal/FooterPrompt';
  */
 export default function Home() {
   // 정렬은 PostList가 정본 함수(lib/posts/sort.ts)로 수행 — 페이지는 draft 필터만
-  const posts = getAllPosts().filter((post) => !post.draft);
+  const posts = getPublishedPosts();
 
   const categoryCount = Object.keys(CATEGORY_CONTENT).length;
   const year = new Date().getFullYear();

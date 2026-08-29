@@ -1,7 +1,7 @@
-import { getAllPosts } from '@/lib/mdx';
+import { getPublishedPosts } from '@/lib/mdx';
 
 export function GET() {
-  const posts = getAllPosts().filter((post) => !post.draft);
+  const posts = getPublishedPosts();
 
   const index = posts.map((post) => ({
     slug: post.slug,

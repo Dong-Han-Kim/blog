@@ -1,4 +1,4 @@
-import { getAllPosts } from '@/lib/mdx';
+import { getPublishedPosts } from '@/lib/mdx';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { PromptLine } from '@/components/terminal/PromptLine';
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 // 미디자인 인덱스 — 구조(집계·그리드) 불변, CRT 토큰으로 톤만 맞춤 (설계 §7.10)
 export default function CategoriesPage() {
-  const allPosts = getAllPosts().filter((post) => !post.draft);
+  const allPosts = getPublishedPosts();
 
   const categoryMap = new Map<string, number>();
   allPosts.forEach((post) => {

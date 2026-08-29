@@ -94,6 +94,18 @@ export function getAllPosts(): PostMeta[] {
   }
 }
 
+/**
+ * 발행(비-draft) 포스트 목록 정본 (reuse-audit C-3 / H2-a).
+ *
+ * ⚠️ 정렬하지 않는다 — 정렬 정본은 lib/posts/sort.ts의 sortPostsByDate다.
+ *    여기서 정렬을 끼워 넣으면 호출부의 기존 정렬과 이중 적용된다 (C-3.I2).
+ * ⚠️ 자체 try/catch를 두지 않는다 — getAllPosts()의 에러 정책(redirect/notFound)에
+ *    그대로 위임한다 (C-3.I4, C-1.I1과 동일 근거).
+ */
+export function getPublishedPosts(): PostMeta[] {
+  return getAllPosts().filter((post) => !post.draft);
+}
+
 export function getPostBySlug(slug: string) {
   try {
     const categories = fs.readdirSync(postsDirectory);

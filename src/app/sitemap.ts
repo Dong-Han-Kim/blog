@@ -1,10 +1,10 @@
 import type { MetadataRoute } from 'next';
-import { getAllPosts } from '@/lib/mdx';
+import { getPublishedPosts } from '@/lib/mdx';
 import { tagHref } from '@/lib/routes';
 import { SITE_URL } from '@/constants/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const posts = getAllPosts().filter((post) => !post.draft);
+  const posts = getPublishedPosts();
 
   const postEntries: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${SITE_URL}/posts/${post.slug}`,
