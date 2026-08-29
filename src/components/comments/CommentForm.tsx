@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { BlinkCursor } from '@/components/terminal/BlinkCursor';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 import { commentFormSchema, type CommentFormData } from '@/lib/validations/comment';
 import { createComment } from '@/actions/comment';
 import type { Comment } from '@/types/comment';

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 interface TocItem {
   id: string;

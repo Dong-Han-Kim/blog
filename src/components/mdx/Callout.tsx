@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 // 기존 콘텐츠 호환을 위해 타입 4종 유지, 라벨만 `! {LABEL}` 패턴으로 매핑 (설계 §7.5)
 const LABELS = {

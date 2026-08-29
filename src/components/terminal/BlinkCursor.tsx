@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 // 핸드오버 커서 블록: md 9×15(기본) / lg 11×20(워드마크) / sm 8×14(모바일)
 const SIZE_CLASS = {

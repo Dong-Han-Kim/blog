@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 import type { SeriesInfo } from '@/lib/mdx';
 
 interface SeriesNavProps {

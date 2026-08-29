@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 interface TerminalButtonProps {
   children: ReactNode;

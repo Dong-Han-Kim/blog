@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 /** 라벨 끝 화살표 → sr-only 방향 설명. 화살표 문자 자체는 aria-hidden 처리 */
 const ARROW_SR_TEXT: Record<string, string> = {

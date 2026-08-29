@@ -15,7 +15,7 @@ import { CommentForm } from './CommentForm';
 import { updateComment } from '@/actions/comment';
 import { formatCommentTime } from '@/lib/comments/format';
 import { SITE_OWNER_NAME } from '@/constants/site';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 import type { Comment, CommentWithChildren } from '@/types/comment';
 
 const editContentSchema = z.object({

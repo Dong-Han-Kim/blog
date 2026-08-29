@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type ComponentProps } from 'react';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 type CodeBlockProps = ComponentProps<'pre'> & {
   /** rehype-pretty-code가 pre에 부착하는 언어명 (설계 §7.5) */
