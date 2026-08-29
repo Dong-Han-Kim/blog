@@ -29,12 +29,15 @@ export function GET() {
     )
     .join('');
 
+  // 피드 채널명은 사용자에게 노출되는 브랜드 표시명이므로 b.log() (결정 D-1ⓒ).
+  // blog92는 호스트명 은유(PromptLine의 `blog92@web:~$`, error.tsx의 `./blog92 --render`,
+  // 폴백 도메인)에만 쓰는 시스템 식별자라 그대로 둔다.
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>blog92</title>
+    <title>b.log()</title>
     <link>${SITE_URL}</link>
-    <description>blog92 기술 블로그</description>
+    <description>b.log() 기술 블로그</description>
     <language>ko</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml"/>${items}
