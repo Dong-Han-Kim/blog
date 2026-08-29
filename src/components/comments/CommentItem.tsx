@@ -14,6 +14,7 @@ import { DeleteCommentDialog } from './DeleteCommentDialog';
 import { CommentForm } from './CommentForm';
 import { updateComment } from '@/actions/comment';
 import { formatCommentTime } from '@/lib/comments/format';
+import { countNodes } from '@/lib/comments/tree';
 import { updateCommentSchema } from '@/lib/validations/comment';
 import { SITE_OWNER_NAME } from '@/constants/site';
 import { cn } from '@/lib/utils';
@@ -38,11 +39,6 @@ interface CommentItemProps {
   collapsed?: boolean;
   /** 루트 댓글 전용 — 스레드 토글 핸들러 */
   onToggleThread?: (commentId: string) => void;
-}
-
-// 서브트리 답글 총수 (스레드 토글 라벨용)
-function countReplies(comment: CommentWithChildren): number {
-  return comment.children.reduce((sum, child) => sum + 1 + countReplies(child), 0);
 }
 
 export function CommentItem({
@@ -113,7 +109,7 @@ export function CommentItem({
   const isAuthor = comment.authorName === SITE_OWNER_NAME;
   const isReply = comment.depth > 0;
   const isUpdated = !!comment.updatedAt;
-  const replyCount = countReplies(comment);
+  const replyCount = countNodes(comment.children);
 
   return (
     <div>

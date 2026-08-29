@@ -11,6 +11,7 @@ import {
   buildCommentTree,
   addCommentToTree,
   commentExistsInTree,
+  countNodes,
   removeCommentFromTree,
   updateCommentInTree,
 } from '@/lib/comments/tree';
@@ -95,7 +96,7 @@ export function CommentSection({ postSlug, initialComments }: CommentSectionProp
     });
   }, []);
 
-  const commentCount = countComments(commentTree);
+  const commentCount = countNodes(commentTree);
   const oldest = sortOrder === 'oldest';
 
   // 저장 상태(commentTree)는 createdAt asc 불변식 유지 — 정렬은 파생값만 (설계 §3.4).
@@ -140,8 +141,4 @@ export function CommentSection({ postSlug, initialComments }: CommentSectionProp
       </div>
     </section>
   );
-}
-
-function countComments(tree: CommentWithChildren[]): number {
-  return tree.reduce((sum, node) => sum + 1 + countComments(node.children), 0);
 }

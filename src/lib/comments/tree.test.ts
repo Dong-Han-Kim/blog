@@ -6,6 +6,7 @@ import {
   addCommentToTree,
   buildCommentTree,
   commentExistsInTree,
+  countNodes,
   removeCommentFromTree,
   updateCommentInTree,
 } from './tree';
@@ -266,5 +267,33 @@ describe('updateCommentInTree', () => {
     const snapshot = structuredClone(tree);
     updateCommentInTree(tree, 'grandchild-1', 'mutated?', 'now');
     expect(tree).toEqual(snapshot);
+  });
+});
+
+describe('countNodes', () => {
+  it('빈 배열은 0', () => {
+    expect(countNodes([])).toBe(0);
+  });
+  it('단일 루트는 1', () => {
+    expect(countNodes(buildCommentTree([makeComment({ id: 'r' })]))).toBe(1);
+  });
+  it('3단 중첩을 전부 센다', () => {
+    const tree = buildCommentTree([
+      makeComment({ id: 'a' }),
+      makeComment({ id: 'b', parentId: 'a' }),
+      makeComment({ id: 'c', parentId: 'b' }),
+    ]);
+    expect(countNodes(tree)).toBe(3);           // 루트 포함 = CommentSection 용법
+    expect(countNodes(tree[0].children)).toBe(2); // 자신 제외 = CommentItem 용법
+  });
+  it('형제 다수를 센다', () => {
+    const tree = buildCommentTree([
+      makeComment({ id: 'a' }),
+      makeComment({ id: 'b', parentId: 'a' }),
+      makeComment({ id: 'c', parentId: 'a' }),
+      makeComment({ id: 'd' }),
+    ]);
+    expect(countNodes(tree)).toBe(4);
+    expect(countNodes(tree[0].children)).toBe(2);
   });
 });

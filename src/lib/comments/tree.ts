@@ -100,3 +100,14 @@ export function updateCommentInTree(
     };
   });
 }
+
+/**
+ * 노드 배열의 전체 노드 수(자손 포함) — reuse-audit B-6 / L1.
+ * ⚠️ "자기 자신 포함 여부"는 **인자로 결정된다.**
+ *   - 답글 수: countNodes(comment.children)  → 자신 제외
+ *   - 전체 댓글 수: countNodes(tree)         → 루트 포함
+ * 인자를 잘못 넘기면 모든 스레드 카운트가 +1 된다.
+ */
+export function countNodes(nodes: CommentWithChildren[]): number {
+  return nodes.reduce((sum, node) => sum + 1 + countNodes(node.children), 0);
+}
