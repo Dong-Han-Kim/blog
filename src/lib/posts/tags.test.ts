@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { countCategories, countTags } from './tags';
+import { countCategories, countTags, sortTagsByCount } from './tags';
 
 const post = (tags: string[], category = 'til') => ({ tags, category });
 
@@ -38,5 +38,46 @@ describe('countCategories', () => {
       ['til', 2],
       ['linux', 1],
     ]);
+  });
+});
+
+describe('sortTagsByCount', () => {
+  it('count 내림차순이 1차 축이다', () => {
+    const counts = new Map([
+      ['a', 1],
+      ['b', 3],
+      ['c', 2],
+    ]);
+    expect(sortTagsByCount(counts).map(([t]) => t)).toEqual(['b', 'c', 'a']);
+  });
+  // ★ 환경 로케일 무관 결정성 고정 (C-6.4)
+  it('동률은 compareStrings 오름차순 — 대소문자·한글 혼합 골든 순서', () => {
+    const counts = new Map([
+      ['터미널', 1],
+      ['glibc', 1],
+      ['Virtual DOM', 1],
+      ['ldd', 1],
+      ['CLI', 1],
+      ['서버운영', 1],
+      ['systemd', 1],
+      ['Next.js', 1],
+    ]);
+    expect(sortTagsByCount(counts).map(([t]) => t)).toEqual([
+      'CLI',
+      'Next.js',
+      'Virtual DOM',
+      'glibc',
+      'ldd',
+      'systemd',
+      '서버운영',
+      '터미널',
+    ]);
+  });
+  it('1차 축이 2차 축을 이긴다', () => {
+    const counts = new Map([
+      ['zzz', 5],
+      ['aaa', 1],
+    ]);
+    expect(sortTagsByCount(counts).map(([t]) => t)).toEqual(['zzz', 'aaa']);
   });
 });

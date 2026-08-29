@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { PostMeta } from '@/types/common';
 
-import { DEFAULT_POST_SORT, sortPostsByDate } from './sort';
+import { compareStrings, DEFAULT_POST_SORT, sortPostsByDate } from './sort';
 
 let seq = 0;
 function makePost(overrides: Partial<PostMeta> = {}): PostMeta {
@@ -326,5 +326,19 @@ describe('sortPostsByDate (설계 §3.3 목록 정렬 정본)', () => {
     const once = sortPostsByDate(posts, 'newest');
     const twice = sortPostsByDate(once, 'newest');
     expect(slugs(twice)).toEqual(slugs(once));
+  });
+});
+
+describe('compareStrings (로케일 무관 코드 유닛 비교)', () => {
+  it('대문자가 소문자보다 앞선다 (localeCompare와 갈리는 지점)', () => {
+    expect(compareStrings('B', 'a')).toBeLessThan(0);
+    expect('B'.localeCompare('a')).toBeGreaterThan(0); // 대비 문서화
+  });
+  it('한글은 Latin 뒤에 온다 (환경 로케일과 무관)', () => {
+    expect(compareStrings('터미널', 'zzz')).toBeGreaterThan(0);
+    expect(compareStrings('글', 'A')).toBeGreaterThan(0);
+  });
+  it('동일 문자열은 0', () => {
+    expect(compareStrings('Linux', 'Linux')).toBe(0);
   });
 });

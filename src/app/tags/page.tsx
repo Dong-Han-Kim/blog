@@ -1,5 +1,5 @@
 import { getPublishedPosts } from '@/lib/mdx';
-import { countTags } from '@/lib/posts/tags';
+import { countTags, sortTagsByCount } from '@/lib/posts/tags';
 import { tagHref } from '@/lib/routes';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -15,8 +15,7 @@ export const metadata: Metadata = {
 export default function TagsPage() {
   const allPosts = getPublishedPosts();
 
-  const tagMap = countTags(allPosts);
-  const tags = Array.from(tagMap.entries()).sort((a, b) => b[1] - a[1]);
+  const tags = sortTagsByCount(countTags(allPosts));
 
   return (
     <>

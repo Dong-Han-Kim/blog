@@ -8,6 +8,8 @@
  * fs 등 노드 의존이 없어 클라이언트 번들(lib/search.ts 경유)에서도 안전하다.
  */
 
+import { compareStrings } from './sort';
+
 /** 문자열 키 목록의 빈도를 센다 — 삽입 순서 = 첫 등장 순서 */
 function countKeyList(keys: readonly string[]): Map<string, number> {
   const counts = new Map<string, number>();
@@ -29,4 +31,18 @@ export function countCategories(
   posts: readonly { category: string }[],
 ): Map<string, number> {
   return countKeyList(posts.map((post) => post.category));
+}
+
+/**
+ * 태그 빈도 정렬 정본 (reuse-audit C-6 / H3-b, 결정 D-3ⓒ).
+ * 1차 count 내림차순, 2차 이름 오름차순(compareStrings — 로케일 무관).
+ * localeCompare를 쓰지 않는 근거는 lib/posts/sort.ts의 compareStrings 주석 참조.
+ * 세 소비처(/tags, ALL TAGS 패널, 검색 팔레트 TRY 칩)가 이 함수 하나만 신뢰한다.
+ */
+export function sortTagsByCount(
+  counts: Map<string, number>,
+): Array<[string, number]> {
+  return [...counts.entries()].sort(
+    (a, b) => b[1] - a[1] || compareStrings(a[0], b[0]),
+  );
 }

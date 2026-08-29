@@ -36,8 +36,11 @@ type SameDateSortKey = {
  * 로케일 무관 문자열 비교 — UTF-16 코드 유닛 오름차순.
  * localeCompare는 ICU/기본 로케일에 콜레이션이 좌우돼(en↔ko에서 Latin·Hangul 순서 반전)
  * 빌드 서버·브라우저·테스트 환경 간 결과가 달라질 수 있으므로 쓰지 않는다.
+ * 태그 정렬(lib/posts/tags.ts의 sortTagsByCount)과 카테고리 이름순 정렬도 이 함수를
+ * 쓴다 — topTags가 서버 프리렌더와 클라이언트 팔레트 양쪽에서 호출돼 위와 동일한
+ * hydration 순서 불일치 구조를 갖기 때문이다 (결정 D-3ⓒ, 2026-08-29).
  */
-function compareStrings(a: string, b: string): number {
+export function compareStrings(a: string, b: string): number {
   if (a < b) return -1;
   if (a > b) return 1;
   return 0;
