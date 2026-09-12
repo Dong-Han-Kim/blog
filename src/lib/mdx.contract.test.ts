@@ -359,6 +359,31 @@ describe('시리즈 정본 — sortSeriesPosts / getSeriesForPost', () => {
     expect(getPostsBySeries('S').map((p) => p.slug)).toEqual(['mmm', 'aaa', 'zzz']);
   });
 
+  // ★ slug tie-break는 로케일 무관 코드 유닛 비교여야 한다 (sort.ts의 compareStrings와 동일 원칙).
+  //   localeCompare(인자 없음)는 대소문자를 1차가 아닌 3차 판정으로 미뤄 'a-post' < 'B-post'로
+  //   보지만, 코드 유닛 비교는 'B'(0x42) < 'a'(0x61)라 'B-post'가 앞선다 — 둘이 갈린다.
+  it('seriesOrder·date가 같을 때 slug tie-break가 로케일에 의존하지 않는다 (대소문자 교차)', async () => {
+    const { getPostsBySeries } = await loadMdx([
+      { category: 'a', slug: 'a-post', series: 'S', seriesOrder: 1, date: '2026-01-01' },
+      { category: 'a', slug: 'B-post', series: 'S', seriesOrder: 1, date: '2026-01-01' },
+    ]);
+    expect('B-post'.localeCompare('a-post')).toBeGreaterThan(0); // 대비 문서화 — localeCompare라면 반대 순서가 나온다
+    expect(getPostsBySeries('S').map((p) => p.slug)).toEqual(['B-post', 'a-post']);
+  });
+
+  // ★ 한글 시리즈 slug와 라틴 slug가 섞이면 실행 환경 로케일(en/ko)에 따라 localeCompare의
+  //   부호가 뒤집힌다 — same-date-series-sort review의 sort.ts 사고와 동일 패턴.
+  it('seriesOrder·date가 같을 때 slug tie-break가 한글·라틴 교차에서도 로케일에 의존하지 않는다', async () => {
+    const { getPostsBySeries } = await loadMdx([
+      { category: 'a', slug: '가나다-post', series: 'S', seriesOrder: 1, date: '2026-01-01' },
+      { category: 'a', slug: 'apple-post', series: 'S', seriesOrder: 1, date: '2026-01-01' },
+    ]);
+    // en 로케일 기준 대비 문서화 — ko 로케일에서는 이 부호가 뒤집힌다(review.md 1차 참조)
+    expect('apple-post'.localeCompare('가나다-post', 'en')).toBeLessThan(0);
+    expect('apple-post'.localeCompare('가나다-post', 'ko')).toBeGreaterThan(0);
+    expect(getPostsBySeries('S').map((p) => p.slug)).toEqual(['apple-post', '가나다-post']);
+  });
+
   // ★ 의도적 이원화: 같은 입력에 대해 두 정렬 정본이 서로 다른 답을 내야 한다
   it('sortSeriesPosts와 sortPostsByDate는 의도적으로 다른 순서를 낸다', async () => {
     const { getPostsBySeries } = await loadMdx(series);

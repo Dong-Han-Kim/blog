@@ -6,6 +6,7 @@ import {
   type PostFrontmatter,
 } from './validations/posts';
 import { calcReadingTime } from './reading-time';
+import { compareStrings } from './posts/sort';
 import { notFound, redirect } from 'next/navigation';
 import { ZodError } from 'zod';
 import { PostMeta } from '@/types/common';
@@ -198,7 +199,9 @@ export interface SeriesInfo {
  * 시리즈 정렬 정본 (설계 §3.1) — 컴포넌트는 이 순서를 그대로 신뢰한다.
  * 1. seriesOrder ?? Infinity (order 있는 편이 앞, 누락 편은 뒤)
  * 2. date 오름차순 (동률 시)
- * 3. slug localeCompare (최종 결정성 — proxy 3부작처럼 date 전부 동일 케이스 대비)
+ * 3. slug 코드 유닛 비교(compareStrings, 최종 결정성 — proxy 3부작처럼 date 전부 동일 케이스 대비).
+ *    localeCompare는 실행 환경 로케일에 따라 부호가 갈려(sort.ts의 sortPostsByDate와 동일 사고,
+ *    docs/company/same-date-series-sort/review.md 후속 참고) 쓰지 않는다.
  * 표시 번호는 seriesOrder 원값이 아니라 정렬 후 배열 인덱스 + 1을 쓴다.
  */
 export function sortSeriesPosts(posts: PostMeta[]): PostMeta[] {
@@ -208,7 +211,7 @@ export function sortSeriesPosts(posts: PostMeta[]): PostMeta[] {
     if (orderA !== orderB) return orderA - orderB;
     // date는 YYYY-MM-DD 고정 형식이라 문자열 비교가 시간순과 일치한다
     if (a.date !== b.date) return a.date < b.date ? -1 : 1;
-    return a.slug.localeCompare(b.slug);
+    return compareStrings(a.slug, b.slug);
   });
 }
 
