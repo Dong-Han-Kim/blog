@@ -29,6 +29,13 @@
       "when": 1789227357709,
       "tag": "0003_stale_shadowcat",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789229478204,
+      "tag": "0004_drop_permissive_comment_policies",
+      "breakpoints": true
     }
   ]
 }
