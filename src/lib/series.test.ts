@@ -111,12 +111,23 @@ describe('실제 콘텐츠 통합 (content/posts 파일시스템)', () => {
     expect(series?.next?.slug).toBe('javascript-proxy-reflect-patterns');
   });
 
-  it('단일 편 시리즈 (react-rendering-principles) — 1편, prev/next null', () => {
+  it('React 렌더링 Deep Dive — 번외편 재번호(정수 seriesOrder) 후 7편 순서', () => {
+    expect(slugs(getPostsBySeries('React 렌더링 Deep Dive'))).toEqual([
+      'react-rendering-principles',
+      'react-fiber-architecture',
+      'react-suspense',
+      'react-lane-internals',
+      'react-server-components',
+      'react-streaming-rendering',
+      'react-suspense-boundary-design',
+    ]);
+  });
+
+  it('첫 편의 시리즈 컨텍스트 — currentIndex 0, prev null', () => {
     const series = getSeriesForPost('react-rendering-principles');
-    expect(series?.posts).toHaveLength(1);
     expect(series?.currentIndex).toBe(0);
     expect(series?.prev).toBeNull();
-    expect(series?.next).toBeNull();
+    expect(series?.next?.slug).toBe('react-fiber-architecture');
   });
 
   it('시리즈 미소속 글 — null', () => {

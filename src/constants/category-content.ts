@@ -11,6 +11,10 @@ export const CATEGORY_CONTENT: CategoryContent = {
     name: 'Backend',
     description: '서버·API·인증 — 백엔드 개발 기록',
   },
+  architecture: {
+    name: 'Architecture',
+    description: '안티패턴·디자인 패턴·설계 원칙 — 언어와 계층을 가리지 않는 설계 기록',
+  },
   devops: {
     name: 'DevOps',
     description: 'Docker·CI/CD·인프라 — 배포와 운영 자동화 기록',
