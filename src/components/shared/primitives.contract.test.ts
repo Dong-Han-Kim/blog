@@ -169,8 +169,21 @@ describe('ArchiveHeader — 카테고리/태그 상세 공통 헤더 (D-4 / C4)'
       'items-end',
       'justify-between',
       'gap-32',
+      'max-md:flex-col',
+      'max-md:items-start',
+      'max-md:gap-12',
     ]);
     expect(markup).not.toContain('mb-40');
+  });
+
+  // 회귀 지점: 가로 배치 + shrink-0 우측 메타가 모바일에서 문서 가로 넘침을 만들었다
+  //   (360px에서 /categories/frontend +64px, /tags/useDeferredValue +291px @320px).
+  it('모바일에서 세로로 쌓이고, 긴 한 단어 제목이 줄바꿈될 수 있다', () => {
+    const markup = renderToStaticMarkup(h(ArchiveHeader, tagProps));
+    expect(markup).toContain('<div class="min-w-0 [overflow-wrap:anywhere]"><h1');
+    expect(markup).toContain(
+      'class="shrink-0 text-right text-[11px] leading-[2] text-text-dim max-md:text-left"',
+    );
   });
 
   it('설명문이 text-[13px]로 수렴한다 (D-2 축③)', () => {

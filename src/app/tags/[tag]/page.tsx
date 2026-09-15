@@ -61,7 +61,7 @@ export default async function TagPage({ params }: PageProps) {
       />
       <ArchiveHeader
         title={`#${decoded}`}
-        titleClassName="text-[40px] leading-[1.3]"
+        titleClassName="text-[40px] leading-[1.3] max-md:text-[28px]"
         description="이 태그가 달린 글"
         entryCount={publishedPosts.length}
         path={`tags/${decoded.toLowerCase()}/`}

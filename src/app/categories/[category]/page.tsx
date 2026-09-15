@@ -54,7 +54,7 @@ export default async function CategoryPage({ params }: PageProps) {
       <PromptLine command={`cd categories/${slug}`} className="mt-44 mb-26" />
       <ArchiveHeader
         title={content?.name ?? category}
-        titleClassName="text-cat-title uppercase"
+        titleClassName="text-cat-title uppercase max-md:text-[30px]"
         description={content?.description}
         entryCount={posts.length}
         path={`categories/${slug}/`}

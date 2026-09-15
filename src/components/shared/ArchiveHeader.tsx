@@ -34,8 +34,12 @@ export function ArchiveHeader({
   path,
 }: ArchiveHeaderProps) {
   return (
-    <header className="mb-44 flex items-end justify-between gap-32">
-      <div>
+    // 모바일(<768px)에서는 세로로 쌓는다. 가로 배치 그대로면 shrink-0 우측 메타가 폭을
+    // 양보하지 않아 문서 전체가 가로로 넘친다(360px에서 카테고리·태그 상세 ~60개 페이지).
+    // overflow-wrap은 상속되므로 h1 클래스 문자열(아래 twMerge 주석)을 건드리지 않고
+    // 래퍼에 둔다 — `#useDeferredValue` 같은 한 단어 제목이 뷰포트보다 넓을 때의 안전망.
+    <header className="mb-44 flex items-end justify-between gap-32 max-md:flex-col max-md:items-start max-md:gap-12">
+      <div className="min-w-0 [overflow-wrap:anywhere]">
         {/*
           cn(twMerge)을 쓰지 않고 문자열로 이어 붙인다. `text-cat-title`은 폰트 크기
           토큰(globals.css:49 `--text-cat-title`)이지만 tailwind-merge는 t-shirt size가
@@ -52,7 +56,7 @@ export function ArchiveHeader({
           </p>
         )}
       </div>
-      <div className="shrink-0 text-right text-[11px] leading-[2] text-text-dim">
+      <div className="shrink-0 text-right text-[11px] leading-[2] text-text-dim max-md:text-left">
         <div>{entryCount} ENTRIES</div>
         <div className="text-text-faint">{path}</div>
       </div>
