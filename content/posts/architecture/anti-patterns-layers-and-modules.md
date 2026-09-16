@@ -26,7 +26,7 @@ keywords: ['Anti-Pattern', 'Architecture', 'Layered Architecture', 'DDD', 'TypeS
 - **5편** — 시스템 간 통합과 아키텍처를 결정하는 조직
 
 > **분류에 대한 메모**
-> 안티패턴이라는 용어를 대중화한 Brown 외 『AntiPatterns』(1998)는 안티패턴을 **개발(Development)**, **아키텍처(Architecture)**, **관리(Management)** 세 범주로 나눈다. 원전 기준으로 2편의 Spaghetti Code와 Lava Flow는 개발 범주에 속한다. 이 시리즈는 원전 분류 대신 **"문제가 영향을 미치는 범위"**를 기준으로 재분류하고 있다는 점을 밝혀 둔다.
+> 안티패턴이라는 용어를 대중화한 Brown 외 『AntiPatterns』(1998)는 안티패턴을 **개발(Development)**, **아키텍처(Architecture)**, **관리(Management)** 세 범주로 나눈다. 원전 기준으로 2편의 Spaghetti Code와 Lava Flow는 개발 범주에 속한다. 이 시리즈는 원전 분류 대신 "**문제가 영향을 미치는 범위**"를 기준으로 재분류하고 있다는 점을 밝혀 둔다.
 
 이번 편의 여섯 가지는 다음과 같다.
 
@@ -327,7 +327,7 @@ export const orderService = {
 
 ### 주의 — 언제나 안티패턴은 아니다
 
-비즈니스 규칙이 거의 없는 **단순 CRUD 시스템에서는 빈약한 모델이 오히려 적절하다.** Fowler 자신도 로직이 단순하면 Transaction Script(절차적으로 트랜잭션을 처리하는 방식)가 합리적인 선택이라고 설명한다. 안티패턴이 되는 조건은 **"규칙이 복잡한데도 규칙이 객체 밖에 흩어져 있을 때"**다.
+비즈니스 규칙이 거의 없는 **단순 CRUD 시스템에서는 빈약한 모델이 오히려 적절하다.** Fowler 자신도 로직이 단순하면 Transaction Script(절차적으로 트랜잭션을 처리하는 방식)가 합리적인 선택이라고 설명한다. 안티패턴이 되는 조건은 "**규칙이 복잡한데도 규칙이 객체 밖에 흩어져 있을 때**"다.
 
 ---
 
@@ -389,7 +389,7 @@ export function calculateDiscount(order: Order, config: DiscountConfig) {
 
 『AntiPatterns』의 아키텍처 범주에 속하는 안티패턴으로, **예상 가능한 모든 쓰임새를 하나의 인터페이스에 담아 지나치게 비대해진 상태**를 말한다. 인터페이스 분리 원칙(ISP)을 위반한 대표 사례다.
 
-1편의 God Object와 비슷해 보이지만 초점이 다르다. God Object는 **구현**이 비대한 것이고, Swiss Army Knife는 **계약(인터페이스)**이 비대한 것이다. 구현은 여러 클래스에 나뉘어 있어도 계약 하나가 모든 것을 요구할 수 있다.
+1편의 God Object와 비슷해 보이지만 초점이 다르다. God Object는 **구현**이 비대한 것이고, Swiss Army Knife는 **계약**(인터페이스)이 비대한 것이다. 구현은 여러 클래스에 나뉘어 있어도 계약 하나가 모든 것을 요구할 수 있다.
 
 ### 냄새나는 코드
 

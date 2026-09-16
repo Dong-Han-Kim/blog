@@ -19,11 +19,11 @@ keywords: ['Design Pattern', 'GoF', 'Creational Pattern', 'TypeScript', 'SOLID',
 
 ## 들어가며
 
-[안티패턴 시리즈](/posts/anti-patterns-before-design-patterns)는 "이렇게 하면 망가진다"는 이야기였다. 이번 시리즈는 그 반대편, **"이런 문제에는 이런 구조가 검증되었다"**는 이야기다.
+[안티패턴 시리즈](/posts/anti-patterns-before-design-patterns)는 "이렇게 하면 망가진다"는 이야기였다. 이번 시리즈는 그 반대편, "**이런 문제에는 이런 구조가 검증되었다**"는 이야기다.
 
 ### 디자인 패턴이란
 
-1994년 Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides 네 사람이 쓴 『Design Patterns: Elements of Reusable Object-Oriented Software』는 반복적으로 나타나는 설계 문제와 그 해법 23가지에 이름을 붙였다. 저자 네 명을 묶어 **GoF(Gang of Four)**라고 부른다.
+1994년 Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides 네 사람이 쓴 『Design Patterns: Elements of Reusable Object-Oriented Software』는 반복적으로 나타나는 설계 문제와 그 해법 23가지에 이름을 붙였다. 저자 네 명을 묶어 **GoF**(Gang of Four)라고 부른다.
 
 패턴은 복사해서 붙여 넣는 코드가 아니다. 각 패턴은 다음 네 가지로 구성된다.
 
@@ -147,7 +147,7 @@ Singleton은 GoF 패턴 중 **가장 많이 비판받는 패턴**이다. 전역 
 - 테스트마다 상태가 공유되어 테스트 순서에 따라 결과가 달라진다
 - 테스트에서 가짜 객체로 교체하기 어렵다
 
-그래서 현대 코드에서는 **"하나만 만든다"와 "전역으로 꺼내 쓴다"를 분리**한다. 인스턴스는 애플리케이션 시작 지점에서 하나만 만들고, 필요한 곳에는 **인자로 전달(의존성 주입)**한다.
+그래서 현대 코드에서는 **"하나만 만든다"와 "전역으로 꺼내 쓴다"를 분리**한다. 인스턴스는 애플리케이션 시작 지점에서 하나만 만들고, 필요한 곳에는 **인자로 전달**(의존성 주입)한다.
 
 ```ts
 // 의존성을 인자로 받는다 — 테스트에서 가짜 pool을 넣을 수 있다
@@ -229,18 +229,18 @@ class SlackNotifier extends Notifier {
 ```ts
 type SenderFactory = () => Sender;
 
-const senderFactories: Record<string, SenderFactory> = {
+const senderFactories = {
   email: () => new EmailSender(smtpConfig),
   sms: () => new SmsSender(smsApiKey),
   slack: () => new SlackSender(webhookUrl),
-};
+} satisfies Record<string, SenderFactory>;
 
 export function createSender(channel: keyof typeof senderFactories): Sender {
   return senderFactories[channel]();
 }
 ```
 
-새 채널은 레지스트리에 한 줄을 추가하는 것으로 끝난다. `keyof typeof`로 존재하지 않는 채널 이름은 컴파일 단계에서 걸러진다.
+새 채널은 레지스트리에 한 줄을 추가하는 것으로 끝난다. `satisfies`를 쓴 이유가 있다. `const senderFactories: Record<string, SenderFactory>`처럼 타입 주석을 달면 `keyof typeof senderFactories`가 `string`으로 넓어져 존재하지 않는 채널 이름도 그대로 통과한다. `satisfies`는 각 팩토리가 올바른 시그니처인지 검사하면서 키 목록을 `"email" | "sms" | "slack"`으로 좁혀 두므로, 그제서야 오타가 컴파일 단계에서 걸린다.
 
 ### 언제 쓰고 언제 피하나
 
@@ -253,7 +253,7 @@ export function createSender(channel: keyof typeof senderFactories): Sender {
 
 ### 의도
 
-**서로 관련된 객체들의 묶음(제품군)**을, 구체 클래스를 지정하지 않고 생성할 수 있는 인터페이스를 제공한다.
+**서로 관련된 객체들의 묶음**(제품군)을, 구체 클래스를 지정하지 않고 생성할 수 있는 인터페이스를 제공한다.
 
 Factory Method가 **객체 하나**의 생성을 추상화한다면, Abstract Factory는 **함께 쓰여야 하는 객체 여러 개**의 생성을 추상화한다.
 

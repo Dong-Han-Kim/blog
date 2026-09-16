@@ -379,6 +379,10 @@ CREATE TABLE order_status (
   sort_order  INT NOT NULL,
   is_active   BOOLEAN NOT NULL DEFAULT TRUE
 );
+-- 자식 컬럼이 ENUM인 채로 FK를 걸면 부모(VARCHAR(20))와 타입이 달라 거부된다.
+-- 먼저 컬럼 타입을 맞춘다.
+ALTER TABLE orders MODIFY status VARCHAR(20) NOT NULL;
+
 ALTER TABLE orders
   ADD CONSTRAINT fk_orders_status FOREIGN KEY (status) REFERENCES order_status(status_code);
 ```
