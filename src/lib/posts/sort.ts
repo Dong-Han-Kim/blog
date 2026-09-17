@@ -19,8 +19,12 @@ export const DEFAULT_POST_SORT: PostSortOrder = 'newest';
  *    (파일시스템 순서 의존 제거).
  * 문자열 비교는 로케일 무관 코드 유닛 비교(compareStrings) — 한글 시리즈명↔Latin slug의
  * 교차 스크립트 비교가 실행 환경 기본 로케일(en: Latin<Hangul, ko: Hangul<Latin)에
- * 좌우되면 서버 프리렌더와 클라이언트(PostList)의 정렬이 어긋나 hydration 순서
- * 불일치가 생기므로 localeCompare를 쓰지 않는다.
+ * 좌우되면 **같은 목록이 환경마다 다른 순서로** 나오므로 localeCompare를 쓰지 않는다.
+ * (근거 갱신 2026-09-17, feat-list-pagination D-3: PostList가 서버 컴포넌트가 되면서
+ * "서버 프리렌더 ↔ 클라이언트 PostList의 hydration 순서 불일치"라는 원래 근거는 사라졌다.
+ * 그러나 제약은 그대로다 — ① 빌드 머신과 런타임 서버의 기본 로케일이 다르면 프리렌더된
+ * 페이지와 요청 시 렌더된 페이지의 순서가 갈리고, ② 이 비교 함수를 공유하는
+ * sortTagsByCount는 여전히 클라이언트에서도 호출된다(아래 compareStrings 주석, D-3ⓒ).)
  * 모든 쌍 비교가 sameDateSortKey 한 곳에서 파생되므로 쌍 단위 분기로 생기던 순환이 없다.
  * 시리즈인데 seriesOrder가 없는 글은 비소속으로 취급(groupKey=slug)해 한쪽만 order가
  * 있는 케이스가 순환을 만들지 않는다.

@@ -14,3 +14,23 @@ export const SITE_OWNER_NAME = 'han';
  */
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://blog92.vercel.app';
+
+/** RSS 피드 라우트 경로 정본 (`app/feed.xml/route.ts`). 경로를 옮기면 여기만 고친다. */
+export const FEED_PATH = '/feed.xml';
+
+/**
+ * RSS 자동탐색 링크(`<link rel="alternate" type="application/rss+xml">`)의 정본.
+ *
+ * ⚠️ `layout.tsx`에만 두면 안 된다. Next의 메타데이터 병합은 **최상위 키 단위 치환**이지
+ *    깊은 병합이 아니다(`next/dist/lib/metadata/resolve-metadata.js`의 `case 'alternates'` —
+ *    하위 라우트가 `alternates`를 돌려주면 상위의 `alternates`를 통째로 버린다).
+ *    그래서 `alternates: { canonical }`만 반환하는 라우트는 layout의 피드 링크를 **잃는다**.
+ *    실제로 목록 4라우트에 canonical을 추가하자마자 `/` `/posts` `/categories/*` `/tags/*`
+ *    네 곳에서 피드 자동탐색이 사라졌다(리뷰 H-1). `/feed.xml` 자체는 멀쩡해서 빌드·테스트·화면
+ *    어디에도 신호가 없다 — 그래서 `alternates`를 반환하는 곳은 **전부** 이 상수를 함께 실어야 한다.
+ *
+ * 중복처럼 보여도 지우지 말 것. 회귀 테스트는 `src/app/feed-discovery.test.ts`.
+ */
+export const RSS_ALTERNATE_TYPES: Record<string, string> = {
+  'application/rss+xml': FEED_PATH,
+};

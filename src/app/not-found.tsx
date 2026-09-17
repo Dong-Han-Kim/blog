@@ -28,7 +28,10 @@ export default function NotFound() {
         404
       </h1>
 
-      {/* 에러 블록 — 모바일은 프롬프트/명령/에러 3줄 분리 */}
+      {/* 에러 블록 — 모바일은 프롬프트/명령/에러 3줄 분리.
+          요청 경로가 퍼센트 인코딩된 한 덩어리로 들어와 320px에서 가로로 넘치던 문제는
+          NotFoundPath 안의 `[overflow-wrap:anywhere]` 래퍼가 처리한다 (QA 결함 B).
+          여기 텍스트에 다시 걸지 말 것 — 줄바꿈 기회가 없는 부분은 경로뿐이다. */}
       <div className="mt-34 text-[13px] leading-[2.2]">
         <p>
           <span className="text-text-faint max-md:block">{PROMPT}</span>{' '}

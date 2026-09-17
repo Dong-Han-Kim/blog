@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { SearchCommand } from '@/components/search/SearchCommand';
 import { CrtOverlay } from '@/components/crt/CrtOverlay';
 import { TerminalHeader } from '@/components/terminal/TerminalHeader';
+import { RSS_ALTERNATE_TYPES } from '@/constants/site';
 
 // 페인트 전에 localStorage의 CRT off 상태를 <html data-crt>로 반영해
 // SSR 플래시를 제거한다 (설계 §3.2). React 상태 아님 — 문자열 스크립트.
@@ -16,11 +17,9 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.ico',
   },
-  alternates: {
-    types: {
-      'application/rss+xml': '/feed.xml',
-    },
-  },
+  // ⚠️ 여기 값은 하위 라우트가 `alternates`를 반환하는 순간 **통째로 치환**된다(깊은 병합 아님).
+  //    그래서 상수 하나를 공유하고, alternates를 돌려주는 라우트는 전부 이 값을 다시 싣는다.
+  alternates: { types: RSS_ALTERNATE_TYPES },
 };
 
 export const viewport: Viewport = {
