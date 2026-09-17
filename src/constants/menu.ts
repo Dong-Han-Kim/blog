@@ -5,6 +5,7 @@ export const Default_Nav_items = [
   { name: 'Architecture', path: '/categories/architecture', state: true },
   { name: 'DevOps', path: '/categories/devops', state: true },
   { name: 'Linux', path: '/categories/linux', state: true },
+  { name: 'Network', path: '/categories/network', state: true },
   { name: 'Database', path: '/categories/database', state: true },
   { name: 'Projects', path: '/categories/projects', state: true },
   { name: 'TIL', path: '/categories/til', state: true },

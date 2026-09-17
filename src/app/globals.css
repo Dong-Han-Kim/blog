@@ -1,4 +1,19 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
+
+/*
+ * Tailwind v4는 자동 content 감지로 프로젝트 전체를 훑어 유틸리티 후보를 찾는다.
+ * 그러면 content/posts 본문의 코드블록까지 후보가 된다 — Ansible 인벤토리의
+ * 대괄호 섹션 헤더(`all` 다음에 콜론과 `vars`가 오는 형태) 같은 평범한 텍스트가
+ * 임의 속성 유틸리티로 해석돼 유효하지 않은 CSS 규칙을 만들고, Lightning CSS가
+ * 이를 거부해 `next dev`의 모든 라우트가 500이 된다.
+ * (`next build`는 경고로 강등하고 규칙을 버려서 프로덕션에서는 드러나지 않는다.)
+ *
+ * @source를 추가하는 것만으로는 자동 탐지가 꺼지지 않으므로 source(none)으로 끈 뒤
+ * src/만 명시한다. 유틸리티 클래스는 src/ 안에서만 쓴다. — 2026-09-17
+ *
+ * ⚠️ 이 주석에 문제 토큰을 그대로 적지 말 것. globals.css도 스캔 대상이라 재현된다.
+ */
+@source '../../src';
 
 /*
  * 레트로 CRT 터미널 파운데이션 (retro-crt-redesign U1/U2)

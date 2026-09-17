@@ -23,6 +23,10 @@ export const CATEGORY_CONTENT: CategoryContent = {
     name: 'Linux',
     description: '명령어·셸·서버 운영 — 리눅스 실무 기록',
   },
+  network: {
+    name: 'Network',
+    description: 'TCP/IP·HTTP·TLS·CORS — 패킷이 오가는 길을 따라가는 기록',
+  },
   database: {
     name: 'Database',
     description: '쿼리·인덱스·트랜잭션 — 데이터베이스 기록',
